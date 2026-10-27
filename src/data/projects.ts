@@ -337,7 +337,7 @@ export const PROJECTS: Project[] = [
     publicationApproved: true,
     rank: 5,
     liveUrl: 'https://saas-physio.vercel.app',
-    sourceUrl: 'https://github.com/kbdcreditsolutions/SAAS-Physio',
+    sourceUrl: 'https://github.com/manojtyson-37/SAAS-Physio',
     techStack: ['Next.js', 'Prisma', 'Neon Postgres', 'Tailwind CSS', 'TypeScript', 'Vercel'],
     lastVerified: 'October 2026',
     badge: 'Healthcare SaaS',
@@ -473,7 +473,7 @@ export const PROJECTS: Project[] = [
     publicationApproved: true,
     rank: 8,
     liveUrl: 'https://nexify-dashboard.vercel.app',
-    sourceUrl: 'https://github.com/kbdcreditsolutions/nexifydashboard',
+    sourceUrl: 'https://github.com/manojtyson-37/nexifydashboard',
     techStack: ['Next.js 16', 'Prisma 6', 'Neon Postgres', 'NextAuth v5', 'Recharts', 'TanStack Table'],
     lastVerified: 'October 2026',
     highlights: [
@@ -497,6 +497,7 @@ export const PROJECTS: Project[] = [
     featured: false,
     publicationApproved: true,
     rank: 9,
+    sourceUrl: 'https://github.com/manojtyson-37/Accounting-Module',
     techStack: ['Next.js', 'Supabase Postgres', 'Vercel Serverless', 'PDF Generation', 'GST Rules Engine'],
     lastVerified: 'October 2026',
     highlights: [
@@ -568,7 +569,7 @@ export const PROJECTS: Project[] = [
     featured: false,
     publicationApproved: true,
     rank: 12,
-    sourceUrl: 'https://github.com/kbdcreditsolutions/Jaymahal-Palace-',
+    sourceUrl: 'https://github.com/manojtyson-37/Jaymahal-Palace-',
     techStack: ['Next.js 14', 'Prisma', 'Tailwind CSS', 'Razorpay API', 'Framer Motion', 'JWT Auth'],
     lastVerified: 'October 2026',
     highlights: [
@@ -649,6 +650,30 @@ export const PROJECTS: Project[] = [
     ],
     relatedSlugs: ['echora', 'jayamahal-palace'],
     accentColor: '#F43F5E'
+  },
+  {
+    slug: 'kusum-dental-care',
+    name: 'Kusum Dental Care · Clinical Operating System',
+    tagline: 'Full-stack patient booking, EHR records, and dental clinic management engine.',
+    shortDescription: 'Modern dental healthcare portal with multilingual patient self-service (English/Kannada), Fastify & Supabase backend, real-time appointment slot holding, and walk-in scheduling.',
+    detailedDescription: 'Kusum Dental Care is an end-to-end clinical management application built for high-touch healthcare practices. It combines a patient-facing multilingual booking portal with an administrative dashboard for appointment management, treatment record archiving, walk-in scheduling, and automated WhatsApp patient reminders.',
+    category: 'saas-cloud',
+    categoryLabel: 'SaaS & Industry OS',
+    status: 'live',
+    statusLabel: 'Live Production',
+    featured: false,
+    publicationApproved: true,
+    rank: 16,
+    sourceUrl: 'https://github.com/manojtyson-37/kusum-dental-care',
+    techStack: ['React 19', 'Fastify', 'Supabase Postgres', 'Tailwind CSS', 'Vite', 'TypeScript'],
+    lastVerified: 'October 2026',
+    highlights: [
+      'Multilingual English & Kannada booking engine with automated patient consent verification',
+      'Real-time appointment slot locking preventing concurrent overbooking during clinical consultations',
+      'Comprehensive treatment invoice and EHR history tracking with secure Supabase Row Level Security (RLS)'
+    ],
+    relatedSlugs: ['physiocare', 'kbd-books', 'dinepulse'],
+    accentColor: '#0EA5E9'
   }
 ];
 

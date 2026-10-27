@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0C0D10;
+  --background: #090A0D;
   --foreground: #F4F3F8;
-  --surface-card: #15171C;
-  --surface-card-hover: #1A1D24;
-  --surface-subtle: #101216;
+  --surface-card: #121419;
+  --surface-card-hover: #181A22;
+  --surface-subtle: #0E1015;
   --text-primary: #F4F3F8;
-  --text-secondary: #A6A8B3;
-  --text-muted: #717684;
+  --text-secondary: #9FA2B0;
+  --text-muted: #6C707E;
   --accent-violet: #B99AFF;
   --accent-violet-hover: #CCAFFF;
   --accent-violet-soft: rgba(185, 154, 255, 0.12);
-  --border-card: #30333B;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-hover: #484D58;
+  --border-card: #242731;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-hover: #3E4351;
 }
 
 @theme inline {
@@ -46,65 +46,95 @@ html {
 }
 
 body {
-  background-color: #0C0D10;
+  background-color: #090A0D;
   color: #F4F3F8;
   font-family: var(--font-sans), "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 198, 0.08), transparent 80%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 48px 48px, 48px 48px;
 }
 
 h1, h2, h3, h4, h5, h6, .font-display {
   font-family: var(--font-display), "Space Grotesk", sans-serif;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0C0D10;
+  background: #090A0D;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #30333B;
+  background: #242731;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #484D58;
+  background: #3E4351;
+}
+
+/* Tactile button micro-interactions (Transitions.dev style) */
+.btn-tactile {
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  user-select: none;
+}
+
+.btn-tactile:active {
+  transform: scale(0.975);
 }
 
 /* Subtle focus indicators */
 *:focus-visible {
-  outline: 2px solid #B99AFF;
+  outline: 2px solid #FFFFFF;
   outline-offset: 2px;
 }
 
-/* Utility classes */
+/* Utility badge classes */
 .badge-live {
-  color: #10B981;
-  background-color: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34D399;
+  background-color: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.3);
 }
 
 .badge-open-source {
   color: #38BDF8;
   background-color: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 .badge-prototype {
-  color: #F59E0B;
-  background-color: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #FBBF24;
+  background-color: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
 .badge-in-progress {
-  color: #B99AFF;
-  background-color: rgba(185, 154, 255, 0.1);
-  border: 1px solid rgba(185, 154, 255, 0.25);
+  color: #C084FC;
+  background-color: rgba(192, 132, 252, 0.1);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
