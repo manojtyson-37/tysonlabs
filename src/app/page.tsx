@@ -77,10 +77,10 @@ export default function HomePage() {
             {/* Main Statement */}
             <div className="space-y-4">
               <h1 className="font-display font-extrabold text-4xl sm:text-6xl md:text-7xl text-white tracking-tight leading-[1.04]">
-                High-throughput vertical SaaS. Zero boilerplate.
+                Software built to run real businesses.
               </h1>
               <p className="text-base sm:text-lg text-[#94A3B8] leading-relaxed max-w-2xl font-normal">
-                We architect and ship sovereign business operating systems, client-side WebAssembly engines, and autonomous AI infrastructure for high-stakes domains. No synthetic slop, no outsourced code — just hardened production systems.
+                From offline-first restaurant POS tills and garment factory ERPs to in-browser chess engines and creator checkout systems. Everything designed, engineered, and shipped end-to-end.
               </p>
             </div>
 
@@ -105,13 +105,13 @@ export default function HomePage() {
             {/* Verified Capabilities & Shipped Systems Strip */}
             <div className="flex items-center gap-2 text-[11px] font-mono text-[#64748B] flex-wrap pt-1">
               <span className="text-white font-medium">Shipped systems:</span>
-              <span className="text-[#94A3B8]">DinePulse POS (Live)</span>
+              <span className="text-[#94A3B8]">DinePulse Restaurant POS (Live)</span>
               <span>·</span>
-              <span className="text-[#94A3B8]">Silaa Atelier ERP</span>
+              <span className="text-[#94A3B8]">Silaa Garment ERP</span>
               <span>·</span>
               <span className="text-[#94A3B8]">Stockfish 18 WASM</span>
               <span>·</span>
-              <span className="text-[#94A3B8]">Tysonpe Commerce</span>
+              <span className="text-[#94A3B8]">Tysonpe Payments</span>
             </div>
 
             {/* Studio Engineering Proof Metrics */}
