@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { getFeaturedProjects } from '@/data/projects';
 import { ProjectCard } from '@/components/ProjectCard';
 import { HeroTelemetryDeck } from '@/components/HeroTelemetryDeck';
+import { HomeProjectsExplorer } from '@/components/HomeProjectsExplorer';
 import {
   ArrowUpRight,
+  ExternalLink,
   Sparkles,
   Bot,
   Layout,
@@ -136,32 +138,55 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Selected Work Section */}
+      {/* Live Systems Radar Ribbon */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-[#242731]">
-          <div>
-            <div className="text-xs uppercase tracking-wider font-semibold text-[#B99AFF] font-mono mb-1.5">
-              Level 1 — Standout Flagships
-            </div>
-            <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#F4F3F8]">
-              Selected work.
-            </h2>
+        <div className="bg-[#121419] border border-[#242731] rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono shadow-lg shadow-black/40">
+          <div className="flex items-center gap-3">
+            <span className="flex h-2.5 w-2.5 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span className="text-white font-bold tracking-wider uppercase">ACTIVE RADAR</span>
+            <span className="text-[#6C707E] hidden sm:inline">· 5 Live Verified Deployments</span>
           </div>
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#B99AFF] hover:text-[#CCAFFF] transition-colors"
-          >
-            <span>View complete catalogue ({getFeaturedProjects().length} featured)</span>
-            <ArrowUpRight className="w-4 h-4" />
-          </Link>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <a href="https://saas-physio.vercel.app" target="_blank" rel="noopener noreferrer" className="btn-tactile px-3 py-1.5 rounded bg-[#181B22] border border-[#2B2F3A] text-[#E4E5EB] hover:text-emerald-400 hover:border-emerald-500 transition-all flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span>PhysioCare SaaS</span>
+              <ExternalLink className="w-3 h-3 text-[#6C707E]" />
+            </a>
+            <a href="https://nexify-dashboard.vercel.app" target="_blank" rel="noopener noreferrer" className="btn-tactile px-3 py-1.5 rounded bg-[#181B22] border border-[#2B2F3A] text-[#E4E5EB] hover:text-sky-400 hover:border-sky-500 transition-all flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+              <span>Nexify Ops</span>
+              <ExternalLink className="w-3 h-3 text-[#6C707E]" />
+            </a>
+            <a href="https://www.kusumsdentalcare.in" target="_blank" rel="noopener noreferrer" className="btn-tactile px-3 py-1.5 rounded bg-[#181B22] border border-[#2B2F3A] text-[#E4E5EB] hover:text-purple-400 hover:border-purple-500 transition-all flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+              <span>Kusum Dental EHR</span>
+              <ExternalLink className="w-3 h-3 text-[#6C707E]" />
+            </a>
+            <a href="https://tysonchess-two.vercel.app" target="_blank" rel="noopener noreferrer" className="btn-tactile px-3 py-1.5 rounded bg-[#181B22] border border-[#2B2F3A] text-[#E4E5EB] hover:text-amber-400 hover:border-amber-500 transition-all flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+              <span>Stockfish 18 WASM</span>
+              <ExternalLink className="w-3 h-3 text-[#6C707E]" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Selected Work Section with Interactive Explorer */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-8">
+        <div className="mb-6">
+          <div className="text-xs uppercase tracking-wider font-semibold text-[#B99AFF] font-mono mb-1.5">
+            Level 1 — Standout Flagships
+          </div>
+          <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#F4F3F8]">
+            Selected work.
+          </h2>
         </div>
 
-        {/* Featured Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredProjects.map((project) => (
-            <ProjectCard key={project.slug} project={project} featured />
-          ))}
-        </div>
+        <HomeProjectsExplorer initialProjects={featuredProjects} />
       </section>
 
       {/* Studio Capabilities / Focus Areas */}
