@@ -1,0 +1,80 @@
+import React from 'react';
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { getApprovedProjects } from '@/data/projects';
+import { ProjectCard } from '@/components/ProjectCard';
+import { FlaskConical, Sparkles, Terminal, Cpu } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'TysonLabs · Labs & Experiments',
+  description: 'Explorations in browser WebAssembly engines, autonomous multi-agent pipelines, and developer infrastructure.',
+};
+
+export default function LabsPage() {
+  const allProjects = getApprovedProjects();
+  // Filter for experiments, prototypes, AI systems, and developer tools
+  const labProjects = allProjects.filter(
+    (p) => p.category === 'experiments' || p.category === 'ai-agents' || p.category === 'developer-tools' || p.status === 'prototype'
+  );
+
+  return (
+    <div className="max-w-6xl mx-auto px-6 sm:px-8 py-10 space-y-16">
+      {/* Header */}
+      <div className="space-y-4 max-w-2xl">
+        <div className="text-xs uppercase tracking-wider font-semibold text-[#B99AFF] font-mono flex items-center gap-2">
+          <FlaskConical className="w-3.5 h-3.5" />
+          <span>Level 3 — Experiments & Prototypes</span>
+        </div>
+        <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#F4F3F8] tracking-tight">
+          Labs & technical experiments.
+        </h1>
+        <p className="text-base text-[#A6A8B3] leading-relaxed">
+          The proving ground for cutting-edge technologies before they graduate into production operating systems. Everything from Stockfish 18 WASM to multi-agent LLM coordination.
+        </p>
+      </div>
+
+      {/* Lab Highlights Matrix */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="p-5 rounded-xl bg-[#15171C] border border-[#30333B] space-y-2">
+          <Cpu className="w-5 h-5 text-sky-400" />
+          <h3 className="font-display font-bold text-base text-[#F4F3F8]">Client WASM Engines</h3>
+          <p className="text-xs text-[#A6A8B3] leading-relaxed">
+            Running heavy computational engines like Stockfish 18 in client web workers with zero backend costs.
+          </p>
+        </div>
+        <div className="p-5 rounded-xl bg-[#15171C] border border-[#30333B] space-y-2">
+          <Terminal className="w-5 h-5 text-purple-400" />
+          <h3 className="font-display font-bold text-base text-[#F4F3F8]">Multi-Agent Pipelines</h3>
+          <p className="text-xs text-[#A6A8B3] leading-relaxed">
+            Chaining specialized research, script, voice, and visual AI agents with strict quality gates.
+          </p>
+        </div>
+        <div className="p-5 rounded-xl bg-[#15171C] border border-[#30333B] space-y-2">
+          <Sparkles className="w-5 h-5 text-emerald-400" />
+          <h3 className="font-display font-bold text-base text-[#F4F3F8]">Token Compression</h3>
+          <p className="text-xs text-[#A6A8B3] leading-relaxed">
+            Headroom token compression achieving 60-90% token reduction across multi-turn agent runs.
+          </p>
+        </div>
+      </div>
+
+      {/* Lab Projects Grid */}
+      <section className="space-y-6">
+        <div className="flex items-center justify-between pb-3 border-b border-[#30333B]">
+          <h2 className="font-display font-bold text-xl text-[#F4F3F8]">
+            Active Lab Builds
+          </h2>
+          <span className="text-xs font-mono text-[#717684]">
+            {labProjects.length} Experiments
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {labProjects.map((project) => (
+            <ProjectCard key={project.slug} project={project} />
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}

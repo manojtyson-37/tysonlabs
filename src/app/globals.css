@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0C0D10;
+  --foreground: #F4F3F8;
+  --surface-card: #15171C;
+  --surface-card-hover: #1A1D24;
+  --surface-subtle: #101216;
+  --text-primary: #F4F3F8;
+  --text-secondary: #A6A8B3;
+  --text-muted: #717684;
+  --accent-violet: #B99AFF;
+  --accent-violet-hover: #CCAFFF;
+  --accent-violet-soft: rgba(185, 154, 255, 0.12);
+  --border-card: #30333B;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-hover: #484D58;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--surface-card);
+  --color-card-hover: var(--surface-card-hover);
+  --color-card-subtle: var(--surface-subtle);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent-violet);
+  --color-accent-hover: var(--accent-violet-hover);
+  --color-border: var(--border-card);
+  --color-border-subtle: var(--border-subtle);
+  
+  --font-display: var(--font-display), "Space Grotesk", sans-serif;
+  --font-sans: var(--font-sans), "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: var(--font-mono), monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0C0D10;
+  color: #F4F3F8;
+  font-family: var(--font-sans), "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display), "Space Grotesk", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0C0D10;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #30333B;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #484D58;
+}
+
+/* Subtle focus indicators */
+*:focus-visible {
+  outline: 2px solid #B99AFF;
+  outline-offset: 2px;
+}
+
+/* Utility classes */
+.badge-live {
+  color: #10B981;
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.badge-open-source {
+  color: #38BDF8;
+  background-color: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.badge-prototype {
+  color: #F59E0B;
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.badge-in-progress {
+  color: #B99AFF;
+  background-color: rgba(185, 154, 255, 0.1);
+  border: 1px solid rgba(185, 154, 255, 0.25);
 }

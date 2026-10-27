@@ -1,0 +1,131 @@
+import React from 'react';
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { ArrowUpRight, Mail, Globe, Terminal, ShieldCheck, HeartHandshake, Zap } from 'lucide-react';
+import { GithubIcon } from '@/components/Icons';
+
+export const metadata: Metadata = {
+  title: 'About TysonLabs · Independent Technology Studio',
+  description: 'The philosophy, engineering doctrine, and builder behind TysonLabs.',
+};
+
+export default function AboutPage() {
+  return (
+    <div className="max-w-4xl mx-auto px-6 sm:px-8 py-10 space-y-16">
+      {/* Header */}
+      <div className="space-y-4 max-w-2xl">
+        <div className="text-xs uppercase tracking-wider font-semibold text-[#B99AFF] font-mono">
+          Studio Philosophy & Background
+        </div>
+        <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#F4F3F8] tracking-tight">
+          Ideas into products.
+        </h1>
+        <p className="text-base text-[#A6A8B3] leading-relaxed">
+          TysonLabs is an independent technology studio created and led by Manoj Tyson. We build software, AI tools, and digital platforms designed to solve real business challenges without decorative friction.
+        </p>
+      </div>
+
+      {/* The Core Thesis */}
+      <section className="p-8 sm:p-10 rounded-2xl bg-[#15171C] border border-[#30333B] space-y-6">
+        <h2 className="font-display font-bold text-2xl text-[#F4F3F8]">
+          The Intersection of Product Intuition & Hard Engineering
+        </h2>
+        <div className="space-y-4 text-sm sm:text-base text-[#A6A8B3] leading-relaxed">
+          <p>
+            Too much modern software is built either by designers who don&apos;t understand database indexes and edge latency, or by engineers who don&apos;t understand the operator standing on a noisy restaurant floor trying to punch an order under bright lights.
+          </p>
+          <p>
+            TysonLabs exists at that rare intersection: deeply understanding the nuances of the business domain — Indian GST tax splits, FSSAI regulations, apparel yield equations, and payment reconciliation — while possessing the technical mastery to ship full-stack web applications, compiled WebAssembly engines, and autonomous agent coordination systems.
+          </p>
+        </div>
+      </section>
+
+      {/* Engineering Principles */}
+      <section className="space-y-6">
+        <div className="pb-3 border-b border-[#30333B]">
+          <h2 className="font-display font-bold text-2xl text-[#F4F3F8]">
+            Core Doctrines
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-6 rounded-xl bg-[#15171C] border border-[#30333B] space-y-3">
+            <div className="w-8 h-8 rounded-lg bg-[#0C0D10] border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Zap className="w-4 h-4" />
+            </div>
+            <h3 className="font-display font-bold text-base text-[#F4F3F8]">Zero Slop Aesthetic</h3>
+            <p className="text-xs text-[#A6A8B3] leading-relaxed">
+              We strictly forbid generic AI glowing slop, crypto-style neon blobs, and decorative cards with fake metrics. If an element doesn&apos;t serve an operational purpose, it doesn&apos;t belong on the screen.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl bg-[#15171C] border border-[#30333B] space-y-3">
+            <div className="w-8 h-8 rounded-lg bg-[#0C0D10] border border-sky-500/30 flex items-center justify-center text-sky-400">
+              <Terminal className="w-4 h-4" />
+            </div>
+            <h3 className="font-display font-bold text-base text-[#F4F3F8]">High-Contrast Daylight Usability</h3>
+            <p className="text-xs text-[#A6A8B3] leading-relaxed">
+              Tools used by factory workers, kitchen chefs, or clinic staff must remain legible under harsh real-world lighting. We design for speed, clear visual contrast, and tactile feedback.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl bg-[#15171C] border border-[#30333B] space-y-3">
+            <div className="w-8 h-8 rounded-lg bg-[#0C0D10] border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <h3 className="font-display font-bold text-base text-[#F4F3F8]">Sovereign Architecture</h3>
+            <p className="text-xs text-[#A6A8B3] leading-relaxed">
+              We favor client-side WASM, serverless edge routes, and clean PostgreSQL schemas that operators can own and control without recurring vendor lock-in or fragile microservice webs.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl bg-[#15171C] border border-[#30333B] space-y-3">
+            <div className="w-8 h-8 rounded-lg bg-[#0C0D10] border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <HeartHandshake className="w-4 h-4" />
+            </div>
+            <h3 className="font-display font-bold text-base text-[#F4F3F8]">Verified Work Over Hype</h3>
+            <p className="text-xs text-[#A6A8B3] leading-relaxed">
+              Every project in this studio represents working code that has been inspected, tested, and verified. We don&apos;t publish hypothetical mockups and claim they are finished products.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* The Founder & Verified Links */}
+      <section className="p-8 rounded-2xl bg-[#15171C] border border-[#30333B] space-y-6">
+        <h2 className="font-display font-bold text-2xl text-[#F4F3F8]">
+          Builder & Maintainer
+        </h2>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="font-display font-bold text-lg text-[#F4F3F8]">Manoj Tyson</div>
+            <p className="text-sm text-[#A6A8B3]">
+              Senior Product Engineer, Systems Architect, and Independent Studio Founder.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <a
+              href="https://github.com/manojtyson-37"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0C0D10] border border-[#30333B] text-xs font-mono text-[#F4F3F8] hover:border-[#B99AFF] transition-colors"
+            >
+              <GithubIcon className="w-3.5 h-3.5 text-[#B99AFF]" />
+              <span>@manojtyson-37</span>
+              <ArrowUpRight className="w-3 h-3 text-[#717684]" />
+            </a>
+
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#B99AFF] text-[#0C0D10] text-xs font-bold hover:bg-[#CCAFFF] transition-colors"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>Send Message</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
