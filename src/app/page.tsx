@@ -69,18 +69,18 @@ export default function HomePage() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               <span className="uppercase tracking-wider font-semibold text-white">
-                INDEPENDENT TECHNOLOGY STUDIO
+                TYSONLABS · INDEPENDENT ENGINEERING STUDIO
               </span>
-              <span className="text-[#64748B] hidden sm:inline">· SYSTEMS ACTIVE</span>
+              <span className="text-[#64748B] hidden sm:inline">· 16 PRODUCTION CODEBASES</span>
             </div>
 
             {/* Main Statement */}
             <div className="space-y-4">
               <h1 className="font-display font-extrabold text-4xl sm:text-6xl md:text-7xl text-white tracking-tight leading-[1.04]">
-                Ideas into products.
+                High-throughput vertical SaaS. Zero boilerplate.
               </h1>
               <p className="text-base sm:text-lg text-[#94A3B8] leading-relaxed max-w-2xl font-normal">
-                Digital products, AI-powered systems, and software architectures engineered to solve real operational problems. High contrast, zero decorative fluff, and authentic engineering craft.
+                We architect and ship sovereign business operating systems, client-side WebAssembly engines, and autonomous AI infrastructure for high-stakes domains. No synthetic slop, no outsourced code — just hardened production systems.
               </p>
             </div>
 
@@ -90,7 +90,7 @@ export default function HomePage() {
                 href="/projects"
                 className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-white text-black font-semibold text-sm hover:bg-zinc-200 transition-all shadow-lg shadow-white/5 active:scale-[0.98]"
               >
-                <span>Explore projects</span>
+                <span>Explore 16 Live Builds</span>
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
 
@@ -98,27 +98,39 @@ export default function HomePage() {
                 href="/contact"
                 className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-[#0F1116] text-white border border-white/[0.1] font-semibold text-sm hover:border-white/[0.25] hover:bg-[#151820] transition-all active:scale-[0.98]"
               >
-                <span>Get in touch</span>
+                <span>Commission a System</span>
               </Link>
+            </div>
+
+            {/* Verified Capabilities & Shipped Systems Strip */}
+            <div className="flex items-center gap-2 text-[11px] font-mono text-[#64748B] flex-wrap pt-1">
+              <span className="text-white font-medium">Shipped systems:</span>
+              <span className="text-[#94A3B8]">DinePulse POS (Live)</span>
+              <span>·</span>
+              <span className="text-[#94A3B8]">Silaa Atelier ERP</span>
+              <span>·</span>
+              <span className="text-[#94A3B8]">Stockfish 18 WASM</span>
+              <span>·</span>
+              <span className="text-[#94A3B8]">Tysonpe Commerce</span>
             </div>
 
             {/* Studio Engineering Proof Metrics */}
             <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-white/[0.08] text-xs font-mono">
               <div className="bg-[#0F1116] p-3.5 rounded-xl border border-white/[0.08]">
                 <div className="font-display font-bold text-2xl text-white">16</div>
-                <div className="text-[#64748B] mt-1">Sovereign Projects</div>
+                <div className="text-[#64748B] mt-1">Sovereign Codebases</div>
               </div>
               <div className="bg-[#0F1116] p-3.5 rounded-xl border border-white/[0.08]">
                 <div className="font-display font-bold text-2xl text-emerald-400">100%</div>
-                <div className="text-[#64748B] mt-1">Working Codebases</div>
+                <div className="text-[#64748B] mt-1">Production Ready</div>
               </div>
               <div className="bg-[#0F1116] p-3.5 rounded-xl border border-white/[0.08]">
-                <div className="font-display font-bold text-2xl text-white">Zero</div>
-                <div className="text-[#64748B] mt-1">AI Slop & Noise</div>
+                <div className="font-display font-bold text-2xl text-white">Sub-10ms</div>
+                <div className="text-[#64748B] mt-1">POS & Engine Latency</div>
               </div>
               <div className="bg-[#0F1116] p-3.5 rounded-xl border border-white/[0.08]">
-                <div className="font-display font-bold text-2xl text-sky-400">WASM / Edge</div>
-                <div className="text-[#64748B] mt-1">High-Speed Stack</div>
+                <div className="font-display font-bold text-2xl text-sky-400">Full-Stack</div>
+                <div className="text-[#64748B] mt-1">UI · DB · Hardware · Edge</div>
               </div>
             </div>
           </div>
@@ -266,10 +278,10 @@ export default function HomePage() {
               <span>Studio Engineering Doctrine</span>
             </div>
             <h2 className="font-display font-bold text-2xl sm:text-4xl text-white tracking-tight">
-              From idea to implementation.
+              Hardened systems. Built for operators.
             </h2>
             <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed">
-              We reject generic &quot;AI portfolio slop&quot; — no useless glowing neon blobs, no ambiguous floating cards with placeholder text, and no fabricated metrics. Every system here was built to solve a concrete real-world operational need.
+              Every codebase in TysonLabs was engineered to eliminate high-stakes operational friction — from sub-10ms restaurant billing under peak dining rushes to zero-waste garment marker calculation. No placeholder mockups, no generic templates, and no fabricated metrics.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
@@ -329,7 +341,7 @@ export default function HomePage() {
             href="/contact"
             className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-all whitespace-nowrap shadow-lg shadow-white/5 active:scale-[0.98]"
           >
-            <span>Let&apos;s make it real</span>
+            <span>Commission a System</span>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>

@@ -44,10 +44,10 @@ export function HeroTelemetryDeck() {
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span className="font-semibold text-white tracking-wider text-[11px]">
-            STUDIO RUNTIME RADAR
+            LIVE ARCHITECTURE BENCHMARKS
           </span>
           <span className="text-[#64748B] text-[10px] hidden sm:inline">
-            // EDGE NODE BLR-01
+            // SHIPPED PRODUCTION ENGINES
           </span>
         </div>
 
