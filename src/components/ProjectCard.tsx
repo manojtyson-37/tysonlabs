@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Project } from '@/data/projects';
 import { ProjectGraphic } from '@/components/ProjectGraphic';
-import { ArrowUpRight, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, ExternalLink, ChevronRight } from 'lucide-react';
 import { GithubIcon } from '@/components/Icons';
 
 interface ProjectCardProps {
@@ -11,62 +11,62 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, featured = false }: ProjectCardProps) {
-  const statusBadgeClass = {
-    'live': 'badge-live',
-    'open-source': 'badge-open-source',
-    'prototype': 'badge-prototype',
-    'in-progress': 'badge-in-progress',
-    'archived': 'text-zinc-500 bg-zinc-800/20 border-zinc-700/30'
-  }[project.status] || 'badge-prototype';
+  const isLive = project.status === 'live';
 
   return (
-    <article className="group bg-[#15171C] border border-[#30333B] hover:border-[#484D58] rounded-xl overflow-hidden transition-all duration-200 flex flex-col justify-between shadow-sm hover:shadow-xl hover:shadow-black/40">
+    <article className="group bg-[#0F1116] border border-white/[0.08] hover:border-white/[0.2] rounded-xl overflow-hidden transition-all duration-200 flex flex-col justify-between hover:shadow-xl hover:shadow-black/50">
       <div>
-        {/* Project Visual / Diagram Header */}
+        {/* Card Header: Index & Status */}
+        <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <span className="text-[#64748B] font-light">#{String(project.rank).padStart(2, '0')}</span>
+            <span className="text-[#64748B]">/</span>
+            <span className="uppercase tracking-wider text-[#94A3B8] text-[11px] font-medium">
+              {project.categoryLabel}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${isLive ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+            <span className={`text-[10px] uppercase font-semibold ${isLive ? 'text-emerald-400' : 'text-amber-400'}`}>
+              {project.statusLabel}
+            </span>
+          </div>
+        </div>
+
+        {/* Technical System Architecture Blueprint */}
         <Link href={`/projects/${project.slug}`} className="block focus-visible:outline-none" tabIndex={-1}>
           <ProjectGraphic slug={project.slug} name={project.name} category={project.categoryLabel} />
         </Link>
 
         {/* Card Body */}
-        <div className="p-6">
-          {/* Category & Status Row */}
-          <div className="flex items-center justify-between gap-2 mb-3">
-            <span className="text-xs uppercase tracking-wider font-semibold text-[#A6A8B3] font-mono">
-              {project.categoryLabel}
-            </span>
-            <span className={`text-[11px] font-mono font-medium px-2 py-0.5 rounded-full border ${statusBadgeClass}`}>
-              {project.statusLabel}
-            </span>
-          </div>
-
-          {/* Title */}
-          <h3 className="font-display font-bold text-xl text-[#F4F3F8] group-hover:text-white transition-colors mb-2">
+        <div className="p-5 space-y-3">
+          <h3 className="font-display font-bold text-lg text-white group-hover:text-white transition-colors">
             <Link
               href={`/projects/${project.slug}`}
-              className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B99AFF] rounded"
+              className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white rounded"
             >
               {project.name}
             </Link>
           </h3>
 
-          {/* Tagline / Short description */}
-          <p className="text-sm text-[#A6A8B3] leading-relaxed line-clamp-2 mb-4">
+          <p className="text-xs text-[#94A3B8] leading-relaxed line-clamp-2">
             {project.shortDescription}
           </p>
 
           {/* Tech Stack Pills */}
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            {project.techStack.slice(0, 4).map((tech) => (
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {project.techStack.slice(0, 3).map((tech) => (
               <span
                 key={tech}
-                className="text-[11px] font-mono px-2 py-0.5 rounded bg-[#0C0D10] text-[#A6A8B3] border border-[#30333B]/60"
+                className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#090A0D] text-[#94A3B8] border border-white/[0.06]"
               >
                 {tech}
               </span>
             ))}
-            {project.techStack.length > 4 && (
-              <span className="text-[11px] font-mono px-1.5 py-0.5 text-[#717684]">
-                +{project.techStack.length - 4}
+            {project.techStack.length > 3 && (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 text-[#64748B]">
+                +{project.techStack.length - 3}
               </span>
             )}
           </div>
@@ -74,27 +74,26 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
       </div>
 
       {/* Card Action Footer */}
-      <div className="px-6 py-4 border-t border-[#30333B]/70 bg-[#121419] flex items-center justify-between text-xs font-medium">
+      <div className="px-5 py-3 border-t border-white/[0.06] bg-[#0B0D11] flex items-center justify-between text-xs">
         <Link
           href={`/projects/${project.slug}`}
-          className="inline-flex items-center gap-1.5 text-[#F4F3F8] hover:text-[#B99AFF] transition-colors font-semibold"
+          className="btn-tactile inline-flex items-center gap-1 text-white hover:text-[#94A3B8] font-mono text-[11px] font-semibold transition-colors"
         >
-          <span>View Case Study</span>
-          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          <span>Case Study</span>
+          <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
         </Link>
 
-        {/* External Quick Links */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {project.liveUrl && (
             <a
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#717684] hover:text-[#10B981] transition-colors p-1"
-              title="Open Live Product"
-              aria-label={`Open live demo for ${project.name}`}
+              className="btn-tactile inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#13161C] border border-white/[0.08] text-emerald-400 hover:text-white hover:bg-emerald-600 transition-all text-[11px] font-mono"
+              title="Launch Live Application"
             >
-              <ExternalLink className="w-4 h-4" />
+              <span>Launch</span>
+              <ExternalLink className="w-3 h-3" />
             </a>
           )}
           {project.sourceUrl && (
@@ -102,11 +101,10 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
               href={project.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#717684] hover:text-[#F4F3F8] transition-colors p-1"
+              className="p-1 rounded text-[#64748B] hover:text-white hover:bg-white/[0.05] transition-colors"
               title="Inspect Source Code on GitHub"
-              aria-label={`View GitHub repository for ${project.name}`}
             >
-              <GithubIcon className="w-4 h-4" />
+              <GithubIcon className="w-3.5 h-3.5" />
             </a>
           )}
         </div>

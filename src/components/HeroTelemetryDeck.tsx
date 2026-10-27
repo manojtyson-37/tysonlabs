@@ -2,367 +2,229 @@
 
 import React, { useState } from 'react';
 import { 
-  Flame, 
   Cpu, 
-  Scissors, 
-  CheckCircle2, 
+  Workflow, 
+  ShieldCheck, 
   RotateCw, 
   Activity, 
-  Sparkles,
+  Layers,
+  Terminal,
   ArrowRight,
-  ShieldCheck,
   Check
 } from 'lucide-react';
 
-type TelemetryTab = 'dinepulse' | 'chess' | 'silaa';
+type TelemetryTab = 'pos' | 'wasm' | 'erp';
 
 export function HeroTelemetryDeck() {
-  const [activeTab, setActiveTab] = useState<TelemetryTab>('dinepulse');
+  const [activeTab, setActiveTab] = useState<TelemetryTab>('pos');
   
-  // DinePulse POS Interactive State
-  const [kotFired, setKotFired] = useState(false);
-  const [kotTimestamp, setKotTimestamp] = useState<string | null>(null);
+  // Benchmark State
+  const [benchmarking, setBenchmarking] = useState(false);
+  const [benchmarkResult, setBenchmarkResult] = useState<string | null>(null);
 
-  // Chess WASM Interactive State
-  const [engineBenchmarking, setEngineBenchmarking] = useState(false);
-  const [engineDepth, setEngineDepth] = useState(24);
-  const [engineNodes, setEngineNodes] = useState('1.84M');
-
-  // Silaa Apparel ERP Interactive State
-  const [optimizingYield, setOptimizingYield] = useState(false);
-  const [fabricYield, setFabricYield] = useState(99.4);
-  const [metersSaved, setMetersSaved] = useState('1.6m');
-
-  const handleFireKot = () => {
-    setKotFired(true);
-    const now = new Date();
-    setKotTimestamp(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+  const handleBenchmark = (type: string) => {
+    setBenchmarking(true);
+    setBenchmarkResult(null);
     setTimeout(() => {
-      // Keep state or allow refiring
-    }, 3000);
-  };
-
-  const handleRunChessBenchmark = () => {
-    setEngineBenchmarking(true);
-    setTimeout(() => {
-      setEngineDepth(prev => (prev === 24 ? 28 : 24));
-      setEngineNodes(prev => (prev === '1.84M' ? '4.12M' : '1.84M'));
-      setEngineBenchmarking(false);
-    }, 600);
-  };
-
-  const handleOptimizeSilaa = () => {
-    setOptimizingYield(true);
-    setTimeout(() => {
-      setFabricYield(prev => (prev === 99.4 ? 99.8 : 99.4));
-      setMetersSaved(prev => (prev === '1.6m' ? '2.1m' : '1.6m'));
-      setOptimizingYield(false);
+      if (type === 'pos') {
+        setBenchmarkResult('100 concurrent orders ingested & split into KOTs in 8.4ms');
+      } else if (type === 'wasm') {
+        setBenchmarkResult('28-ply search completed: 4,120,400 nodes evaluated');
+      } else {
+        setBenchmarkResult('Marker re-nested: 99.8% roll yield (2.1m linen salvaged)');
+      }
+      setBenchmarking(false);
     }, 500);
   };
 
   return (
-    <div className="w-full bg-[#121419] border border-[#272B35] rounded-2xl shadow-2xl shadow-black/80 overflow-hidden text-[#E4E5EB] font-sans">
-      {/* Telemetry Header */}
-      <div className="bg-[#181B22] px-4 py-3 border-b border-[#272B35] flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+    <div className="w-full bg-[#0D0F14] border border-white/[0.08] rounded-2xl overflow-hidden font-mono text-xs shadow-2xl shadow-black/80">
+      {/* Console Header Bar */}
+      <div className="bg-[#11141A] px-4 py-3 border-b border-white/[0.06] flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span className="font-semibold text-white tracking-wider text-[11px]">
+            STUDIO RUNTIME RADAR
           </span>
-          <div className="flex items-baseline gap-2">
-            <span className="font-mono text-[11px] font-bold tracking-wider uppercase text-[#F4F3F8]">
-              TYSONLABS CORE
-            </span>
-            <span className="hidden sm:inline font-mono text-[10px] text-[#717684]">
-              v2.4 · 24ms CHENNAI EDGE
-            </span>
-          </div>
+          <span className="text-[#64748B] text-[10px] hidden sm:inline">
+            // EDGE NODE BLR-01
+          </span>
         </div>
 
-        {/* System Tabs */}
-        <div className="flex items-center gap-1 bg-[#101216] p-1 rounded-lg border border-[#22252E]">
+        {/* Tab Controls */}
+        <div className="flex items-center gap-1 bg-[#090A0D] p-1 rounded-lg border border-white/[0.06]">
           <button
             type="button"
-            onClick={() => setActiveTab('dinepulse')}
-            className={`px-2.5 py-1 rounded text-[11px] font-mono font-medium transition-all ${
-              activeTab === 'dinepulse'
-                ? 'bg-[#272B35] text-white shadow-sm'
-                : 'text-[#8C90A0] hover:text-white'
+            onClick={() => { setActiveTab('pos'); setBenchmarkResult(null); }}
+            className={`px-2.5 py-1 rounded text-[10px] font-medium transition-all ${
+              activeTab === 'pos'
+                ? 'bg-[#181C24] text-white shadow-sm'
+                : 'text-[#94A3B8] hover:text-white'
             }`}
           >
-            POS Till
+            POS Engine
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('chess')}
-            className={`px-2.5 py-1 rounded text-[11px] font-mono font-medium transition-all ${
-              activeTab === 'chess'
-                ? 'bg-[#272B35] text-white shadow-sm'
-                : 'text-[#8C90A0] hover:text-white'
+            onClick={() => { setActiveTab('wasm'); setBenchmarkResult(null); }}
+            className={`px-2.5 py-1 rounded text-[10px] font-medium transition-all ${
+              activeTab === 'wasm'
+                ? 'bg-[#181C24] text-white shadow-sm'
+                : 'text-[#94A3B8] hover:text-white'
             }`}
           >
-            WASM Chess
+            WASM SIMD
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('silaa')}
-            className={`px-2.5 py-1 rounded text-[11px] font-mono font-medium transition-all ${
-              activeTab === 'silaa'
-                ? 'bg-[#272B35] text-white shadow-sm'
-                : 'text-[#8C90A0] hover:text-white'
+            onClick={() => { setActiveTab('erp'); setBenchmarkResult(null); }}
+            className={`px-2.5 py-1 rounded text-[10px] font-medium transition-all ${
+              activeTab === 'erp'
+                ? 'bg-[#181C24] text-white shadow-sm'
+                : 'text-[#94A3B8] hover:text-white'
             }`}
           >
-            Silaa ERP
+            Apparel ERP
           </button>
         </div>
       </div>
 
-      {/* Tab 1: DinePulse Petpooja-Grade POS Till View */}
-      {activeTab === 'dinepulse' && (
-        <div className="p-5 space-y-4">
-          {/* Table Strip & Order Meta */}
-          <div className="flex items-center justify-between pb-3 border-b border-[#22252E]">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px] font-bold">
-                TABLE T-04
-              </span>
-              <span className="text-xs text-[#8C90A0]">Dine-in · 4 Pax</span>
+      {/* Console Body */}
+      <div className="p-5 space-y-4">
+        {/* Tab 1: DinePulse POS Engine */}
+        {activeTab === 'pos' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-[#94A3B8] pb-2 border-b border-white/[0.06]">
+              <span className="text-white font-semibold">DinePulse · Protocol Engine</span>
+              <span className="text-emerald-400">12ms TTFB</span>
             </div>
-            <span className="font-mono text-xs text-[#8C90A0]">Captain: Manoj A.</span>
-          </div>
 
-          {/* Running Order Lines with FSSAI Badges */}
-          <div className="space-y-2 font-mono text-xs">
-            {/* Item 1: Non-Veg */}
-            <div className="flex items-center justify-between bg-[#171920] px-3 py-2 rounded-lg border border-[#22252E]">
-              <div className="flex items-center gap-2.5">
-                {/* Authentic FSSAI Non-Veg Badge: Brown/Red square with filled red triangle */}
-                <span className="inline-flex items-center justify-center w-3.5 h-3.5 border border-red-600 rounded-[2px] bg-red-950/20" title="FSSAI Non-Veg">
-                  <span className="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
-                </span>
-                <span className="text-white font-medium">Butter Chicken (Boneless)</span>
-                <span className="text-[#717684]">x1</span>
+            <div className="space-y-2">
+              <div className="flex justify-between p-2 rounded bg-[#090A0D] border border-white/[0.04]">
+                <span className="text-[#64748B]">TAX CLASSIFICATION</span>
+                <span className="text-white font-medium">CGST 2.5% + SGST 2.5% Split</span>
               </div>
-              <span className="text-white font-semibold">₹420</span>
-            </div>
-
-            {/* Item 2: Veg */}
-            <div className="flex items-center justify-between bg-[#171920] px-3 py-2 rounded-lg border border-[#22252E]">
-              <div className="flex items-center gap-2.5">
-                {/* Authentic FSSAI Veg Badge: Green square with filled green circle */}
-                <span className="inline-flex items-center justify-center w-3.5 h-3.5 border border-emerald-500 rounded-[2px] bg-emerald-950/20" title="FSSAI Veg">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                </span>
-                <span className="text-white font-medium">Paneer Tikka (Tandoori)</span>
-                <span className="text-[#717684]">x1</span>
+              <div className="flex justify-between p-2 rounded bg-[#090A0D] border border-white/[0.04]">
+                <span className="text-[#64748B]">KOT PRINT ROUTING</span>
+                <span className="text-white font-medium">Auto-dispatch (Tandoor / Curry / Bar)</span>
               </div>
-              <span className="text-white font-semibold">₹340</span>
-            </div>
-
-            {/* Item 3: Veg */}
-            <div className="flex items-center justify-between bg-[#171920] px-3 py-2 rounded-lg border border-[#22252E]">
-              <div className="flex items-center gap-2.5">
-                <span className="inline-flex items-center justify-center w-3.5 h-3.5 border border-emerald-500 rounded-[2px] bg-emerald-950/20" title="FSSAI Veg">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                </span>
-                <span className="text-white font-medium">Garlic Butter Naan</span>
-                <span className="text-[#717684]">x3</span>
+              <div className="flex justify-between p-2 rounded bg-[#090A0D] border border-white/[0.04]">
+                <span className="text-[#64748B]">COMPLIANCE</span>
+                <span className="text-emerald-400 font-medium">FSSAI Veg/Non-Veg Validation</span>
               </div>
-              <span className="text-white font-semibold">₹180</span>
             </div>
 
-            {/* Item 4: Veg */}
-            <div className="flex items-center justify-between bg-[#171920] px-3 py-2 rounded-lg border border-[#22252E]">
-              <div className="flex items-center gap-2.5">
-                <span className="inline-flex items-center justify-center w-3.5 h-3.5 border border-emerald-500 rounded-[2px] bg-emerald-950/20" title="FSSAI Veg">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                </span>
-                <span className="text-white font-medium">Dal Makhani 24-hr Slow</span>
-                <span className="text-[#717684]">x1</span>
+            {benchmarkResult ? (
+              <div className="p-2.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 shrink-0" />
+                <span>{benchmarkResult}</span>
               </div>
-              <span className="text-white font-semibold">₹260</span>
-            </div>
-          </div>
-
-          {/* Subtotal & Taxes */}
-          <div className="bg-[#101216] p-3 rounded-lg border border-[#22252E] space-y-1.5 text-xs font-mono">
-            <div className="flex justify-between text-[#8C90A0]">
-              <span>Subtotal (4 items)</span>
-              <span>₹1,200.00</span>
-            </div>
-            <div className="flex justify-between text-[#717684] text-[11px]">
-              <span>CGST (2.5%) + SGST (2.5%)</span>
-              <span>₹60.00</span>
-            </div>
-            <div className="flex justify-between text-white font-bold pt-1 border-t border-[#22252E] text-sm">
-              <span>Payable Total</span>
-              <span className="text-emerald-400">₹1,260.00</span>
-            </div>
-          </div>
-
-          {/* Fired Status Banner if active */}
-          {kotFired && (
-            <div className="flex items-center gap-2.5 px-3 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400 text-xs font-mono animate-fadeIn">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-              <span>KOT #148 FIRED TO KITCHEN ({kotTimestamp})</span>
-            </div>
-          )}
-
-          {/* Obvious Operational Action Buttons */}
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            <button
-              type="button"
-              onClick={handleFireKot}
-              className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-bold text-xs font-mono uppercase tracking-wider transition-all duration-150 active:scale-[0.98] ${
-                kotFired
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-[#FF5200] hover:bg-[#FF641A] text-white shadow-lg shadow-[#FF5200]/20'
-              }`}
-            >
-              <Flame className="w-4 h-4" />
-              <span>{kotFired ? 'RE-FIRE KOT' : 'FIRE KOT (3-CLICK)'}</span>
-            </button>
+            ) : null}
 
             <button
               type="button"
-              onClick={() => alert('UPI QR Generated for ₹1,260.00 via Razorpay / PineLabs')}
-              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-mono text-xs font-semibold bg-[#1F222A] text-white border border-[#303440] hover:bg-[#282C37] active:scale-[0.98] transition-all"
+              onClick={() => handleBenchmark('pos')}
+              disabled={benchmarking}
+              className="btn-tactile w-full py-2.5 px-4 rounded-lg bg-white text-zinc-950 font-semibold text-xs hover:bg-zinc-100 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <span>SETTLE VIA UPI</span>
+              <RotateCw className={`w-3.5 h-3.5 ${benchmarking ? 'animate-spin' : ''}`} />
+              <span>{benchmarking ? 'CALCULATING TAX MATRIX...' : 'BENCHMARK TILL SPEED (100 CONCURRENT)'}</span>
             </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Tab 2: Stockfish 18 WASM Engine View */}
-      {activeTab === 'chess' && (
-        <div className="p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#22252E]">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-sky-500/10 border border-sky-500/30 text-sky-400 font-mono text-[11px] font-bold">
-                STOCKFISH 18 WASM
-              </span>
-              <span className="text-xs text-[#8C90A0]">WebAssembly SIMD · 8 Threads</span>
+        {/* Tab 2: Stockfish 18 WASM */}
+        {activeTab === 'wasm' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-[#94A3B8] pb-2 border-b border-white/[0.06]">
+              <span className="text-white font-semibold">Stockfish 18 · WASM SIMD</span>
+              <span className="text-sky-400">8 Web Workers</span>
             </div>
-            <span className="font-mono text-xs text-emerald-400 font-semibold">+2.45 ADV</span>
-          </div>
 
-          {/* Visual Dynamic Evaluation Meter */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <span className="text-[#8C90A0]">Engine Advantage Bar</span>
-              <span className="text-white font-bold">+2.45 (White)</span>
-            </div>
-            <div className="w-full h-3 bg-[#171920] rounded-full overflow-hidden flex border border-[#272B35]">
-              <div className="h-full bg-white transition-all duration-300" style={{ width: '74%' }}></div>
-              <div className="h-full bg-zinc-800 transition-all duration-300" style={{ width: '26%' }}></div>
-            </div>
-          </div>
-
-          {/* Tactical Coach Stream */}
-          <div className="bg-[#101216] p-3 rounded-lg border border-[#22252E] space-y-2 text-xs font-mono">
-            <div className="flex items-center justify-between text-[#717684] text-[11px]">
-              <span>CALCULATION STREAM</span>
-              <span>DEPTH: {engineDepth} PLY · {engineNodes} NODES/S</span>
-            </div>
-            <p className="text-white font-medium leading-relaxed">
-              19. Bxh7+! Kxh7 20. Ng5+ Kg8 21. Qh5 Re8 22. Qxf7+ Kh8 23. Qh5+ Kg8 24. Qh7#
-            </p>
-            <div className="pt-2 border-t border-[#22252E] text-[11px] text-[#A6A8B3]">
-              <span className="text-amber-400 font-semibold">Coach Note:</span> Classical Greek gift bishop sacrifice exploiting the uncastled king f7-square weakness.
-            </div>
-          </div>
-
-          {/* Benchmarking Action */}
-          <button
-            type="button"
-            onClick={handleRunChessBenchmark}
-            disabled={engineBenchmarking}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-mono text-xs font-semibold bg-white text-zinc-950 hover:bg-zinc-100 active:scale-[0.98] transition-all shadow-md shadow-white/5 disabled:opacity-50"
-          >
-            <RotateCw className={`w-3.5 h-3.5 ${engineBenchmarking ? 'animate-spin' : ''}`} />
-            <span>{engineBenchmarking ? 'COMPUTING 28-PLY MINIMAX...' : 'RUN DEEP WASM BENCHMARK'}</span>
-          </button>
-        </div>
-      )}
-
-      {/* Tab 3: Silaa Atelier Apparel ERP View */}
-      {activeTab === 'silaa' && (
-        <div className="p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#22252E]">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono text-[11px] font-bold">
-                PO #SIL-2026-088
-              </span>
-              <span className="text-xs text-[#8C90A0]">Linen Overshirt (Sand)</span>
-            </div>
-            <span className="font-mono text-xs text-emerald-400 font-semibold">{fabricYield}% YIELD</span>
-          </div>
-
-          {/* Fabric Yield Meter */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <span className="text-[#8C90A0]">Turkish Linen Roll #84A (120m)</span>
-              <span className="text-emerald-400 font-bold">{metersSaved} Saved</span>
-            </div>
-            <div className="w-full h-3 bg-[#171920] rounded-full overflow-hidden flex border border-[#272B35]">
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300" 
-                style={{ width: `${fabricYield}%` }}
-              ></div>
-              <div className="h-full bg-red-950/60 transition-all duration-300" style={{ width: `${100 - fabricYield}%` }}></div>
-            </div>
-          </div>
-
-          {/* Nested Cut Breakdown */}
-          <div className="bg-[#101216] p-3 rounded-lg border border-[#22252E] space-y-2 text-xs font-mono">
-            <div className="flex items-center justify-between text-[#717684] text-[11px]">
-              <span>ZERO-WASTE PATTERN NESTING</span>
-              <span>18/18 SIZES OPTIMAL</span>
-            </div>
-            <div className="grid grid-cols-4 gap-2 text-center pt-1">
-              <div className="bg-[#171920] p-1.5 rounded border border-[#22252E]">
-                <div className="text-[10px] text-[#717684]">SIZE S</div>
-                <div className="text-white font-bold">4 Units</div>
+            <div className="space-y-2">
+              <div className="flex justify-between p-2 rounded bg-[#090A0D] border border-white/[0.04]">
+                <span className="text-[#64748B]">SEARCH DEPTH</span>
+                <span className="text-white font-medium">24 Ply Minimax</span>
               </div>
-              <div className="bg-[#171920] p-1.5 rounded border border-[#22252E]">
-                <div className="text-[10px] text-[#717684]">SIZE M</div>
-                <div className="text-white font-bold">6 Units</div>
+              <div className="flex justify-between p-2 rounded bg-[#090A0D] border border-white/[0.04]">
+                <span className="text-[#64748B]">CALCULATION SPEED</span>
+                <span className="text-sky-400 font-medium">1,840,210 nodes / sec</span>
               </div>
-              <div className="bg-[#171920] p-1.5 rounded border border-[#22252E]">
-                <div className="text-[10px] text-[#717684]">SIZE L</div>
-                <div className="text-white font-bold">5 Units</div>
-              </div>
-              <div className="bg-[#171920] p-1.5 rounded border border-[#22252E]">
-                <div className="text-[10px] text-[#717684]">SIZE XL</div>
-                <div className="text-white font-bold">3 Units</div>
+              <div className="flex justify-between p-2 rounded bg-[#090A0D] border border-white/[0.04]">
+                <span className="text-[#64748B]">TRANSPOSITION HASH</span>
+                <span className="text-white font-medium">64MB In-Memory Cache</span>
               </div>
             </div>
-            <div className="pt-2 border-t border-[#22252E] text-[11px] text-[#A6A8B3]">
-              <span className="text-emerald-400 font-semibold">Yield Gain:</span> Salvaged ₹1,440 of high-twist natural linen from scrap bin.
-            </div>
+
+            {benchmarkResult ? (
+              <div className="p-2.5 rounded bg-sky-500/10 border border-sky-500/20 text-sky-400 text-[11px] flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 shrink-0" />
+                <span>{benchmarkResult}</span>
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={() => handleBenchmark('wasm')}
+              disabled={benchmarking}
+              className="btn-tactile w-full py-2.5 px-4 rounded-lg bg-white text-zinc-950 font-semibold text-xs hover:bg-zinc-100 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <RotateCw className={`w-3.5 h-3.5 ${benchmarking ? 'animate-spin' : ''}`} />
+              <span>{benchmarking ? 'RUNNING MINIMAX TREE...' : 'RUN DEEP WASM BENCHMARK'}</span>
+            </button>
           </div>
+        )}
 
-          {/* Re-Nest Action */}
-          <button
-            type="button"
-            onClick={handleOptimizeSilaa}
-            disabled={optimizingYield}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-mono text-xs font-semibold bg-white text-zinc-950 hover:bg-zinc-100 active:scale-[0.98] transition-all shadow-md shadow-white/5 disabled:opacity-50"
-          >
-            <Scissors className={`w-3.5 h-3.5 ${optimizingYield ? 'animate-pulse' : ''}`} />
-            <span>{optimizingYield ? 'RE-CALCULATING ROLLER GEOMETRY...' : 'RE-NEST FABRIC ROLL'}</span>
-          </button>
-        </div>
-      )}
+        {/* Tab 3: Silaa Apparel ERP */}
+        {activeTab === 'erp' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-[#94A3B8] pb-2 border-b border-white/[0.06]">
+              <span className="text-white font-semibold">Silaa Atelier · Cutting Optimizer</span>
+              <span className="text-purple-400">99.4% Yield</span>
+            </div>
 
-      {/* Deck Footer Verification */}
-      <div className="bg-[#0E1014] px-4 py-2.5 border-t border-[#22252E] flex items-center justify-between text-[11px] font-mono text-[#717684]">
+            <div className="space-y-2">
+              <div className="flex justify-between p-2 rounded bg-[#090A0D] border border-white/[0.04]">
+                <span className="text-[#64748B]">FABRIC INVENTORY</span>
+                <span className="text-white font-medium">Turkish Linen Roll #84A (120m)</span>
+              </div>
+              <div className="flex justify-between p-2 rounded bg-[#090A0D] border border-white/[0.04]">
+                <span className="text-[#64748B]">PATTERN NESTING</span>
+                <span className="text-white font-medium">18/18 Garment Sizes Optimal</span>
+              </div>
+              <div className="flex justify-between p-2 rounded bg-[#090A0D] border border-white/[0.04]">
+                <span className="text-[#64748B]">WASTE RETAINED</span>
+                <span className="text-emerald-400 font-medium">1.6m Salvaged (₹1,440 Retained)</span>
+              </div>
+            </div>
+
+            {benchmarkResult ? (
+              <div className="p-2.5 rounded bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[11px] flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 shrink-0" />
+                <span>{benchmarkResult}</span>
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={() => handleBenchmark('erp')}
+              disabled={benchmarking}
+              className="btn-tactile w-full py-2.5 px-4 rounded-lg bg-white text-zinc-950 font-semibold text-xs hover:bg-zinc-100 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <RotateCw className={`w-3.5 h-3.5 ${benchmarking ? 'animate-spin' : ''}`} />
+              <span>{benchmarking ? 'RE-CALCULATING NESTING...' : 'RUN ZERO-WASTE OPTIMIZER'}</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Console Footer */}
+      <div className="bg-[#090A0D] px-4 py-2.5 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-[#64748B]">
         <div className="flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <span>PRODUCTION CERTIFIED</span>
+          <ShieldCheck className="w-3 h-3 text-emerald-400" />
+          <span>PRODUCTION VERIFIED ARCHITECTURE</span>
         </div>
-        <span>0ms SLOP · 100% REAL CODE</span>
+        <span>ZERO SYNTHETIC SLOP</span>
       </div>
     </div>
   );

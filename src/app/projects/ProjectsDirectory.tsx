@@ -84,25 +84,25 @@ export function ProjectsDirectory() {
   const hasActiveFilters = searchQuery.trim() !== '' || selectedCategory !== 'all' || selectedStatus !== 'all' || sortBy !== 'featured';
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* Control Bar: Search & Filters */}
-      <div className="p-6 rounded-xl bg-[#15171C] border border-[#30333B] space-y-5">
+      <div className="p-6 rounded-2xl bg-[#0F1116] border border-white/[0.08] space-y-5 shadow-xl shadow-black/40">
         {/* Top Row: Search Input & Sort Selector */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-[#717684] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search projects by name, technology, or keywords (e.g. Next.js, POS, WASM)..."
-              className="w-full pl-10 pr-10 py-2.5 rounded-lg bg-[#0C0D10] border border-[#30333B] text-sm text-[#F4F3F8] placeholder-[#717684] focus:outline-none focus:border-[#B99AFF] focus:ring-1 focus:ring-[#B99AFF] transition-colors"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[#090A0D] border border-white/[0.08] text-sm text-white placeholder-[#64748B] focus:outline-none focus:border-white/30 transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#717684] hover:text-[#F4F3F8] p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-white p-1"
                 aria-label="Clear search input"
               >
                 <X className="w-4 h-4" />
@@ -112,14 +112,14 @@ export function ProjectsDirectory() {
 
           {/* Sort Selector */}
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-xs text-[#717684] font-mono flex items-center gap-1">
+            <span className="text-xs text-[#64748B] font-mono flex items-center gap-1">
               <ArrowUpDown className="w-3.5 h-3.5" />
               <span>Sort:</span>
             </span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-[#0C0D10] border border-[#30333B] text-xs text-[#F4F3F8] rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#B99AFF]"
+              className="bg-[#090A0D] border border-white/[0.08] text-xs text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-white/30"
             >
               <option value="featured">Featured First</option>
               <option value="alphabetical">Alphabetical (A–Z)</option>
@@ -129,7 +129,7 @@ export function ProjectsDirectory() {
 
         {/* Second Row: Category Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-xs text-[#717684] font-mono shrink-0 mr-1 flex items-center gap-1">
+          <span className="text-xs text-[#64748B] font-mono shrink-0 mr-1 flex items-center gap-1">
             <SlidersHorizontal className="w-3.5 h-3.5" />
             <span>Category:</span>
           </span>
@@ -140,10 +140,10 @@ export function ProjectsDirectory() {
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-all duration-150 border ${
+                className={`btn-tactile text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-all duration-150 border ${
                   isSelected
-                    ? 'bg-[#B99AFF] text-[#0C0D10] border-[#B99AFF] font-semibold shadow-sm'
-                    : 'bg-[#0C0D10] text-[#A6A8B3] border-[#30333B] hover:border-[#484D58] hover:text-[#F4F3F8]'
+                    ? 'bg-white text-black border-white font-semibold shadow-sm'
+                    : 'bg-[#090A0D] text-[#94A3B8] border-white/[0.08] hover:border-white/20 hover:text-white'
                 }`}
               >
                 {cat.label}
@@ -153,9 +153,9 @@ export function ProjectsDirectory() {
         </div>
 
         {/* Third Row: Lifecycle Status Pills */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-[#30333B]/60 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-white/[0.06] text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-[#717684] font-mono mr-1">Lifecycle:</span>
+            <span className="text-[#64748B] font-mono mr-1">Lifecycle:</span>
             {STATUS_OPTIONS.map((status) => {
               const isSelected = selectedStatus === status.id;
               return (
@@ -163,10 +163,10 @@ export function ProjectsDirectory() {
                   key={status.id}
                   type="button"
                   onClick={() => setSelectedStatus(status.id)}
-                  className={`px-2.5 py-1 rounded text-xs font-mono transition-colors border ${
+                  className={`btn-tactile px-2.5 py-1 rounded text-xs font-mono transition-colors border ${
                     isSelected
-                      ? 'bg-[#30333B] text-white border-white/20 font-bold'
-                      : 'bg-[#0C0D10] text-[#717684] border-[#30333B]/60 hover:text-[#A6A8B3]'
+                      ? 'bg-white/[0.12] text-white border-white/20 font-bold'
+                      : 'bg-[#090A0D] text-[#64748B] border-white/[0.06] hover:text-[#94A3B8]'
                   }`}
                 >
                   {status.label}
@@ -180,7 +180,7 @@ export function ProjectsDirectory() {
             <button
               type="button"
               onClick={handleReset}
-              className="text-[#B99AFF] hover:underline font-mono text-xs flex items-center gap-1"
+              className="text-white hover:underline font-mono text-xs flex items-center gap-1"
             >
               <X className="w-3.5 h-3.5" />
               <span>Reset filters</span>
@@ -190,9 +190,9 @@ export function ProjectsDirectory() {
       </div>
 
       {/* Results Count Bar */}
-      <div className="flex items-center justify-between text-xs font-mono text-[#717684] px-1">
+      <div className="flex items-center justify-between text-xs font-mono text-[#64748B] px-1">
         <div>
-          Showing <span className="text-[#F4F3F8] font-bold">{filteredProjects.length}</span> of {allProjects.length} sovereign builds
+          Showing <span className="text-white font-bold">{filteredProjects.length}</span> of {allProjects.length} sovereign builds
         </div>
         {hasActiveFilters && (
           <div className="text-amber-400">
@@ -209,21 +209,21 @@ export function ProjectsDirectory() {
           ))}
         </div>
       ) : (
-        <div className="p-12 sm:p-16 rounded-xl bg-[#15171C] border border-[#30333B] text-center space-y-4 max-w-lg mx-auto">
-          <div className="w-12 h-12 rounded-full bg-[#0C0D10] border border-[#30333B] mx-auto flex items-center justify-center text-[#717684]">
+        <div className="p-12 sm:p-16 rounded-2xl bg-[#0F1116] border border-white/[0.08] text-center space-y-4 max-w-lg mx-auto">
+          <div className="w-12 h-12 rounded-full bg-[#090A0D] border border-white/[0.08] mx-auto flex items-center justify-center text-[#64748B]">
             <Search className="w-6 h-6" />
           </div>
-          <h3 className="font-display font-bold text-xl text-[#F4F3F8]">
+          <h3 className="font-display font-bold text-xl text-white">
             No matching projects found
           </h3>
-          <p className="text-sm text-[#A6A8B3]">
+          <p className="text-xs text-[#94A3B8] leading-relaxed">
             We couldn&apos;t find any builds matching your criteria. Try loosening your search terms or clearing selected category filters.
           </p>
           <div className="pt-2">
             <button
               type="button"
               onClick={handleReset}
-              className="px-4 py-2 rounded-lg bg-[#30333B] text-[#F4F3F8] text-xs font-semibold hover:bg-[#484D58] transition-colors"
+              className="btn-tactile px-4 py-2 rounded-lg bg-white text-black text-xs font-semibold hover:bg-zinc-200 transition-colors"
             >
               Reset all filters
             </button>

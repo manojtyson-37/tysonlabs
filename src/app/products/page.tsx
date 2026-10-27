@@ -20,25 +20,25 @@ export default function ProductsPage() {
     <div className="max-w-6xl mx-auto px-6 sm:px-8 py-10 space-y-16">
       {/* Header */}
       <div className="space-y-4 max-w-2xl">
-        <div className="text-xs uppercase tracking-wider font-semibold text-[#10B981] font-mono flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <div className="text-xs uppercase tracking-wider font-semibold text-emerald-400 font-mono flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span>Deployable & Interactive Software</span>
         </div>
-        <h1 className="font-display font-bold text-3xl sm:text-5xl text-[#F4F3F8] tracking-tight">
+        <h1 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
           Products you can use today.
         </h1>
-        <p className="text-base text-[#A6A8B3] leading-relaxed">
-          Unlike concept portfolios full of static Figma mockups, TysonLabs builds real, functional software. The systems below are deployed, interactive, and available for evaluation.
+        <p className="text-base text-[#94A3B8] leading-relaxed">
+          Unlike concept portfolios full of static mockups, TysonLabs builds real, functional software. The systems below are deployed, interactive, and available for evaluation.
         </p>
       </div>
 
       {/* Production Products Section */}
       <section className="space-y-6">
-        <div className="flex items-center justify-between pb-3 border-b border-[#30333B]">
-          <h2 className="font-display font-bold text-xl text-[#F4F3F8]">
+        <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+          <h2 className="font-display font-bold text-xl text-white">
             Production & Open-Source Systems
           </h2>
-          <span className="text-xs font-mono text-[#717684]">
+          <span className="text-xs font-mono text-[#64748B]">
             {liveProducts.length} Live Deployments
           </span>
         </div>
@@ -47,11 +47,11 @@ export default function ProductsPage() {
           {liveProducts.map((product) => (
             <div
               key={product.slug}
-              className="p-6 rounded-xl bg-[#15171C] border border-[#30333B] hover:border-[#484D58] transition-all flex flex-col justify-between space-y-5 shadow-sm"
+              className="p-6 rounded-2xl bg-[#0F1116] border border-white/[0.08] hover:border-white/[0.2] transition-all flex flex-col justify-between space-y-5 shadow-sm"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase tracking-wider text-[#A6A8B3]">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#94A3B8]">
                     {product.categoryLabel}
                   </span>
                   <span className="text-[11px] font-mono px-2 py-0.5 rounded-full badge-live">
@@ -59,13 +59,13 @@ export default function ProductsPage() {
                   </span>
                 </div>
 
-                <h3 className="font-display font-bold text-xl text-[#F4F3F8]">
-                  <Link href={`/projects/${product.slug}`} className="hover:text-[#B99AFF] transition-colors">
+                <h3 className="font-display font-bold text-xl text-white">
+                  <Link href={`/projects/${product.slug}`} className="hover:text-zinc-300 transition-colors">
                     {product.name}
                   </Link>
                 </h3>
 
-                <p className="text-sm text-[#A6A8B3] leading-relaxed">
+                <p className="text-sm text-[#94A3B8] leading-relaxed">
                   {product.shortDescription}
                 </p>
 
@@ -80,10 +80,10 @@ export default function ProductsPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-4 border-t border-[#30333B]/60 flex items-center justify-between text-xs font-semibold">
+              <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold">
                 <Link
                   href={`/projects/${product.slug}`}
-                  className="text-[#A6A8B3] hover:text-[#F4F3F8] transition-colors"
+                  className="text-[#94A3B8] hover:text-white transition-colors"
                 >
                   Architecture & Case Study →
                 </Link>
@@ -93,7 +93,7 @@ export default function ProductsPage() {
                     href={product.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#B99AFF] text-[#0C0D10] font-bold hover:bg-[#CCAFFF] transition-colors"
+                    className="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white text-black font-bold hover:bg-zinc-200 transition-colors active:scale-[0.98]"
                   >
                     <span>Launch Product</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -105,7 +105,7 @@ export default function ProductsPage() {
                     href={product.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#30333B] text-[#F4F3F8] hover:bg-[#484D58] transition-colors"
+                    className="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#141820] text-white border border-white/[0.1] hover:border-white/30 transition-colors active:scale-[0.98]"
                   >
                     <span>Inspect GitHub</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -119,16 +119,16 @@ export default function ProductsPage() {
 
       {/* In-Development & Prototypes Section */}
       <section className="space-y-6 pt-6">
-        <div className="flex items-center justify-between pb-3 border-b border-[#30333B]">
+        <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
           <div>
-            <h2 className="font-display font-bold text-xl text-[#F4F3F8]">
+            <h2 className="font-display font-bold text-xl text-white">
               Active Builds & Prototypes
             </h2>
-            <p className="text-xs text-[#717684] mt-0.5 font-mono">
+            <p className="text-xs text-[#64748B] mt-0.5 font-mono">
               Working codebases in testing and release preparation
             </p>
           </div>
-          <span className="text-xs font-mono text-[#717684]">
+          <span className="text-xs font-mono text-[#64748B]">
             {prototypes.length} Builds
           </span>
         </div>
@@ -137,23 +137,23 @@ export default function ProductsPage() {
           {prototypes.map((proto) => (
             <div
               key={proto.slug}
-              className="p-5 rounded-xl bg-[#121419] border border-[#30333B] flex items-center justify-between gap-4"
+              className="p-5 rounded-xl bg-[#0F1116] border border-white/[0.08] hover:border-white/[0.16] transition-all flex items-center justify-between gap-4"
             >
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold text-[#F4F3F8]">{proto.name}</span>
+                  <span className="text-xs font-bold text-white">{proto.name}</span>
                   <span className="text-[10px] font-mono px-2 py-0.2 rounded badge-prototype">
                     {proto.statusLabel}
                   </span>
                 </div>
-                <p className="text-xs text-[#A6A8B3] line-clamp-1">
+                <p className="text-xs text-[#94A3B8] line-clamp-1">
                   {proto.shortDescription}
                 </p>
               </div>
 
               <Link
                 href={`/projects/${proto.slug}`}
-                className="shrink-0 text-xs font-mono text-[#B99AFF] hover:underline"
+                className="shrink-0 text-xs font-mono text-white hover:underline"
               >
                 Inspect →
               </Link>

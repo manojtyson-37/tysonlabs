@@ -1,4 +1,20 @@
+'use client';
+
 import React from 'react';
+import { 
+  Cpu, 
+  Layers, 
+  Database, 
+  ArrowRight, 
+  Activity, 
+  ShieldCheck, 
+  GitBranch, 
+  Server,
+  Zap,
+  Radio,
+  FileCode2,
+  Workflow
+} from 'lucide-react';
 
 interface ProjectGraphicProps {
   slug: string;
@@ -8,267 +24,287 @@ interface ProjectGraphicProps {
 }
 
 export function ProjectGraphic({ slug, name, category, className = '' }: ProjectGraphicProps) {
+  // Common architectural canvas container
+  const containerStyle = `w-full h-44 bg-[#0B0D11] p-4 flex flex-col justify-between border-b border-white/[0.06] relative overflow-hidden group-hover:bg-[#0E1015] transition-colors ${className}`;
+
   switch (slug) {
     case 'dinepulse':
       return (
-        <div className={`w-full h-full min-h-[220px] bg-[#0E1015] p-5 flex flex-col justify-between border-b border-[#30333B] relative overflow-hidden group-hover:border-[#B99AFF]/40 transition-colors ${className}`}>
-          {/* Top till bar */}
-          <div className="flex items-center justify-between text-xs pb-3 border-b border-white/[0.08]">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="font-mono text-zinc-300 font-semibold">TABLE T-04</span>
-              <span className="text-[10px] bg-emerald-500/15 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">BILLED</span>
+        <div className={containerStyle}>
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              SYSTEM TOPOLOGY
+            </span>
+            <span>12ms TTFB · EDGE</span>
+          </div>
+
+          {/* Architecture Node Diagram */}
+          <div className="flex items-center justify-between gap-1 text-[11px] font-mono py-2">
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">CLIENT</div>
+              <div className="font-semibold text-white">Till #01</div>
             </div>
-            <div className="flex items-center gap-2 font-mono text-zinc-400">
-              <span>Till #1</span>
-              <span className="text-zinc-600">·</span>
-              <span className="text-amber-400 font-medium">3-Click Mode</span>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">ROUTER</div>
+              <div className="font-semibold text-white">KOT Bus</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">TAX ENGINE</div>
+              <div className="font-semibold text-emerald-400">GST Split</div>
             </div>
           </div>
 
-          {/* Ticket Items with FSSAI Badges */}
-          <div className="my-3 space-y-2 font-mono text-xs">
-            <div className="flex items-center justify-between p-2 rounded bg-[#15171C] border border-white/[0.05]">
-              <div className="flex items-center gap-2">
-                {/* Veg green square */}
-                <span className="w-3.5 h-3.5 border border-emerald-500 flex items-center justify-center rounded-sm bg-emerald-950/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                </span>
-                <span className="text-zinc-200">Paneer Tikka Biryani x2</span>
-              </div>
-              <span className="text-zinc-300">₹760</span>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded bg-[#15171C] border border-white/[0.05]">
-              <div className="flex items-center gap-2">
-                {/* Non-Veg red square */}
-                <span className="w-3.5 h-3.5 border border-red-500 flex items-center justify-center rounded-sm bg-red-950/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                </span>
-                <span className="text-zinc-200">Butter Chicken Kulcha x1</span>
-              </div>
-              <span className="text-zinc-300">₹420</span>
-            </div>
-          </div>
-
-          {/* Bottom actions */}
-          <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Gross Total</span>
-              <span className="font-display font-bold text-base text-zinc-100">₹1,180.00</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono px-2 py-1 rounded bg-[#FF5200] text-white font-bold tracking-wide">
-                FIRE KOT
-              </span>
-              <span className="text-[10px] font-mono px-2 py-1 rounded bg-[#1E222B] text-zinc-300 border border-white/10">
-                WHATSAPP BILL
-              </span>
-            </div>
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B] pt-1 border-t border-white/[0.04]">
+            <span>FSSAI COMPLIANT PROTOCOL</span>
+            <span>PINELABS · RAZORPAY</span>
           </div>
         </div>
       );
 
     case 'tysonchess':
       return (
-        <div className={`w-full h-full min-h-[220px] bg-[#0A0D12] p-5 flex flex-col justify-between border-b border-[#30333B] relative overflow-hidden group-hover:border-[#38BDF8]/40 transition-colors ${className}`}>
-          {/* Stockfish Header */}
-          <div className="flex items-center justify-between text-xs pb-3 border-b border-white/[0.08]">
-            <div className="flex items-center gap-2 font-mono">
-              <span className="text-sky-400 font-bold">♞ STOCKFISH 18</span>
-              <span className="text-[10px] bg-sky-500/15 text-sky-300 px-1.5 py-0.5 rounded border border-sky-500/30">WASM CLIENT</span>
-            </div>
-            <div className="flex items-center gap-1.5 font-mono text-emerald-400 font-bold">
-              <span>+2.45</span>
-              <span className="text-[10px] text-zinc-500 font-normal">depth 22</span>
-            </div>
-          </div>
-
-          {/* Chessboard simulation slice */}
-          <div className="my-3 grid grid-cols-4 gap-1 p-2 bg-[#12161E] rounded border border-white/[0.06] font-mono text-xs">
-            <div className="bg-[#1C2330] p-2 rounded text-center text-zinc-400">c4</div>
-            <div className="bg-[#151B25] p-2 rounded text-center text-sky-300 font-bold">e5! (Best)</div>
-            <div className="bg-[#1C2330] p-2 rounded text-center text-zinc-400">Nc3</div>
-            <div className="bg-[#151B25] p-2 rounded text-center text-amber-400">Nf6 (Book)</div>
-          </div>
-
-          {/* Coach Tactical Feedback */}
-          <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span className="text-xs text-zinc-300 font-mono">Coach: &quot;Knight outpost established on d4&quot;</span>
-            </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
-              BLUNDER GUARD ACTIVE
+        <div className={containerStyle}>
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+            <span className="flex items-center gap-1.5 text-sky-400">
+              <Cpu className="w-3 h-3" />
+              WASM ENGINE PIPELINE
             </span>
+            <span>8 WORKER THREADS</span>
+          </div>
+
+          <div className="flex items-center justify-between gap-1 text-[11px] font-mono py-2">
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">RUNTIME</div>
+              <div className="font-semibold text-white">Stockfish 18</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">SEARCH</div>
+              <div className="font-semibold text-sky-400">24 Ply</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">ANALYSIS</div>
+              <div className="font-semibold text-white">Coach Gen</div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B] pt-1 border-t border-white/[0.04]">
+            <span>SIMD WEB WORKERS</span>
+            <span>1.84M NODES / SEC</span>
+          </div>
+        </div>
+      );
+
+    case 'silaa':
+      return (
+        <div className={containerStyle}>
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+            <span className="flex items-center gap-1.5 text-purple-400">
+              <Workflow className="w-3 h-3" />
+              MANUFACTURING STATE MACHINE
+            </span>
+            <span>99.4% YIELD</span>
+          </div>
+
+          <div className="flex items-center justify-between gap-1 text-[11px] font-mono py-2">
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">INVENTORY</div>
+              <div className="font-semibold text-white">Fabric Lot</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">OPTIMIZER</div>
+              <div className="font-semibold text-purple-400">2D Nesting</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">WORKFLOW</div>
+              <div className="font-semibold text-white">CMT Batch</div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B] pt-1 border-t border-white/[0.04]">
+            <span>FASTAPI + POSTGRESQL</span>
+            <span>ZERO-WASTE PATTERN</span>
           </div>
         </div>
       );
 
     case 'tysonpe':
       return (
-        <div className={`w-full h-full min-h-[220px] bg-[#0E0F14] p-5 flex flex-col justify-between border-b border-[#30333B] relative overflow-hidden group-hover:border-[#8B5CF6]/40 transition-colors ${className}`}>
-          {/* Creator Store Bar */}
-          <div className="flex items-center justify-between text-xs pb-3 border-b border-white/[0.08]">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center font-bold text-[10px] text-violet-300">
-                AR
-              </div>
-              <span className="font-mono text-zinc-200">/c/asha-rao</span>
-            </div>
-            <span className="font-mono text-[10px] text-violet-300 bg-violet-950/60 px-2 py-0.5 rounded border border-violet-800/40">
-              RAZORPAY VERIFIED
+        <div className={containerStyle}>
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <ShieldCheck className="w-3 h-3" />
+              PAYWALL & DRM PIPELINE
             </span>
+            <span>RAZORPAY VERIFIED</span>
           </div>
 
-          {/* Product pricing card */}
-          <div className="my-2 p-3 rounded bg-[#161720] border border-white/[0.06] space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-zinc-100">Full-Stack Algo Trading Cohort</span>
-              <span className="font-display font-bold text-sm text-violet-300">₹4,999</span>
+          <div className="flex items-center justify-between gap-1 text-[11px] font-mono py-2">
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">CLIENT</div>
+              <div className="font-semibold text-white">Checkout</div>
             </div>
-            <div className="flex items-center gap-3 text-[11px] text-zinc-400 font-mono">
-              <span>18 Video Lessons</span>
-              <span>·</span>
-              <span>DRM Watermarked</span>
-              <span>·</span>
-              <span className="text-emerald-400">GST Invoice Ready</span>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">WEBHOOK</div>
+              <div className="font-semibold text-emerald-400">HMAC Sig</div>
             </div>
-          </div>
-
-          {/* Checkout Bar */}
-          <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-xs">
-            <span className="text-zinc-400 font-mono text-[11px]">Instant UPI Intent / NetBanking</span>
-            <span className="font-mono text-[10px] font-bold px-2 py-1 rounded bg-violet-600 text-white">
-              ENROLL NOW ↗
-            </span>
-          </div>
-        </div>
-      );
-
-    case 'silaa-atelier':
-      return (
-        <div className={`w-full h-full min-h-[220px] bg-[#0D1210] p-5 flex flex-col justify-between border-b border-[#30333B] relative overflow-hidden group-hover:border-[#10B981]/40 transition-colors ${className}`}>
-          {/* ERP Header */}
-          <div className="flex items-center justify-between text-xs pb-3 border-b border-white/[0.08]">
-            <div className="flex items-center gap-2 font-mono">
-              <span className="text-emerald-400 font-semibold">PO #SIL-2026-088</span>
-              <span className="text-[10px] bg-emerald-500/15 text-emerald-300 px-1.5 py-0.5 rounded">CUTTING STAGE</span>
-            </div>
-            <span className="text-[11px] text-zinc-400 font-mono">Lot #84A</span>
-          </div>
-
-          {/* Fabric Yield Specs */}
-          <div className="my-2 grid grid-cols-3 gap-2 font-mono text-xs">
-            <div className="bg-[#131B16] p-2 rounded border border-emerald-900/40">
-              <div className="text-[10px] text-zinc-500">Fabric</div>
-              <div className="font-bold text-zinc-200">Mulmul 60s</div>
-            </div>
-            <div className="bg-[#131B16] p-2 rounded border border-emerald-900/40">
-              <div className="text-[10px] text-zinc-500">Total Rolls</div>
-              <div className="font-bold text-zinc-200">1,240 m</div>
-            </div>
-            <div className="bg-[#131B16] p-2 rounded border border-emerald-900/40">
-              <div className="text-[10px] text-zinc-500">Yield Est.</div>
-              <div className="font-bold text-emerald-400">480 pcs</div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">DELIVERY</div>
+              <div className="font-semibold text-white">DRM Stream</div>
             </div>
           </div>
 
-          {/* Workflow Stage */}
-          <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-xs font-mono">
-            <div className="flex items-center gap-1.5 text-zinc-400 text-[11px]">
-              <span className="text-emerald-400 font-bold">Cutting</span> → <span>Embroidery</span> → <span>Stitching</span>
-            </div>
-            <span className="text-[10px] text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded">BOM Verified</span>
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B] pt-1 border-t border-white/[0.04]">
+            <span>AUTOMATED GST INVOICING</span>
+            <span>WATERMARKED ASSETS</span>
           </div>
         </div>
       );
 
     case 'physiocare':
       return (
-        <div className={`w-full h-full min-h-[220px] bg-[#0A1016] p-5 flex flex-col justify-between border-b border-[#30333B] relative overflow-hidden group-hover:border-[#0EA5E9]/40 transition-colors ${className}`}>
-          <div className="flex items-center justify-between text-xs pb-3 border-b border-white/[0.08]">
-            <div className="flex items-center gap-2 font-mono">
-              <span className="text-sky-400 font-semibold">PHYSIOCARE OS</span>
-              <span className="text-[10px] bg-sky-500/15 text-sky-300 px-1.5 py-0.5 rounded">CLINIC #1</span>
-            </div>
-            <span className="text-[11px] text-emerald-400 font-mono">4 Appointments Today</span>
-          </div>
-          <div className="my-2 space-y-1.5 font-mono text-xs">
-            <div className="p-2 rounded bg-[#101924] border border-sky-950 flex items-center justify-between">
-              <div>
-                <div className="text-zinc-200 font-medium">10:30 AM · Cervical Spondylosis</div>
-                <div className="text-[10px] text-zinc-400">Dr. Sharma · Session 4 of 8</div>
-              </div>
-              <span className="text-[10px] text-emerald-400 font-bold">ATTENDED</span>
-            </div>
-          </div>
-          <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-xs font-mono">
-            <span className="text-zinc-400 text-[11px]">Multi-Tenant Neon Postgres</span>
-            <span className="text-[10px] text-sky-300 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-800">
-              GST BILLING LIVE
+        <div className={containerStyle}>
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+            <span className="flex items-center gap-1.5 text-sky-400">
+              <Server className="w-3 h-3" />
+              MULTI-TENANT CLINIC EHR
             </span>
+            <span>ISOLATED TENANTS</span>
+          </div>
+
+          <div className="flex items-center justify-between gap-1 text-[11px] font-mono py-2">
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">CALENDAR</div>
+              <div className="font-semibold text-white">Slot Lock</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">SECURITY</div>
+              <div className="font-semibold text-sky-400">Neon RLS</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">BILLING</div>
+              <div className="font-semibold text-white">Tax Invoice</div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B] pt-1 border-t border-white/[0.04]">
+            <span>NEXT.JS 14 · PRISMA</span>
+            <span>ELECTRONIC HEALTH RECORD</span>
+          </div>
+        </div>
+      );
+
+    case 'kusum-dental-care':
+      return (
+        <div className={containerStyle}>
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <Activity className="w-3 h-3" />
+              CLINICAL EHR ARCHITECTURE
+            </span>
+            <span>BILINGUAL (KN/EN)</span>
+          </div>
+
+          <div className="flex items-center justify-between gap-1 text-[11px] font-mono py-2">
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">PORTAL</div>
+              <div className="font-semibold text-white">Booking</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">BACKEND</div>
+              <div className="font-semibold text-emerald-400">Fastify API</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">DATA</div>
+              <div className="font-semibold text-white">Supabase RLS</div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B] pt-1 border-t border-white/[0.04]">
+            <span>REALTIME SLOT HOLDING</span>
+            <span>PATIENT CONSENT VAULT</span>
           </div>
         </div>
       );
 
     case 'agents-and-skills':
       return (
-        <div className={`w-full h-full min-h-[220px] bg-[#110D18] p-5 flex flex-col justify-between border-b border-[#30333B] relative overflow-hidden group-hover:border-[#A855F7]/40 transition-colors ${className}`}>
-          <div className="flex items-center justify-between text-xs pb-3 border-b border-white/[0.08]">
-            <div className="flex items-center gap-2 font-mono">
-              <span className="text-purple-400 font-semibold">CHIEF OF STAFF</span>
-              <span className="text-[10px] bg-purple-500/15 text-purple-300 px-1.5 py-0.5 rounded">COORDINATOR</span>
-            </div>
-            <span className="text-[11px] text-emerald-400 font-mono">Token Cut: -78%</span>
-          </div>
-          <div className="my-2 flex items-center justify-between text-xs font-mono p-2 rounded bg-[#1A1424] border border-purple-900/30">
-            <div className="text-center">
-              <div className="text-[10px] text-zinc-500">Orchestrator</div>
-              <div className="font-bold text-purple-300">Planning</div>
-            </div>
-            <div className="text-zinc-600">→</div>
-            <div className="text-center">
-              <div className="text-[10px] text-zinc-500">Engineer</div>
-              <div className="font-bold text-sky-300">TDD Code</div>
-            </div>
-            <div className="text-zinc-600">→</div>
-            <div className="text-center">
-              <div className="text-[10px] text-zinc-500">Reviewer</div>
-              <div className="font-bold text-emerald-300">Quality Gate</div>
-            </div>
-          </div>
-          <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-xs font-mono">
-            <span className="text-zinc-400 text-[11px]">Headroom Compression Engine</span>
-            <span className="text-[10px] text-purple-300 bg-purple-950 px-2 py-0.5 rounded border border-purple-800">
-              GITHUB REPO
+        <div className={containerStyle}>
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+            <span className="flex items-center gap-1.5 text-purple-400">
+              <GitBranch className="w-3 h-3" />
+              MULTI-AGENT COORDINATION
             </span>
+            <span>CCR COMPRESSION</span>
+          </div>
+
+          <div className="flex items-center justify-between gap-1 text-[11px] font-mono py-2">
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">ORCHESTRATOR</div>
+              <div className="font-semibold text-white">Chief of Staff</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">SPECIALISTS</div>
+              <div className="font-semibold text-purple-400">12 Personas</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">GATE</div>
+              <div className="font-semibold text-white">Quality Audit</div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B] pt-1 border-t border-white/[0.04]">
+            <span>HEADROOM -78% TOKENS</span>
+            <span>ZERO-TOUCH WORKFLOWS</span>
           </div>
         </div>
       );
 
     default:
-      // Generic clean studio preview for other projects
       return (
-        <div className={`w-full h-full min-h-[220px] bg-[#12141A] p-5 flex flex-col justify-between border-b border-[#30333B] relative overflow-hidden group-hover:border-white/20 transition-colors ${className}`}>
-          <div className="flex items-center justify-between text-xs pb-3 border-b border-white/[0.08]">
-            <span className="font-mono text-zinc-400 uppercase tracking-wider text-[11px]">{category}</span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.05] text-zinc-300 border border-white/10">
-              VERIFIED BUILD
+        <div className={containerStyle}>
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+            <span className="flex items-center gap-1.5 text-zinc-300">
+              <FileCode2 className="w-3 h-3" />
+              SYSTEM ARCHITECTURE
             </span>
+            <span>PRODUCTION VERIFIED</span>
           </div>
-          <div className="my-4">
-            <h4 className="font-display font-bold text-lg text-zinc-100 group-hover:text-white transition-colors">
-              {name}
-            </h4>
-            <div className="mt-2 flex items-center gap-2 font-mono text-xs text-zinc-500">
-              <span>Architecture verified</span>
-              <span>·</span>
-              <span>Zero-slop UI</span>
+
+          <div className="flex items-center justify-between gap-1 text-[11px] font-mono py-2">
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">SURFACE</div>
+              <div className="font-semibold text-white">Modern UI</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">RUNTIME</div>
+              <div className="font-semibold text-zinc-200">Edge API</div>
+            </div>
+            <ArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
+            <div className="px-2 py-1.5 rounded bg-[#13161C] border border-white/[0.08] text-zinc-300 text-center flex-1">
+              <div className="text-[9px] text-[#64748B]">PERSISTENCE</div>
+              <div className="font-semibold text-white">Database</div>
             </div>
           </div>
-          <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-xs font-mono text-zinc-400">
-            <span>TysonLabs Sovereign Project</span>
-            <span className="text-[#B99AFF] group-hover:translate-x-0.5 transition-transform">Inspect ↗</span>
+
+          <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B] pt-1 border-t border-white/[0.04]">
+            <span>ZERO-LAYOUT-SHIFT</span>
+            <span>SOVEREIGN STACK</span>
           </div>
         </div>
       );

@@ -1,20 +1,17 @@
 import React from 'react';
 import Link from 'next/link';
 import { getFeaturedProjects } from '@/data/projects';
-import { ProjectCard } from '@/components/ProjectCard';
 import { HeroTelemetryDeck } from '@/components/HeroTelemetryDeck';
 import { HomeProjectsExplorer } from '@/components/HomeProjectsExplorer';
 import {
   ArrowUpRight,
   ExternalLink,
-  Sparkles,
   Bot,
   Layout,
   Briefcase,
   FlaskConical,
   CheckCircle2,
   Cpu,
-  Layers,
   ShieldCheck,
   Zap,
 } from 'lucide-react';
@@ -26,68 +23,64 @@ export default function HomePage() {
     {
       id: 'ai-agents',
       icon: Bot,
-      title: 'AI & Autonomous Agents',
-      description: 'Production-grade agent frameworks, conversational copilots, and end-to-end task automation pipelines.',
-      highlight: 'Chief of Staff AI & Gemini Copilots',
+      title: 'Autonomous Multi-Agent Systems',
+      description: 'Production-grade agent frameworks with strict separation of roles (research, code, test, review), token compression, and deterministic execution gates.',
+      highlight: 'Chief of Staff AI · Gemini Hospitality Copilot',
       href: '/projects?category=ai-agents',
-      accent: 'border-purple-500/30 text-purple-400 group-hover:border-purple-500',
     },
     {
       id: 'web-experiences',
       icon: Layout,
-      title: 'Web Experiences & Commerce',
-      description: 'Zero-layout-shift web applications, responsive editorial storefronts, and tactile consumer portals.',
-      highlight: 'ECHORA & Jaya Mahal Palace',
+      title: 'High-Performance Web Platforms',
+      description: 'Zero-layout-shift web applications, responsive editorial storefronts, tactile consumer portals, and client-side compiled WebAssembly engines.',
+      highlight: 'ECHORA · Tyson Chess (WASM)',
       href: '/projects?category=web-experiences',
-      accent: 'border-sky-500/30 text-sky-400 group-hover:border-sky-500',
     },
     {
       id: 'business-tools',
       icon: Briefcase,
-      title: 'Business & Operations OS',
-      description: 'High-throughput restaurant POS tills, apparel manufacturing ERPs, clinic management, and GST accounting.',
-      highlight: 'DinePulse & Silaa Atelier',
+      title: 'Vertical SaaS & Operations OS',
+      description: 'High-throughput restaurant POS tills, apparel manufacturing ERPs, clinic management, and compliant Indian GST accounting engines.',
+      highlight: 'DinePulse Till · Silaa Atelier ERP',
       href: '/projects?category=business-tools',
-      accent: 'border-emerald-500/30 text-emerald-400 group-hover:border-emerald-500',
     },
     {
       id: 'experiments',
       icon: FlaskConical,
-      title: 'Labs & Native Experiments',
-      description: 'In-browser Stockfish WASM chess training, automated YouTube video synthesis, and developer toolkits.',
-      highlight: 'Tyson Chess & Video Automation',
+      title: 'Labs & Native Systems',
+      description: 'In-browser Stockfish 18 SIMD chess analysis, automated video synthesis pipelines, and developer telemetry toolkits.',
+      highlight: 'Stockfish 18 WASM · YouTube Synthesis',
       href: '/labs',
-      accent: 'border-amber-500/30 text-amber-400 group-hover:border-amber-500',
     },
   ];
 
   return (
     <div className="space-y-20 sm:space-y-28">
       {/* Asymmetric Tactical Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-6 sm:px-8 pt-6 sm:pt-12 pb-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-10 items-start">
+      <section className="relative max-w-7xl mx-auto px-6 sm:px-8 pt-8 sm:pt-14 pb-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           
           {/* Left Column: Manifesto & Tactile CTAs (7 cols) */}
           <div className="lg:col-span-7 space-y-7">
             {/* Studio Status Pill */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#13151A] border border-[#272B35] text-xs font-mono text-[#9FA2B0]">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#0F1116] border border-white/[0.08] text-xs font-mono text-[#94A3B8]">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span className="uppercase tracking-wider font-semibold text-[#F4F3F8]">
+              <span className="uppercase tracking-wider font-semibold text-white">
                 INDEPENDENT TECHNOLOGY STUDIO
               </span>
-              <span className="text-[#6C707E] hidden sm:inline">· SYSTEMS ACTIVE</span>
+              <span className="text-[#64748B] hidden sm:inline">· SYSTEMS ACTIVE</span>
             </div>
 
             {/* Main Statement */}
             <div className="space-y-4">
-              <h1 className="font-display font-extrabold text-4xl sm:text-6xl md:text-7xl text-[#F4F3F8] tracking-tight leading-[1.04]">
+              <h1 className="font-display font-extrabold text-4xl sm:text-6xl md:text-7xl text-white tracking-tight leading-[1.04]">
                 Ideas into products.
               </h1>
-              <p className="text-base sm:text-lg text-[#9FA2B0] leading-relaxed max-w-2xl font-normal">
-                Digital products, AI-powered systems, and software experiences engineered to solve real problems. Crafted with extreme domain precision, high contrast, and tactile execution.
+              <p className="text-base sm:text-lg text-[#94A3B8] leading-relaxed max-w-2xl font-normal">
+                Digital products, AI-powered systems, and software architectures engineered to solve real operational problems. High contrast, zero decorative fluff, and authentic engineering craft.
               </p>
             </div>
 
@@ -95,7 +88,7 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center gap-4 pt-1">
               <Link
                 href="/projects"
-                className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-white text-zinc-950 font-semibold text-sm hover:bg-zinc-100 hover:shadow-xl hover:shadow-white/5 transition-all shadow-[0_1px_3px_rgba(0,0,0,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-white text-black font-semibold text-sm hover:bg-zinc-200 transition-all shadow-lg shadow-white/5 active:scale-[0.98]"
               >
                 <span>Explore projects</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -103,34 +96,34 @@ export default function HomePage() {
 
               <Link
                 href="/contact"
-                className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-[#14161C] text-[#F4F3F8] border border-[#2A2E37] font-semibold text-sm hover:border-[#4B5263] hover:bg-[#1B1E26] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4B5263]"
+                className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-[#0F1116] text-white border border-white/[0.1] font-semibold text-sm hover:border-white/[0.25] hover:bg-[#151820] transition-all active:scale-[0.98]"
               >
                 <span>Get in touch</span>
               </Link>
             </div>
 
             {/* Studio Engineering Proof Metrics */}
-            <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-[#242731] text-xs font-mono">
-              <div className="bg-[#121419] p-3 rounded-lg border border-[#242731]">
-                <div className="font-display font-bold text-xl text-[#F4F3F8]">15+</div>
-                <div className="text-[#6C707E] mt-0.5">Sovereign Projects</div>
+            <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-white/[0.08] text-xs font-mono">
+              <div className="bg-[#0F1116] p-3.5 rounded-xl border border-white/[0.08]">
+                <div className="font-display font-bold text-2xl text-white">16</div>
+                <div className="text-[#64748B] mt-1">Sovereign Projects</div>
               </div>
-              <div className="bg-[#121419] p-3 rounded-lg border border-[#242731]">
-                <div className="font-display font-bold text-xl text-emerald-400">100%</div>
-                <div className="text-[#6C707E] mt-0.5">Working Codebases</div>
+              <div className="bg-[#0F1116] p-3.5 rounded-xl border border-white/[0.08]">
+                <div className="font-display font-bold text-2xl text-emerald-400">100%</div>
+                <div className="text-[#64748B] mt-1">Working Codebases</div>
               </div>
-              <div className="bg-[#121419] p-3 rounded-lg border border-[#242731]">
-                <div className="font-display font-bold text-xl text-white">Zero</div>
-                <div className="text-[#6C707E] mt-0.5">Slop & Fake Metrics</div>
+              <div className="bg-[#0F1116] p-3.5 rounded-xl border border-white/[0.08]">
+                <div className="font-display font-bold text-2xl text-white">Zero</div>
+                <div className="text-[#64748B] mt-1">AI Slop & Noise</div>
               </div>
-              <div className="bg-[#121419] p-3 rounded-lg border border-[#242731]">
-                <div className="font-display font-bold text-xl text-sky-400">WASM / Cloud</div>
-                <div className="text-[#6C707E] mt-0.5">Modern Architecture</div>
+              <div className="bg-[#0F1116] p-3.5 rounded-xl border border-white/[0.08]">
+                <div className="font-display font-bold text-2xl text-sky-400">WASM / Edge</div>
+                <div className="text-[#64748B] mt-1">High-Speed Stack</div>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Live Studio Telemetry Deck (5 cols) */}
+          {/* Right Column: Studio Runtime Radar (5 cols) */}
           <div className="lg:col-span-5 w-full">
             <HeroTelemetryDeck />
           </div>
@@ -140,36 +133,56 @@ export default function HomePage() {
 
       {/* Live Systems Radar Ribbon */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="bg-[#121419] border border-[#242731] rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono shadow-lg shadow-black/40">
+        <div className="bg-[#0F1116] border border-white/[0.08] rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono shadow-xl shadow-black/60">
           <div className="flex items-center gap-3">
-            <span className="flex h-2.5 w-2.5 relative">
+            <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="text-white font-bold tracking-wider uppercase">ACTIVE RADAR</span>
-            <span className="text-[#6C707E] hidden sm:inline">· 5 Live Verified Deployments</span>
+            <span className="text-white font-bold tracking-wider uppercase">VERIFIED LIVE DEPLOYMENTS</span>
+            <span className="text-[#64748B] hidden sm:inline">· 5 Live Environments</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <a href="https://saas-physio.vercel.app" target="_blank" rel="noopener noreferrer" className="btn-tactile px-3 py-1.5 rounded bg-[#181B22] border border-[#2B2F3A] text-[#E4E5EB] hover:text-emerald-400 hover:border-emerald-500 transition-all flex items-center gap-1.5">
+            <a
+              href="https://saas-physio.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-tactile px-3 py-1.5 rounded-lg bg-[#090A0D] border border-white/[0.08] text-[#94A3B8] hover:text-white hover:border-white/30 transition-all flex items-center gap-1.5"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               <span>PhysioCare SaaS</span>
-              <ExternalLink className="w-3 h-3 text-[#6C707E]" />
+              <ExternalLink className="w-3 h-3 text-[#64748B]" />
             </a>
-            <a href="https://nexify-dashboard.vercel.app" target="_blank" rel="noopener noreferrer" className="btn-tactile px-3 py-1.5 rounded bg-[#181B22] border border-[#2B2F3A] text-[#E4E5EB] hover:text-sky-400 hover:border-sky-500 transition-all flex items-center gap-1.5">
+            <a
+              href="https://nexify-dashboard.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-tactile px-3 py-1.5 rounded-lg bg-[#090A0D] border border-white/[0.08] text-[#94A3B8] hover:text-white hover:border-white/30 transition-all flex items-center gap-1.5"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
               <span>Nexify Ops</span>
-              <ExternalLink className="w-3 h-3 text-[#6C707E]" />
+              <ExternalLink className="w-3 h-3 text-[#64748B]" />
             </a>
-            <a href="https://www.kusumsdentalcare.in" target="_blank" rel="noopener noreferrer" className="btn-tactile px-3 py-1.5 rounded bg-[#181B22] border border-[#2B2F3A] text-[#E4E5EB] hover:text-purple-400 hover:border-purple-500 transition-all flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+            <a
+              href="https://www.kusumsdentalcare.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-tactile px-3 py-1.5 rounded-lg bg-[#090A0D] border border-white/[0.08] text-[#94A3B8] hover:text-white hover:border-white/30 transition-all flex items-center gap-1.5"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               <span>Kusum Dental EHR</span>
-              <ExternalLink className="w-3 h-3 text-[#6C707E]" />
+              <ExternalLink className="w-3 h-3 text-[#64748B]" />
             </a>
-            <a href="https://tysonchess-two.vercel.app" target="_blank" rel="noopener noreferrer" className="btn-tactile px-3 py-1.5 rounded bg-[#181B22] border border-[#2B2F3A] text-[#E4E5EB] hover:text-amber-400 hover:border-amber-500 transition-all flex items-center gap-1.5">
+            <a
+              href="https://tysonchess-two.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-tactile px-3 py-1.5 rounded-lg bg-[#090A0D] border border-white/[0.08] text-[#94A3B8] hover:text-white hover:border-white/30 transition-all flex items-center gap-1.5"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
               <span>Stockfish 18 WASM</span>
-              <ExternalLink className="w-3 h-3 text-[#6C707E]" />
+              <ExternalLink className="w-3 h-3 text-[#64748B]" />
             </a>
           </div>
         </div>
@@ -177,13 +190,22 @@ export default function HomePage() {
 
       {/* Selected Work Section with Interactive Explorer */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="mb-6">
-          <div className="text-xs uppercase tracking-wider font-semibold text-[#B99AFF] font-mono mb-1.5">
-            Level 1 — Standout Flagships
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div className="text-xs uppercase tracking-wider font-semibold text-[#64748B] font-mono mb-1">
+              ARCHITECTURAL MONOGRAPHS
+            </div>
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-white">
+              Selected work.
+            </h2>
           </div>
-          <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#F4F3F8]">
-            Selected work.
-          </h2>
+          <Link
+            href="/projects"
+            className="text-xs font-mono text-[#94A3B8] hover:text-white transition-colors inline-flex items-center gap-1"
+          >
+            <span>Explore all 16 projects</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
         <HomeProjectsExplorer initialProjects={featuredProjects} />
@@ -191,43 +213,43 @@ export default function HomePage() {
 
       {/* Studio Capabilities / Focus Areas */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="mb-8 pb-4 border-b border-[#242731]">
-          <div className="text-xs uppercase tracking-wider font-semibold text-[#B99AFF] font-mono mb-1.5">
-            Disciplines & Focus
+        <div className="mb-8 pb-4 border-b border-white/[0.08]">
+          <div className="text-xs uppercase tracking-wider font-semibold text-[#64748B] font-mono mb-1">
+            DISCIPLINES & EXPERTISE
           </div>
-          <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#F4F3F8]">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl text-white">
             What TysonLabs builds.
           </h2>
-          <p className="text-sm text-[#9FA2B0] mt-1.5 max-w-xl">
-            From industrial manufacturing pipelines and restaurant point-of-sale systems to browser-based Stockfish engines and multi-agent coordination.
+          <p className="text-sm text-[#94A3B8] mt-1.5 max-w-xl">
+            From industrial manufacturing pipelines and restaurant point-of-sale systems to in-browser Stockfish engines and multi-agent coordination.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {studioCapabilities.map((cap) => {
             const Icon = cap.icon;
             return (
               <Link
                 key={cap.id}
                 href={cap.href}
-                className="group p-6 rounded-xl bg-[#121419] border border-[#242731] hover:border-[#3E4351] transition-all duration-200 flex flex-col justify-between hover:shadow-xl hover:shadow-black/40"
+                className="group p-6 rounded-2xl bg-[#0F1116] border border-white/[0.08] hover:border-white/[0.2] transition-all duration-200 flex flex-col justify-between hover:shadow-xl hover:shadow-black/60"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`p-2.5 rounded-lg bg-[#0E1015] border ${cap.accent} transition-colors`}>
+                    <div className="p-2.5 rounded-lg bg-[#090A0D] border border-white/[0.08] text-white">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <ArrowUpRight className="w-4 h-4 text-[#6C707E] group-hover:text-[#F4F3F8] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    <ArrowUpRight className="w-4 h-4 text-[#64748B] group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                   </div>
-                  <h3 className="font-display font-bold text-lg text-[#F4F3F8] group-hover:text-white transition-colors">
+                  <h3 className="font-display font-bold text-lg text-white group-hover:text-zinc-200 transition-colors">
                     {cap.title}
                   </h3>
-                  <p className="text-sm text-[#9FA2B0] mt-2 leading-relaxed">
+                  <p className="text-xs text-[#94A3B8] mt-2.5 leading-relaxed">
                     {cap.description}
                   </p>
                 </div>
-                <div className="pt-4 mt-4 border-t border-[#242731] text-xs font-mono text-[#6C707E]">
-                  Key builds: <span className="text-[#9FA2B0] font-medium">{cap.highlight}</span>
+                <div className="pt-4 mt-5 border-t border-white/[0.06] text-xs font-mono text-[#64748B]">
+                  Key builds: <span className="text-[#94A3B8] font-medium">{cap.highlight}</span>
                 </div>
               </Link>
             );
@@ -237,52 +259,52 @@ export default function HomePage() {
 
       {/* Engineering Philosophy & Ground Rules */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="p-8 sm:p-12 rounded-2xl bg-[#121419] border border-[#242731] relative overflow-hidden">
+        <div className="p-8 sm:p-12 rounded-2xl bg-[#0F1116] border border-white/[0.08] relative overflow-hidden">
           <div className="max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-2 text-xs font-mono text-[#B99AFF] uppercase tracking-wider font-semibold">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 text-xs font-mono text-[#94A3B8] uppercase tracking-wider font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               <span>Studio Engineering Doctrine</span>
             </div>
-            <h2 className="font-display font-bold text-2xl sm:text-4xl text-[#F4F3F8] tracking-tight">
+            <h2 className="font-display font-bold text-2xl sm:text-4xl text-white tracking-tight">
               From idea to implementation.
             </h2>
-            <p className="text-sm sm:text-base text-[#9FA2B0] leading-relaxed">
-              We reject generic &quot;AI portfolio slop&quot; — no useless glowing purple blobs, no ambiguous floating cards with placeholder text, and no fabricated metrics. Every system here was built to solve a concrete real-world operational need.
+            <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed">
+              We reject generic &quot;AI portfolio slop&quot; — no useless glowing neon blobs, no ambiguous floating cards with placeholder text, and no fabricated metrics. Every system here was built to solve a concrete real-world operational need.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-              <div className="flex items-start gap-3 bg-[#0E1015] p-4 rounded-xl border border-[#242731]">
+              <div className="flex items-start gap-3 bg-[#090A0D] p-4 rounded-xl border border-white/[0.08]">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-semibold text-[#F4F3F8]">Daylight Contrast & Speed</h4>
-                  <p className="text-xs text-[#9FA2B0] mt-1">
+                  <h4 className="text-sm font-semibold text-white">Daylight Contrast & Speed</h4>
+                  <p className="text-xs text-[#94A3B8] mt-1">
                     Interfaces built for operators under real lighting, optimized for keyboard shortcuts and sub-second execution.
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 bg-[#0E1015] p-4 rounded-xl border border-[#242731]">
+              <div className="flex items-start gap-3 bg-[#090A0D] p-4 rounded-xl border border-white/[0.08]">
                 <ShieldCheck className="w-5 h-5 text-sky-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-semibold text-[#F4F3F8]">Authentic Domain Logic</h4>
-                  <p className="text-xs text-[#9FA2B0] mt-1">
+                  <h4 className="text-sm font-semibold text-white">Authentic Domain Logic</h4>
+                  <p className="text-xs text-[#94A3B8] mt-1">
                     GST tax split rules, FSSAI compliance badges, and fabric shrinkage calculators built right into the schema.
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 bg-[#0E1015] p-4 rounded-xl border border-[#242731]">
+              <div className="flex items-start gap-3 bg-[#090A0D] p-4 rounded-xl border border-white/[0.08]">
                 <Cpu className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-semibold text-[#F4F3F8]">Sovereign Architectures</h4>
-                  <p className="text-xs text-[#9FA2B0] mt-1">
+                  <h4 className="text-sm font-semibold text-white">Sovereign Architectures</h4>
+                  <p className="text-xs text-[#94A3B8] mt-1">
                     Client-side WASM, serverless edge routes, and self-hosted databases that run without recurring vendor extortion.
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 bg-[#0E1015] p-4 rounded-xl border border-[#242731]">
+              <div className="flex items-start gap-3 bg-[#090A0D] p-4 rounded-xl border border-white/[0.08]">
                 <Zap className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-semibold text-[#F4F3F8]">End-to-End Delivery</h4>
-                  <p className="text-xs text-[#9FA2B0] mt-1">
+                  <h4 className="text-sm font-semibold text-white">End-to-End Delivery</h4>
+                  <p className="text-xs text-[#94A3B8] mt-1">
                     From initial database model and UI design tokens to production Vercel deployment and webhook hardening.
                   </p>
                 </div>
@@ -294,18 +316,18 @@ export default function HomePage() {
 
       {/* Call to Action Banner */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="p-8 sm:p-12 rounded-2xl bg-[#121419] border border-[#242731] flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+        <div className="p-8 sm:p-12 rounded-2xl bg-[#0F1116] border border-white/[0.08] flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="space-y-3 max-w-xl">
-            <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#F4F3F8]">
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-white">
               Have something worth building?
             </h2>
-            <p className="text-sm text-[#9FA2B0] leading-relaxed">
+            <p className="text-sm text-[#94A3B8] leading-relaxed">
               Whether you need a specialized business operating system, an AI workflow engine, or a high-performance web product, let&apos;s build it with clarity and craft.
             </p>
           </div>
           <Link
             href="/contact"
-            className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-white text-zinc-950 font-bold text-sm hover:bg-zinc-100 transition-all whitespace-nowrap shadow-lg shadow-white/5 active:scale-[0.98]"
+            className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-all whitespace-nowrap shadow-lg shadow-white/5 active:scale-[0.98]"
           >
             <span>Let&apos;s make it real</span>
             <ArrowUpRight className="w-4 h-4" />
