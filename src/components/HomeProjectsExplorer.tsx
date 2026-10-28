@@ -44,15 +44,15 @@ export function HomeProjectsExplorer({ initialProjects }: HomeProjectsExplorerPr
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveFilter(tab.id)}
-                className={`btn-tactile inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
+                className={`btn-tactile inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] ${
                   isActive
-                    ? 'bg-white text-zinc-950 font-bold shadow-sm'
-                    : 'bg-[#0E1015] text-[#94A3B8] border border-white/[0.08] hover:text-white hover:border-white/[0.18]'
+                    ? 'bg-white text-black font-semibold shadow-sm'
+                    : 'bg-[#181818] text-[#9B9B9B] border border-white/[0.08] hover:text-white hover:border-white/[0.2]'
                 }`}
               >
                 <span>{tab.label}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded ${
-                  isActive ? 'bg-zinc-200 text-zinc-950' : 'bg-[#181B22] text-[#64748B]'
+                <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                  isActive ? 'bg-zinc-200 text-black font-bold' : 'bg-[#272727] text-[#666666]'
                 }`}>
                   {tab.count}
                 </span>

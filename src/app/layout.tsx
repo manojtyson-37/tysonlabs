@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk, Inter } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 
-const spaceGrotesk = Space_Grotesk({
+const geistSans = Geist({
   subsets: ['latin'],
-  variable: '--font-display',
+  variable: '--font-sans',
   display: 'swap',
 });
 
-const inter = Inter({
+const geistMono = Geist_Mono({
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-mono',
   display: 'swap',
 });
 
@@ -63,10 +63,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} dark`} id="top">
-      <body className="min-h-screen bg-[#090A0D] text-[#F8FAFC] flex flex-col font-sans selection:bg-white selection:text-black antialiased">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} dark`} id="top">
+      <body className="min-h-screen bg-[#000000] text-[#FFFFFF] flex flex-col font-sans selection:bg-white selection:text-black antialiased">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-3 focus:py-2 focus:bg-white focus:text-black focus:text-sm focus:font-semibold focus:rounded-md focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-white"
+        >
+          Skip to main content
+        </a>
         <Navbar />
-        <main className="flex-1 pt-24">{children}</main>
+        <main id="main-content" className="flex-1 pt-24">{children}</main>
         <Footer />
       </body>
     </html>
