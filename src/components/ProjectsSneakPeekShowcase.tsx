@@ -105,12 +105,12 @@ export function ProjectsSneakPeekShowcase() {
       projectName: 'Tyson Chess · Interactive AI Chess Coach',
       projectSlug: 'tysonchess',
       liveUrl: 'https://tysonchess-two.vercel.app',
-      theProblem: 'Amateur chess players are overwhelmed by confusing computer evaluation scores (+1.84) that fail to explain the human reason behind why a move lost or won.',
-      theSolution: 'An in-browser chess academy that speaks plain conversational English: "Moving your Knight to d5 forks the Queen and Bishop", with 6 calibrated AI sparring bots and automatic mistake puzzle drills.',
+      theProblem: 'Chess.com locks daily practice behind an aggressive paywall: solving more than 3 puzzles a day requires paying ₹99 per week (₹5,000+ per year), while game reviews spit out cryptic numeric evaluations (+1.84).',
+      theSolution: 'I thought: why pay ₹99/week just to practice tactics? Why not build it myself? Tyson Chess runs 100% free in the browser with unlimited puzzles, 6 sparring bots, and a coach that explains moves in plain English ("Knight to d5 forks Queen and Bishop").',
       businessImpact: [
-        { label: 'Learning Curve', value: 'Plain English Advice' },
-        { label: 'Server Cost', value: '$0/mo In-Browser AI' },
-        { label: 'Latency', value: 'Zero Loading Screens' },
+        { label: 'Puzzle Paywall', value: '100% Free & Unlimited' },
+        { label: 'Weekly Savings', value: 'Saves ₹99 / Week' },
+        { label: 'Tactical Coach', value: 'Plain English Advice' },
       ],
     },
   ];

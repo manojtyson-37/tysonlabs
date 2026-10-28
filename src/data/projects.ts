@@ -196,9 +196,9 @@ export const PROJECTS: Project[] = [
       'Automated spaced repetition engine converting personal blunders into training drills'
     ],
     caseStudy: {
-      overview: 'Most chess apps either offer simple raw engine evaluations (+1.4) that confuse amateur players, or lock instructional coaching behind expensive monthly subscriptions. Tyson Chess provides deep, humanized coaching running purely on client hardware.',
-      problem: 'Intermediate chess learners plateau because engine scores don’t explain the strategic intuition or immediate hazards of a blunder. Furthermore, players forget their recurring tactical blind spots without systematic review.',
-      targetAudience: 'Club players, aspiring tournament competitors, and adult improvers seeking targeted blunder-reduction drills.',
+      overview: 'I used to play on the Chess.com app every day, but for solving more than 3 puzzles a day or getting basic move reviews you had to pay ₹99 per week (₹5,000+ per year). Paying a recurring weekly subscription just to practice chess tactics felt ridiculous. I thought: why not build it myself? Tyson Chess was engineered to provide unlimited tactical puzzles, plain-English blunder coaching, and human-style sparring bots with zero paywalls.',
+      problem: 'Commercial chess apps lock daily tactical training behind aggressive paywalls (₹99/week) while spitting out raw, robotic engine evaluations (+1.84) that fail to explain why a move actually lost or won.',
+      targetAudience: 'Club players, adult improvers, and intermediate learners seeking unlimited puzzle practice and intuitive blunder coaching without paying weekly subscriptions.',
       solution: 'A zero-backend web platform running intelligent chess AI in dedicated web workers. It features a blunder safety net that halts catastrophic moves during casual play and prompts tactical reflection.',
       myRole: 'Creator & Engine Engineer — Compiled and tuned the WebAssembly engine integration, built the custom bot heuristic softmax weighting, and created the spaced repetition blunder scheduler.',
       architecture: {
@@ -227,12 +227,12 @@ export const PROJECTS: Project[] = [
     },
     businessUseCase: {
       targetIndustry: 'Chess Academies, Intermediate Learners & EdTech',
-      whyBuilt: 'Intermediate chess learners plateau because traditional computer engines output robotic numbers (+1.84) that fail to explain the tactical reasons behind moves, while commercial platforms lock interactive coaching behind expensive monthly paywalls.',
-      problemSolved: 'Runs an intelligent AI mentor directly in the browser that explains blunders in plain conversational English ("Knight to d5 forks Queen and Bishop"), offers 6 human-like sparring bots, and mines mistakes into spaced repetition drills.',
+      whyBuilt: 'I used to play on the Chess.com app every day, and for solving more than 3 puzzles a day you needed to pay ₹99 per week. Paying a recurring subscription just to practice chess tactics felt absurd. So I thought: why not build it myself?',
+      problemSolved: 'An independent in-browser chess academy that runs an intelligent engine directly on your device with zero server latency. It provides unlimited tactical puzzles, replaces confusing computer numbers with plain-English coaching ("Knight to d5 forks Queen and Bishop"), and offers 6 calibrated human-style sparring bots — 100% free forever.',
       businessImpact: [
-        '$0/month server infrastructure cost via client-side execution',
-        'Zero loading delay or engine initialization wait times',
-        'Plain-English tactical explanations replacing raw numeric evaluations'
+        'Unlimited daily tactical puzzles without a ₹99/week subscription paywall',
+        '$0/month server cost running 100% locally in-browser',
+        'Plain-English tactical coaching replacing cryptic numeric evaluations'
       ]
     },
     relatedSlugs: ['dinepulse', 'agents-and-skills'],

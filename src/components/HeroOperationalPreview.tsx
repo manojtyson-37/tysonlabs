@@ -276,7 +276,7 @@ export function HeroOperationalPreview() {
               type="button"
               onClick={() => {
                 setChessMovePlayed(true);
-                triggerFeedback('Knight moved to d5! Coach analyzed 1.8M positions in 40 milliseconds right in your browser.');
+                triggerFeedback('Knight moved to d5! AI coach spotted the fork instantly. Free unlimited puzzles with zero weekly subscription paywalls!');
               }}
               className="btn-tactile w-full px-4 py-2.5 rounded-lg bg-black text-white dark:bg-white dark:text-black font-bold text-xs flex items-center justify-center gap-2 active:scale-[0.98]"
             >
