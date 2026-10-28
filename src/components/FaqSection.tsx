@@ -44,9 +44,8 @@ export function FaqSection() {
   return (
     <section className="max-w-7xl mx-auto px-6 sm:px-8 py-12 sm:py-16" aria-label="Frequently Asked Questions">
       <div className="mb-10 max-w-2xl">
-        <div className="text-xs uppercase tracking-wider font-semibold text-zinc-500 dark:text-[#666666] font-mono mb-2 flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
-          <span>Clear Answers & Terms</span>
+        <div className="text-xs uppercase tracking-wider font-mono text-zinc-500 mb-2">
+          Clear Answers & Terms
         </div>
         <h2 className="font-display font-bold text-2xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
           Frequently asked questions.

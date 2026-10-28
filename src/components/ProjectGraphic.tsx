@@ -4,7 +4,6 @@ import React from 'react';
 import { 
   Check, 
   ShieldCheck, 
-  Sparkles,
   Building2,
   MessageSquare,
   TrendingUp,
@@ -34,46 +33,46 @@ export function ProjectGraphic({ slug, className = '' }: ProjectGraphicProps) {
         <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0E1015]`}>
           <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">
+              <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-semibold text-[10px]">
                 RESTAURANT BILLING TILL
               </span>
-              <span className="text-zinc-400 text-[10px]">Table 04 · 4 Guests</span>
+              <span className="text-zinc-500 text-[10px]">Table 04 · 4 Guests</span>
             </div>
-            <span className="text-emerald-400 font-semibold text-[10px]">Active Order</span>
+            <span className="text-zinc-400 font-medium text-[10px]">Active Order</span>
           </div>
 
           <div className="space-y-1.5 py-1">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-[2px] border border-emerald-500 flex items-center justify-center shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span className="w-3 h-3 rounded-[2px] border border-zinc-600 flex items-center justify-center shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
                 </span>
                 <span className="text-zinc-200 font-medium">Paneer Butter Masala</span>
-                <span className="text-zinc-400 text-[11px]">×1</span>
+                <span className="text-zinc-500 text-[11px]">×1</span>
               </div>
-              <span className="font-mono text-zinc-200 font-bold">₹280</span>
+              <span className="font-mono text-zinc-200">₹280</span>
             </div>
 
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-[2px] border border-emerald-500 flex items-center justify-center shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span className="w-3 h-3 rounded-[2px] border border-zinc-600 flex items-center justify-center shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
                 </span>
                 <span className="text-zinc-200 font-medium">Garlic Butter Naan</span>
-                <span className="text-zinc-400 text-[11px]">×2</span>
+                <span className="text-zinc-500 text-[11px]">×2</span>
               </div>
-              <span className="font-mono text-zinc-200 font-bold">₹120</span>
+              <span className="font-mono text-zinc-200">₹120</span>
             </div>
           </div>
 
           <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs">
-            <div className="text-[10px] text-zinc-400 font-mono">
+            <div className="text-[10px] text-zinc-500 font-mono">
               <span>GST 5% Split Included</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-mono font-bold text-sm text-white">₹420</span>
-              <span className="px-2.5 py-1 rounded bg-emerald-500 text-black font-bold text-[10px] flex items-center gap-1 shadow-xs">
-                <span>⚡ Pay via UPI QR</span>
+              <span className="font-mono font-semibold text-sm text-white">₹420</span>
+              <span className="px-2.5 py-1 rounded bg-white text-black font-semibold text-[10px] flex items-center gap-1 shadow-xs">
+                <span>Pay via UPI QR</span>
               </span>
             </div>
           </div>
@@ -86,24 +85,21 @@ export function ProjectGraphic({ slug, className = '' }: ProjectGraphicProps) {
     case 'tysonchess':
       return (
         <div className={`${baseContainer} bg-zinc-950 text-white dark:bg-[#0A0C10]`}>
-          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px]">
-            <div className="flex items-center gap-1.5 text-sky-400 font-bold">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-[10px]">AI CHESS COACH & ACADEMY</span>
-            </div>
-            <span className="text-zinc-400 font-mono text-[10px]">Live Game Analysis</span>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
+            <span className="text-[10px] text-zinc-300 font-semibold uppercase">AI Chess Coach & Academy</span>
+            <span className="text-zinc-500 text-[10px]">Stockfish 18</span>
           </div>
 
           <div className="flex items-center gap-3 py-1">
             {/* Visual Mini Board */}
-            <div className="grid grid-cols-4 grid-rows-4 w-20 h-20 rounded border border-zinc-700 overflow-hidden shrink-0 shadow-inner">
+            <div className="grid grid-cols-4 grid-rows-4 w-20 h-20 rounded border border-zinc-800 overflow-hidden shrink-0 shadow-inner">
               {['♜', '♞', '♝', '♛', '♟', '♟', '♟', '♟', ' ', ' ', '♘', ' ', '♙', '♙', '♙', '♔'].map((piece, i) => {
                 const isDark = (Math.floor(i / 4) + (i % 4)) % 2 === 1;
                 return (
                   <div
                     key={i}
                     className={`flex items-center justify-center text-xs font-serif ${
-                      isDark ? 'bg-amber-900/60 text-zinc-200' : 'bg-amber-100/20 text-white'
+                      isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-900 text-zinc-100'
                     }`}
                   >
                     {piece}
@@ -114,23 +110,23 @@ export function ProjectGraphic({ slug, className = '' }: ProjectGraphicProps) {
 
             {/* Plain-English Coach Hint */}
             <div className="flex-1 space-y-1">
-              <div className="flex items-center gap-1.5">
-                <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">
+              <div className="flex items-center gap-1.5 font-mono">
+                <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 text-[10px]">
                   +1.84 White Leads
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-200 leading-snug">
-                Moving your Knight to d5 forks opponent&apos;s Queen and Bishop.
+              <p className="text-[11px] text-zinc-300 leading-snug">
+                Moving Knight to d5 forks opponent&apos;s Queen and Bishop.
               </p>
-              <div className="text-[10px] text-zinc-400">
-                Play move: <span className="text-white font-bold">24. Nd5!</span>
+              <div className="text-[10px] text-zinc-400 font-mono">
+                Best move: <span className="text-white font-semibold">24. Nd5!</span>
               </div>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] text-zinc-400">
-            <span>Plays offline in browser</span>
-            <span className="text-emerald-400 font-medium">Zero lag or loading</span>
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+            <span>Runs offline in browser</span>
+            <span>Zero server latency</span>
           </div>
         </div>
       );

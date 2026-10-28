@@ -194,23 +194,21 @@ export default async function ProjectDetailPage({ params }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Why Built (The Catalyst) */}
-            <div className="p-5 rounded-xl bg-white dark:bg-[#14161C] border border-black/[0.06] dark:border-white/[0.06] space-y-2">
-              <span className="text-xs font-mono uppercase tracking-wider font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                <span>The Origin & Why I Built It</span>
+            <div className="p-5 rounded-xl bg-white dark:bg-[#14161C] border border-zinc-200 dark:border-zinc-800 space-y-2">
+              <span className="text-xs font-mono uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400 block">
+                The Origin & Why I Built It
               </span>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
+              <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed [text-wrap:pretty]">
                 {project.businessUseCase.whyBuilt}
               </p>
             </div>
 
             {/* What Was Solved */}
-            <div className="p-5 rounded-xl bg-white dark:bg-[#14161C] border border-black/[0.06] dark:border-white/[0.06] space-y-2">
-              <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>The Core Problem Solved</span>
+            <div className="p-5 rounded-xl bg-white dark:bg-[#14161C] border border-zinc-200 dark:border-zinc-800 space-y-2">
+              <span className="text-xs font-mono uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400 block">
+                The Core Problem Solved
               </span>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
+              <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed [text-wrap:pretty]">
                 {project.businessUseCase.problemSolved}
               </p>
             </div>
@@ -218,19 +216,16 @@ export default async function ProjectDetailPage({ params }: Props) {
 
           {/* Measured Real-World Business Impact */}
           <div className="pt-2">
-            <span className="text-xs font-mono uppercase tracking-wider font-bold text-zinc-900 dark:text-white block mb-3">
+            <span className="text-xs font-mono uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400 block mb-3">
               Measurable Business Impact:
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {project.businessUseCase.businessImpact.map((impact, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white dark:bg-[#14161C] border border-zinc-200/80 dark:border-white/[0.06]"
+                  className="p-3.5 rounded-xl bg-white dark:bg-[#14161C] border border-zinc-200/80 dark:border-zinc-800 text-xs font-mono text-zinc-800 dark:text-zinc-200"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-xs font-medium text-zinc-800 dark:text-zinc-200 leading-snug">
-                    {impact}
-                  </span>
+                  {impact}
                 </div>
               ))}
             </div>

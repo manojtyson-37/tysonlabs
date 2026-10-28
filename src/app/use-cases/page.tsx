@@ -2,34 +2,33 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getApprovedProjects } from '@/data/projects';
-import { ExternalLink, ArrowUpRight, CheckCircle2, AlertTriangle, ArrowRight, Sparkles } from 'lucide-react';
+import { ExternalLink, ArrowUpRight, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Business Use Cases & Solutions · Why We Built It & What It Solved',
-  description: 'Explore the high-stakes business problems solved by TysonLabs across restaurants, factories, clinics, creator commerce, and autonomous AI workflows.',
+  title: 'Case Studies & Business Impact · Manoj Tyson',
+  description: 'Why each system was built, the operational bottleneck it addressed, and the business impact delivered across restaurants, manufacturing, clinics, and fintech.',
 };
 
 export default function UseCasesPage() {
   const projects = getApprovedProjects().filter((p) => p.businessUseCase !== undefined);
 
   return (
-    <div className="max-w-6xl mx-auto px-6 sm:px-8 py-10 space-y-16">
-      {/* Header */}
-      <div className="space-y-4 max-w-3xl">
-        <div className="text-xs uppercase tracking-wider font-semibold text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
-          <span>Commercial Solutions & Impact Matrix</span>
+    <div className="max-w-5xl mx-auto px-6 sm:px-8 py-12 space-y-16">
+      {/* Editorial Header */}
+      <div className="space-y-4 max-w-2xl">
+        <div className="text-xs uppercase tracking-wider font-mono text-zinc-500">
+          Case Studies & Problem Breakdown
         </div>
-        <h1 className="font-display font-bold text-3xl sm:text-5xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
-          Why each product was built & the exact business problem it solved.
+        <h1 className="font-display font-semibold text-3xl sm:text-5xl text-zinc-950 dark:text-white tracking-tight leading-[1.1] [text-wrap:balance]">
+          Why each product was built and what it solved.
         </h1>
-        <p className="text-base text-zinc-600 dark:text-[#94A3B8] leading-relaxed [text-wrap:pretty]">
-          Software should never be built for its own sake or assemble generic templates. Every system below was created in response to real operational leaks, lost revenue, or broken workflows in production businesses.
+        <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
+          Software should never be built for its own sake or assembled from generic templates. Every system below was built in response to concrete operational leaks, lost revenue, or broken workflows in real businesses.
         </p>
       </div>
 
-      {/* Use Cases Matrix */}
-      <div className="space-y-10">
+      {/* Case Studies Matrix */}
+      <div className="space-y-12">
         {projects.map((project, idx) => {
           const uc = project.businessUseCase!;
           const isLive = project.status === 'live';
@@ -37,31 +36,31 @@ export default function UseCasesPage() {
           return (
             <article
               key={project.slug}
-              className="p-6 sm:p-8 rounded-3xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.18] dark:hover:border-white/[0.18] transition-all shadow-sm space-y-6"
+              className="p-6 sm:p-8 rounded-2xl bg-zinc-50/70 dark:bg-[#111216] border border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-6"
             >
               {/* Header: Number, Industry, Status */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-black/[0.08] dark:border-white/[0.08]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-200/80 dark:border-zinc-800 text-xs font-mono">
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-xs font-bold text-zinc-400 dark:text-zinc-500">
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">
                     #{String(idx + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-white dark:bg-[#1A1D24] text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-white/10">
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                     {uc.targetIndustry}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full ${isLive ? 'bg-emerald-500' : 'bg-sky-500'}`}></span>
-                  <span className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">
-                    {project.statusLabel}
+                  <span className="text-zinc-500 dark:text-zinc-400 text-[11px] uppercase tracking-wider">
+                    {isLive ? 'Live in Production' : project.statusLabel}
                   </span>
                 </div>
               </div>
 
               {/* Title & Tagline */}
               <div>
-                <h2 className="font-display font-bold text-2xl sm:text-3xl text-zinc-950 dark:text-white mb-2 [text-wrap:balance]">
-                  <Link href={`/projects/${project.slug}`} className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <h2 className="font-display font-semibold text-2xl sm:text-3xl text-zinc-950 dark:text-white mb-2 [text-wrap:balance]">
+                  <Link href={`/projects/${project.slug}`} className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
                     {project.name}
                   </Link>
                 </h2>
@@ -70,13 +69,12 @@ export default function UseCasesPage() {
                 </p>
               </div>
 
-              {/* The Core Dual Breakdown: Why Built vs Problem Solved */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Left: Why Built & The Frustration */}
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#14161C] border border-red-500/15 dark:border-red-500/20 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
-                    <AlertTriangle className="w-4 h-4 shrink-0" />
-                    <span>Why I Built This (The Bottleneck)</span>
+              {/* Problem vs Solution Split — Clean Editorial Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Left: Origin & Bottleneck */}
+                <div className="p-5 rounded-xl bg-white dark:bg-[#16171D] border border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5">
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-semibold">
+                    The Problem & Origin
                   </div>
                   <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed [text-wrap:pretty]">
                     {uc.whyBuilt}
@@ -84,10 +82,9 @@ export default function UseCasesPage() {
                 </div>
 
                 {/* Right: What Was Engineered & Shipped */}
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#14161C] border border-emerald-500/15 dark:border-emerald-500/20 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                    <span>The Solution That Was Shipped</span>
+                <div className="p-5 rounded-xl bg-white dark:bg-[#16171D] border border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5">
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-semibold">
+                    The Engineered Solution
                   </div>
                   <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed [text-wrap:pretty]">
                     {uc.problemSolved}
@@ -95,33 +92,30 @@ export default function UseCasesPage() {
                 </div>
               </div>
 
-              {/* Business Impact Pills */}
+              {/* Measurable Business Impact */}
               <div className="pt-2">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-3">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-2.5 font-semibold">
                   Measurable Business Impact:
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {uc.businessImpact.map((impact, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white dark:bg-[#14161C] border border-zinc-200/80 dark:border-white/[0.06]"
+                      className="p-3 rounded-lg bg-white dark:bg-[#16171D] border border-zinc-200/70 dark:border-zinc-800/70 text-xs font-mono text-zinc-800 dark:text-zinc-200"
                     >
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                      <span className="text-xs font-medium text-zinc-800 dark:text-zinc-200 leading-snug">
-                        {impact}
-                      </span>
+                      {impact}
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-4 border-t border-black/[0.06] dark:border-white/[0.06] flex flex-wrap items-center justify-between gap-4 text-xs font-semibold">
+              <div className="pt-4 border-t border-zinc-200/80 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
                 <Link
                   href={`/projects/${project.slug}`}
-                  className="btn-tactile inline-flex items-center gap-1.5 text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white font-mono"
+                  className="btn-tactile inline-flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white font-semibold transition-colors"
                 >
-                  <span>Read full architectural monograph</span>
+                  <span>Read full case study</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
 
@@ -131,17 +125,17 @@ export default function UseCasesPage() {
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn-tactile inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black font-bold dark:hover:bg-zinc-200 transition-colors shadow-sm active:scale-[0.98]"
+                      className="btn-tactile inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-semibold transition-colors active:scale-[0.98]"
                     >
-                      <span>Launch Live Product</span>
+                      <span>Launch live build</span>
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   )}
                   <Link
                     href="/contact"
-                    className="btn-tactile inline-flex items-center gap-1 px-3.5 py-2 rounded-xl border border-zinc-200 dark:border-white/10 hover:border-black dark:hover:border-white text-zinc-700 dark:text-zinc-300 font-mono active:scale-[0.98]"
+                    className="btn-tactile inline-flex items-center gap-1 px-3.5 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:border-black dark:hover:border-white text-zinc-700 dark:text-zinc-300 transition-colors active:scale-[0.98]"
                   >
-                    <span>Commission Similar System</span>
+                    <span>Inquire for similar build</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -151,29 +145,27 @@ export default function UseCasesPage() {
         })}
       </div>
 
-      {/* CTA Box */}
-      <section className="p-8 sm:p-12 rounded-3xl bg-zinc-950 text-white dark:bg-[#14161C] border border-zinc-800 dark:border-white/[0.1] flex flex-col md:flex-row items-start md:items-center justify-between gap-8 shadow-2xl">
-        <div className="space-y-3 max-w-xl">
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400 font-semibold">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Have an Operational Problem in Your Business?</span>
+      {/* Clean Editorial Inquiries Box */}
+      <section className="p-8 sm:p-10 rounded-2xl bg-zinc-950 text-white dark:bg-[#111216] border border-zinc-800 dark:border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+        <div className="space-y-2 max-w-xl">
+          <div className="text-xs font-mono uppercase tracking-wider text-zinc-400">
+            HAVE AN OPERATIONAL BOTTLENECK?
           </div>
-          <h2 className="font-display font-bold text-2xl sm:text-4xl text-white [text-wrap:balance]">
-            Let&apos;s build software that solves it.
+          <h2 className="font-display font-semibold text-2xl sm:text-3xl text-white [text-wrap:balance]">
+            Let&apos;s engineer software that solves it.
           </h2>
           <p className="text-sm text-zinc-400 leading-relaxed [text-wrap:pretty]">
-            Whether it&apos;s a high-throughput billing till, custom manufacturing ERP, or automated workflow agent, we deliver production-ready software in 2 to 4 weeks with 100% sovereign code ownership.
+            Whether it&apos;s a high-throughput billing till, custom manufacturing ERP, or automated workflow agent, I deliver production-ready software in 2 to 4 weeks with 100% sovereign code ownership.
           </p>
         </div>
         <Link
           href="/contact"
-          className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white text-black hover:bg-zinc-200 font-bold text-sm shadow-xl active:scale-[0.98] whitespace-nowrap"
+          className="btn-tactile inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black hover:bg-zinc-200 dark:bg-white dark:text-black font-semibold text-sm transition-all active:scale-[0.98] whitespace-nowrap"
         >
-          <span>Schedule an Architecture Call</span>
+          <span>Get in touch</span>
           <ArrowUpRight className="w-4 h-4" />
         </Link>
       </section>
     </div>
   );
 }
-

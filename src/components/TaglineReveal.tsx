@@ -62,9 +62,8 @@ export function TaglineReveal({
       aria-label="Studio Manifesto"
     >
       <div className="max-w-3xl">
-        <div className="text-xs uppercase tracking-wider font-semibold text-zinc-500 dark:text-[#666666] font-mono mb-4 flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>Core Engineering Thesis</span>
+        <div className="text-xs uppercase tracking-wider font-mono text-zinc-500 mb-4">
+          Core Engineering Thesis
         </div>
 
         <p className="font-display font-semibold text-3xl sm:text-5xl md:text-6xl tracking-tight leading-[1.12] [text-wrap:balance]">

@@ -5,21 +5,14 @@ import Link from 'next/link';
 import { 
   ArrowUpRight, 
   ExternalLink, 
-  UtensilsCrossed, 
-  Scissors, 
-  Stethoscope, 
-  CreditCard, 
-  Bot,
-  CheckCircle2,
-  Sparkles
+  Check
 } from 'lucide-react';
 
 type SneakPeekIndustry = 'restaurant' | 'garment' | 'healthcare' | 'creator' | 'ai';
 
 interface SneakPeekItem {
   id: SneakPeekIndustry;
-  icon: React.ComponentType<{ className?: string }>;
-  industryTitle: string;
+  industryLabel: string;
   badge: string;
   projectName: string;
   projectSlug: string;
@@ -36,14 +29,13 @@ export function ProjectsSneakPeekShowcase() {
   const industries: SneakPeekItem[] = [
     {
       id: 'restaurant',
-      icon: UtensilsCrossed,
-      industryTitle: 'Restaurants & Hospitality',
+      industryLabel: 'DinePulse (Restaurant POS)',
       badge: 'Live Production Till',
       projectName: 'DinePulse · Restaurant & Hospitality OS',
       projectSlug: 'dinepulse',
       liveUrl: 'https://dineplus.vercel.app/pos',
-      theProblem: 'Busy restaurants lose money when legacy POS machines lag during dinner rushes, require 8+ clicks per ticket, and leave kitchen cooks out of sync with waiters.',
-      theSolution: 'An ultra-fast 3-click touch till with instant table switching, live kitchen order displays (KDS), Indian FSSAI veg/non-veg tags, UPI dynamic QR codes, and automated WhatsApp guest bills.',
+      theProblem: 'Busy restaurants lose revenue when legacy POS systems lag during dinner rushes, take 8+ clicks to punch a bill, and leave kitchen cooks out of sync with floor servers.',
+      theSolution: 'An ultra-fast 3-click touch billing till with instant table switching, live kitchen order tickets (KOT), FSSAI veg/non-veg compliance tags, dynamic UPI QR payment, and automated WhatsApp guest receipts.',
       businessImpact: [
         { label: 'Till Speed', value: '3 Clicks to Bill' },
         { label: 'Kitchen Sync', value: 'Real-Time KOT' },
@@ -52,8 +44,7 @@ export function ProjectsSneakPeekShowcase() {
     },
     {
       id: 'garment',
-      icon: Scissors,
-      industryTitle: 'Apparel & Factories',
+      industryLabel: 'Silaa (Garment ERP)',
       badge: 'Live Factory ERP',
       projectName: 'Silaa Atelier · Garment Manufacturing ERP',
       projectSlug: 'silaa-atelier',
@@ -68,8 +59,7 @@ export function ProjectsSneakPeekShowcase() {
     },
     {
       id: 'healthcare',
-      icon: Stethoscope,
-      industryTitle: 'Clinics & Healthcare',
+      industryLabel: 'PhysioCare (Clinic OS)',
       badge: 'Live Clinic System',
       projectName: 'PhysioCare · Multi-Tenant Clinic OS',
       projectSlug: 'physiocare',
@@ -84,12 +74,11 @@ export function ProjectsSneakPeekShowcase() {
     },
     {
       id: 'creator',
-      icon: CreditCard,
-      industryTitle: 'Creator Commerce & Checkout',
+      industryLabel: 'Tysonpe (Fintech)',
       badge: 'Active Fintech System',
       projectName: 'Tysonpe · Creator Storefront & Checkout',
       projectSlug: 'tysonpe',
-      theProblem: 'Educators and creators lose 30% of their revenue to platform fees, while global checkout tools fail to support Indian UPI apps or automated Indian GST tax compliance.',
+      theProblem: 'Indian educators and creators lose 30% of their revenue to platform fees, while global checkout tools fail to support Indian UPI apps or automated Indian GST tax compliance.',
       theSolution: 'A high-converting creator storefront with 1-click UPI payments (Google Pay, PhonePe, Paytm), instant digital video masterclass access, automated GST invoices, and dynamic watermarked video protection.',
       businessImpact: [
         { label: 'Platform Cut', value: '0% Middleman Take' },
@@ -99,14 +88,13 @@ export function ProjectsSneakPeekShowcase() {
     },
     {
       id: 'ai',
-      icon: Bot,
-      industryTitle: 'Interactive AI & Games',
+      industryLabel: 'Tyson Chess (AI Academy)',
       badge: 'Live Web Platform',
       projectName: 'Tyson Chess · Interactive AI Chess Coach',
       projectSlug: 'tysonchess',
       liveUrl: 'https://tysonchess-two.vercel.app',
-      theProblem: 'Chess.com locks daily practice behind an aggressive paywall: solving more than 3 puzzles a day requires paying ₹99 per week (₹5,000+ per year), while game reviews spit out cryptic numeric evaluations (+1.84).',
-      theSolution: 'I thought: why pay ₹99/week just to practice tactics? Why not build it myself? Tyson Chess runs 100% free in the browser with unlimited puzzles, 6 sparring bots, and a coach that explains moves in plain English ("Knight to d5 forks Queen and Bishop").',
+      theProblem: 'Chess.com locks daily tactics practice behind an aggressive paywall: solving more than 3 puzzles a day requires paying ₹99 per week (₹5,000+ per year), while game reviews spit out cryptic numeric evaluations.',
+      theSolution: 'I built this because I used to play on chess.com app and solving more than 3 puzzles a day required ₹99/week. So I thought why not build it myself? Tyson Chess runs 100% free in the browser with unlimited puzzles, 6 sparring bots, and a coach that explains moves in plain English.',
       businessImpact: [
         { label: 'Puzzle Paywall', value: '100% Free & Unlimited' },
         { label: 'Weekly Savings', value: 'Saves ₹99 / Week' },
@@ -123,25 +111,23 @@ export function ProjectsSneakPeekShowcase() {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-6 sm:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8 space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-xs font-mono font-semibold">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>SNEAK PEEK INTO 16 SHIPPED SYSTEMS</span>
+    <section className="max-w-7xl mx-auto px-6 sm:px-8 py-8 space-y-8">
+      {/* Editorial Header */}
+      <div className="space-y-3 max-w-2xl">
+        <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+          01 / Selected Systems & Case Studies
         </div>
-        <h2 className="font-display font-bold text-3xl sm:text-4xl text-zinc-950 dark:text-white [text-wrap:balance]">
-          Real software built for real businesses.
+        <h2 className="font-display font-semibold text-3xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
+          Software engineered for real operators.
         </h2>
-        <p className="text-base text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed [text-wrap:pretty]">
-          Instead of empty slides or conceptual prototypes, take an interactive look at real applications solving operational bottlenecks across five distinct industries.
+        <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
+          Explore production software solving concrete operational bottlenecks across five distinct industries.
         </p>
       </div>
 
-      {/* Industry Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar">
+      {/* Minimalist Text Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
         {industries.map((item) => {
-          const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
             <button
@@ -151,67 +137,65 @@ export function ProjectsSneakPeekShowcase() {
                 setActiveTab(item.id);
                 setInteractiveAction(null);
               }}
-              className={`btn-tactile inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 active:scale-[0.98] ${
+              className={`btn-tactile px-4 py-2 rounded-xl text-xs font-mono font-medium whitespace-nowrap transition-all duration-200 active:scale-[0.98] ${
                 isActive
-                  ? 'bg-black text-white dark:bg-white dark:text-black shadow-md'
-                  : 'bg-zinc-100 dark:bg-[#181818] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-white/[0.08] hover:text-black dark:hover:text-white'
+                  ? 'bg-black text-white dark:bg-white dark:text-black font-semibold shadow-xs'
+                  : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200/80 dark:border-zinc-800 hover:text-black dark:hover:text-white'
               }`}
             >
-              <Icon className="w-4 h-4" />
-              <span>{item.industryTitle}</span>
+              {item.industryLabel}
             </button>
           );
         })}
       </div>
 
       {/* Expanded Showcase Card */}
-      <div className="bg-white dark:bg-[#14161C] border border-zinc-200/90 dark:border-white/[0.1] rounded-3xl p-6 sm:p-8 shadow-xl dark:shadow-2xl transition-all">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="bg-white dark:bg-[#121318] border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-sm transition-all">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Column: Business Problem & Shipped Solution (6 cols) */}
           <div className="lg:col-span-6 space-y-6">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+              <span className="text-xs font-mono font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                 {current.badge}
               </span>
             </div>
 
             <div>
-              <h3 className="font-display font-bold text-2xl sm:text-3xl text-zinc-950 dark:text-white mb-2 [text-wrap:balance]">
+              <h3 className="font-display font-semibold text-2xl sm:text-3xl text-zinc-950 dark:text-white [text-wrap:balance]">
                 {current.projectName}
               </h3>
             </div>
 
-            {/* Problem vs Solution Split */}
+            {/* Problem vs Solution Split — Clean Architectural Cards */}
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-red-50/60 dark:bg-red-950/20 border border-red-200/70 dark:border-red-900/40 text-xs sm:text-sm">
-                <span className="font-bold text-red-900 dark:text-red-300 block mb-1">
-                  The Business Bottleneck:
+              <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
+                <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400 block">
+                  The Operational Bottleneck
                 </span>
-                <p className="text-red-950/80 dark:text-red-200/80 leading-relaxed">
+                <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed [text-wrap:pretty]">
                   {current.theProblem}
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/70 dark:border-emerald-900/40 text-xs sm:text-sm">
-                <span className="font-bold text-emerald-900 dark:text-emerald-300 block mb-1">
-                  What I Engineered & Shipped:
+              <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
+                <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400 block">
+                  What I Engineered & Shipped
                 </span>
-                <p className="text-emerald-950/80 dark:text-emerald-200/80 leading-relaxed">
+                <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed [text-wrap:pretty]">
                   {current.theSolution}
                 </p>
               </div>
             </div>
 
             {/* Business Impact Metrics */}
-            <div className="grid grid-cols-3 gap-3 pt-2">
+            <div className="grid grid-cols-3 gap-3 pt-1">
               {current.businessImpact.map((metric, idx) => (
-                <div key={idx} className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-white/[0.06] text-center">
-                  <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 uppercase tracking-tight mb-0.5">
+                <div key={idx} className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/70 dark:border-zinc-800 text-center">
+                  <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-tight mb-0.5">
                     {metric.label}
                   </div>
-                  <div className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">
+                  <div className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-white font-mono">
                     {metric.value}
                   </div>
                 </div>
@@ -219,13 +203,13 @@ export function ProjectsSneakPeekShowcase() {
             </div>
 
             {/* Direct Actions */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-mono">
               {current.liveUrl && (
                 <a
                   href={current.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-tactile inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all shadow-md active:scale-[0.98]"
+                  className="btn-tactile inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-semibold transition-all active:scale-[0.98]"
                 >
                   <span>Launch Live System</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -233,83 +217,83 @@ export function ProjectsSneakPeekShowcase() {
               )}
               <Link
                 href={`/projects/${current.projectSlug}`}
-                className="btn-tactile inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 hover:border-black dark:hover:border-white text-zinc-800 dark:text-zinc-200 text-xs font-semibold transition-all active:scale-[0.98]"
+                className="btn-tactile inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 hover:border-black dark:hover:border-white text-zinc-800 dark:text-zinc-200 font-semibold transition-all active:scale-[0.98]"
               >
-                <span>Full Architecture Monograph</span>
+                <span>Read Case Study</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
 
-          {/* Right Column: Live Interactive Sneak Peek Mockup (6 cols) */}
+          {/* Right Column: Clean Product Interface Preview (6 cols) */}
           <div className="lg:col-span-6 w-full">
-            <div className="rounded-2xl border border-zinc-200 dark:border-white/[0.1] bg-zinc-900 text-white p-5 shadow-2xl relative overflow-hidden font-sans">
+            <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-950 text-white p-5 shadow-lg relative overflow-hidden font-sans">
               
               {/* Interactive notification banner */}
               {interactiveAction && (
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-emerald-500 text-black px-4 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 animate-bounce">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-white text-black px-4 py-1.5 rounded-full text-xs font-mono font-semibold shadow-lg flex items-center gap-2 border border-zinc-300 animate-in fade-in zoom-in-95 duration-200">
+                  <Check className="w-3.5 h-3.5" />
                   <span>{interactiveAction}</span>
                 </div>
               )}
 
-              {/* Dynamic Sneak Peek Visuals per Industry */}
+              {/* Dynamic Preview Visuals per Industry */}
               {activeTab === 'restaurant' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-zinc-800 text-xs font-mono">
-                    <span className="text-emerald-400 font-bold">DINEPULSE RESTAURANT TILL</span>
-                    <span className="text-zinc-400">Table #04 (AC Dining)</span>
+                    <span className="text-zinc-200 font-medium">DinePulse · Restaurant Till</span>
+                    <span className="text-zinc-500">Table #04 (AC Dining)</span>
                   </div>
 
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between items-center p-2 rounded bg-zinc-800/80 border border-zinc-700/60">
+                    <div className="flex justify-between items-center p-2.5 rounded bg-zinc-900 border border-zinc-800">
                       <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-[2px] border border-emerald-500 flex items-center justify-center">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span className="w-3 h-3 rounded-[2px] border border-zinc-500 flex items-center justify-center">
+                          <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
                         </span>
-                        <span className="font-medium text-white">Paneer Butter Masala (Full)</span>
+                        <span className="font-medium text-zinc-200">Paneer Butter Masala</span>
                       </div>
-                      <span className="font-mono text-zinc-200 font-bold">₹280</span>
+                      <span className="font-mono text-zinc-200">₹280</span>
                     </div>
 
-                    <div className="flex justify-between items-center p-2 rounded bg-zinc-800/80 border border-zinc-700/60">
+                    <div className="flex justify-between items-center p-2.5 rounded bg-zinc-900 border border-zinc-800">
                       <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-[2px] border border-emerald-500 flex items-center justify-center">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span className="w-3 h-3 rounded-[2px] border border-zinc-500 flex items-center justify-center">
+                          <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
                         </span>
-                        <span className="font-medium text-white">Butter Garlic Naan ×2</span>
+                        <span className="font-medium text-zinc-200">Butter Garlic Naan ×2</span>
                       </div>
-                      <span className="font-mono text-zinc-200 font-bold">₹120</span>
+                      <span className="font-mono text-zinc-200">₹120</span>
                     </div>
 
-                    <div className="flex justify-between items-center p-2 rounded bg-zinc-800/80 border border-zinc-700/60">
+                    <div className="flex justify-between items-center p-2.5 rounded bg-zinc-900 border border-zinc-800">
                       <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-[2px] border border-emerald-500 flex items-center justify-center">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span className="w-3 h-3 rounded-[2px] border border-zinc-500 flex items-center justify-center">
+                          <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
                         </span>
-                        <span className="font-medium text-white">Fresh Mint Lime Soda ×2</span>
+                        <span className="font-medium text-zinc-200">Fresh Mint Lime Soda ×2</span>
                       </div>
-                      <span className="font-mono text-zinc-200 font-bold">₹80</span>
+                      <span className="font-mono text-zinc-200">₹80</span>
                     </div>
                   </div>
 
                   <div className="pt-3 border-t border-zinc-800 flex justify-between items-center text-xs font-mono">
-                    <span className="text-zinc-400">Total with 5% GST:</span>
-                    <span className="text-base font-bold text-emerald-400">₹504</span>
+                    <span className="text-zinc-400">Total (with 5% GST):</span>
+                    <span className="text-base font-bold text-white">₹504</span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
                     <button
                       type="button"
                       onClick={() => triggerAction('Kitchen Ticket (KOT) Printed & Sent to Chef!')}
-                      className="btn-tactile p-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs border border-zinc-700 active:scale-[0.98]"
+                      className="btn-tactile p-2.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-medium border border-zinc-700 active:scale-[0.98]"
                     >
                       Fire KOT to Kitchen
                     </button>
                     <button
                       type="button"
                       onClick={() => triggerAction('₹504 Settled via UPI QR & WhatsApp Bill Dispatched!')}
-                      className="btn-tactile p-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs shadow-md active:scale-[0.98]"
+                      className="btn-tactile p-2.5 rounded-lg bg-white text-black hover:bg-zinc-200 font-semibold active:scale-[0.98]"
                     >
                       Settle ₹504 via UPI QR
                     </button>
@@ -320,36 +304,36 @@ export function ProjectsSneakPeekShowcase() {
               {activeTab === 'garment' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-zinc-800 text-xs font-mono">
-                    <span className="text-purple-400 font-bold">SILAA APPAREL PRODUCTION ERP</span>
-                    <span className="text-zinc-400">Batch #842 · 500 Linen Shirts</span>
+                    <span className="text-zinc-200 font-medium">Silaa · Garment Factory ERP</span>
+                    <span className="text-zinc-500">Batch #842 · 500 Shirts</span>
                   </div>
 
                   <div className="space-y-2 text-xs">
-                    <div className="p-3 rounded bg-zinc-800/80 border border-zinc-700/60 space-y-2">
+                    <div className="p-3 rounded bg-zinc-900 border border-zinc-800 space-y-2">
                       <div className="flex justify-between text-zinc-300">
                         <span>Fabric Lot: Turkish Flax Linen</span>
-                        <span className="font-mono text-emerald-400 font-bold">99.2% Cutting Yield</span>
+                        <span className="font-mono text-white font-semibold">99.2% Yield</span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-zinc-700 overflow-hidden">
-                        <div className="h-full bg-emerald-500 w-[92%]"></div>
+                      <div className="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                        <div className="h-full bg-zinc-200 w-[92%]"></div>
                       </div>
-                      <div className="flex justify-between text-[11px] text-zinc-400">
-                        <span>Fabric Saved: 1.8 meters/roll</span>
-                        <span className="text-emerald-400 font-bold">₹1,620 Saved / Roll</span>
+                      <div className="flex justify-between text-[11px] text-zinc-400 font-mono">
+                        <span>Fabric Saved: 1.8m/roll</span>
+                        <span className="text-zinc-200">₹1,620 Saved / Roll</span>
                       </div>
                     </div>
 
-                    <div className="p-2.5 rounded bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-between text-xs">
-                      <span className="text-zinc-300">Active Stage:</span>
-                      <span className="font-bold text-purple-400">Sewing & Collar Stitching (68%)</span>
+                    <div className="p-2.5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-between text-xs">
+                      <span className="text-zinc-400">Active Stage:</span>
+                      <span className="font-medium text-white font-mono">Sewing & Stitching (68%)</span>
                     </div>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-2 font-mono text-xs">
                     <button
                       type="button"
                       onClick={() => triggerAction('Marker DXF Exported & Sent to CNC Cutting Table!')}
-                      className="btn-tactile w-full p-2.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md active:scale-[0.98]"
+                      className="btn-tactile w-full p-2.5 rounded-lg bg-white text-black hover:bg-zinc-200 font-semibold active:scale-[0.98]"
                     >
                       Export CNC Cutting Marker (DXF)
                     </button>
@@ -360,36 +344,36 @@ export function ProjectsSneakPeekShowcase() {
               {activeTab === 'healthcare' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-zinc-800 text-xs font-mono">
-                    <span className="text-sky-400 font-bold">PHYSIOCARE PATIENT PORTAL</span>
-                    <span className="text-zinc-400">Dr. Sarah Rao · Room #02</span>
+                    <span className="text-zinc-200 font-medium">PhysioCare · Clinic Portal</span>
+                    <span className="text-zinc-500">Dr. Sarah Rao · Room #02</span>
                   </div>
 
                   <div className="space-y-2 text-xs">
-                    <div className="p-3 rounded bg-zinc-800/80 border border-zinc-700/60 space-y-1.5">
+                    <div className="p-3 rounded bg-zinc-900 border border-zinc-800 space-y-1.5">
                       <div className="flex justify-between items-center">
-                        <span className="font-bold text-white">Rahul Verma (34 M)</span>
-                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">CONFIRMED</span>
+                        <span className="font-medium text-white">Rahul Verma (34 M)</span>
+                        <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-[10px] font-mono">CONFIRMED</span>
                       </div>
-                      <div className="text-[11px] text-zinc-400">Post-Op ACL Reconstruction · Visit 4 of 12</div>
-                      <div className="pt-1 flex justify-between items-center text-[11px]">
-                        <span className="text-zinc-300">Knee Flexion Angle:</span>
-                        <span className="font-mono font-bold text-sky-400">115° (+15° recovery gain)</span>
+                      <div className="text-[11px] text-zinc-400">Post-Op ACL Rehab · Visit 4 of 12</div>
+                      <div className="pt-1 flex justify-between items-center text-[11px] font-mono">
+                        <span className="text-zinc-400">Knee Flexion Angle:</span>
+                        <span className="text-white font-semibold">115° (+15° gain)</span>
                       </div>
                     </div>
 
-                    <div className="p-2.5 rounded bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-between text-xs">
-                      <span className="text-zinc-300">Automated WhatsApp Reminder:</span>
-                      <span className="text-emerald-400 font-bold">Delivered (10:14 AM)</span>
+                    <div className="p-2.5 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-between text-xs font-mono">
+                      <span className="text-zinc-400">WhatsApp Reminder:</span>
+                      <span className="text-zinc-200">Delivered (10:14 AM)</span>
                     </div>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-2 font-mono text-xs">
                     <button
                       type="button"
                       onClick={() => triggerAction('Visit Completed! Exercise Video Chart Sent via WhatsApp!')}
-                      className="btn-tactile w-full p-2.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-md active:scale-[0.98]"
+                      className="btn-tactile w-full p-2.5 rounded-lg bg-white text-black hover:bg-zinc-200 font-semibold active:scale-[0.98]"
                     >
-                      Complete Visit & Send WhatsApp Exercise Chart
+                      Complete Visit & Send WhatsApp Chart
                     </button>
                   </div>
                 </div>
@@ -398,35 +382,35 @@ export function ProjectsSneakPeekShowcase() {
               {activeTab === 'creator' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-zinc-800 text-xs font-mono">
-                    <span className="text-emerald-400 font-bold">TYSONPE 1-CLICK CREATOR CHECKOUT</span>
-                    <span className="text-zinc-400">Razorpay Verified</span>
+                    <span className="text-zinc-200 font-medium">Tysonpe · Creator Checkout</span>
+                    <span className="text-zinc-500">UPI Intent Ready</span>
                   </div>
 
-                  <div className="p-3 rounded bg-zinc-800/80 border border-zinc-700/60 space-y-2">
+                  <div className="p-3 rounded bg-zinc-900 border border-zinc-800 space-y-2">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-bold text-white text-xs">Full-Stack Software Architecture Masterclass</div>
-                        <div className="text-[10px] text-zinc-400">Lifetime Access · 24 HD Videos + GitHub Codebases</div>
+                        <div className="font-medium text-white text-xs">Full-Stack Architecture Masterclass</div>
+                        <div className="text-[10px] text-zinc-400">Lifetime Access · 24 HD Videos + Codebases</div>
                       </div>
                       <div className="text-right">
-                        <div className="font-mono font-bold text-sm text-emerald-400">₹2,499</div>
-                        <div className="text-[9px] text-zinc-400">GST Invoice Included</div>
+                        <div className="font-mono font-bold text-sm text-white">₹2,499</div>
+                        <div className="text-[9px] text-zinc-500 font-mono">GST Invoice Included</div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1.5 pt-1 text-[10px] font-mono">
-                      <span className="text-zinc-400">Supported:</span>
-                      <span className="px-1.5 py-0.5 rounded bg-zinc-700 text-white font-bold">Google Pay</span>
-                      <span className="px-1.5 py-0.5 rounded bg-zinc-700 text-white font-bold">PhonePe</span>
-                      <span className="px-1.5 py-0.5 rounded bg-zinc-700 text-white font-bold">Paytm</span>
+                      <span className="text-zinc-500">Supported:</span>
+                      <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">Google Pay</span>
+                      <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">PhonePe</span>
+                      <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">Paytm</span>
                     </div>
                   </div>
 
-                  <div className="pt-1">
+                  <div className="pt-1 font-mono text-xs">
                     <button
                       type="button"
                       onClick={() => triggerAction('₹2,499 Paid! Digital Masterclass Unlocked & GST Tax Bill Sent!')}
-                      className="btn-tactile w-full p-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs shadow-md active:scale-[0.98]"
+                      className="btn-tactile w-full p-2.5 rounded-lg bg-white text-black hover:bg-zinc-200 font-semibold active:scale-[0.98]"
                     >
                       Test 1-Click UPI Payment (₹2,499)
                     </button>
@@ -437,19 +421,19 @@ export function ProjectsSneakPeekShowcase() {
               {activeTab === 'ai' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-zinc-800 text-xs font-mono">
-                    <span className="text-amber-400 font-bold">TYSON CHESS · AI COACH</span>
-                    <span className="text-emerald-400 font-bold">+1.84 Advantage</span>
+                    <span className="text-zinc-200 font-medium">Tyson Chess · Engine Coach</span>
+                    <span className="text-zinc-400 font-mono">+1.84 Advantage</span>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="grid grid-cols-4 grid-rows-4 w-24 h-24 rounded border border-zinc-700 overflow-hidden shrink-0 shadow-inner">
+                    <div className="grid grid-cols-4 grid-rows-4 w-24 h-24 rounded border border-zinc-800 overflow-hidden shrink-0 shadow-inner">
                       {['♜', '♞', '♝', '♛', '♟', '♟', '♟', '♟', ' ', ' ', '♘', ' ', '♙', '♙', '♙', '♔'].map((piece, i) => {
                         const isDark = (Math.floor(i / 4) + (i % 4)) % 2 === 1;
                         return (
                           <div
                             key={i}
                             className={`flex items-center justify-center text-xs font-serif ${
-                              isDark ? 'bg-amber-900/60 text-zinc-200' : 'bg-amber-100/20 text-white'
+                              isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-900 text-zinc-100'
                             }`}
                           >
                             {piece}
@@ -459,32 +443,32 @@ export function ProjectsSneakPeekShowcase() {
                     </div>
 
                     <div className="flex-1 space-y-1.5 text-xs">
-                      <div className="p-2 rounded bg-zinc-800/80 border border-zinc-700/60">
-                        <span className="text-[10px] uppercase font-mono font-bold text-amber-400 block mb-0.5">
+                      <div className="p-2.5 rounded bg-zinc-900 border border-zinc-800">
+                        <span className="text-[10px] uppercase font-mono text-zinc-400 block mb-0.5">
                           Plain-English Coach Advice:
                         </span>
-                        <p className="text-zinc-200 text-[11px] leading-snug">
+                        <p className="text-zinc-300 text-[11px] leading-snug">
                           &ldquo;Moving your Knight to d5 forks opponent&apos;s Queen and Bishop. White wins decisive material.&rdquo;
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-1">
+                  <div className="pt-1 font-mono text-xs">
                     <button
                       type="button"
                       onClick={() => triggerAction('Move 24. Nd5 Played! AI Advantage Updated to +2.4 (Winning)!')}
-                      className="btn-tactile w-full p-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow-md active:scale-[0.98]"
+                      className="btn-tactile w-full p-2.5 rounded-lg bg-white text-black hover:bg-zinc-200 font-semibold active:scale-[0.98]"
                     >
-                      Play Knight to d5 (Test Live AI Move)
+                      Play Knight to d5 (Test Move)
                     </button>
                   </div>
                 </div>
               )}
 
-              <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
-                <span>100% Tested Production Interface</span>
-                <span className="text-emerald-400 font-medium">Click to test interaction</span>
+              <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                <span>Production Interface Preview</span>
+                <span>Click buttons to test</span>
               </div>
             </div>
           </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getApprovedProjects } from '@/data/projects';
-import { ExternalLink, ArrowUpRight, CheckCircle2, Sparkles } from 'lucide-react';
+import { ExternalLink, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Live Products & Systems · Built to Solve Business Bottlenecks',
@@ -20,23 +20,21 @@ export default function ProductsPage() {
     <div className="max-w-6xl mx-auto px-6 sm:px-8 py-10 space-y-16">
       {/* Header */}
       <div className="space-y-4 max-w-3xl">
-        <div className="text-xs uppercase tracking-wider font-semibold text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
-          <span>Deployable & Interactive Software</span>
+        <div className="text-xs uppercase tracking-wider font-mono text-zinc-500">
+          Deployable & Interactive Software
         </div>
-        <h1 className="font-display font-bold text-3xl sm:text-5xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
+        <h1 className="font-display font-semibold text-3xl sm:text-5xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
           Software built to solve real operational bottlenecks.
         </h1>
-        <p className="text-base text-zinc-600 dark:text-[#94A3B8] leading-relaxed [text-wrap:pretty]">
+        <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
           Every product below was engineered to eliminate high-stakes business friction — from slow POS tills in restaurants to fabric wastage in garment factories and unbilled clinic visits.
         </p>
         <div className="pt-2">
           <Link
             href="/use-cases"
-            className="btn-tactile inline-flex items-center gap-2 text-xs font-mono font-semibold px-4 py-2 rounded-xl bg-zinc-100 dark:bg-[#1A1D24] text-zinc-900 dark:text-white border border-zinc-200 dark:border-white/10 hover:border-black dark:hover:border-white transition-all active:scale-[0.98]"
+            className="btn-tactile inline-flex items-center gap-2 text-xs font-mono font-semibold px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-white transition-all active:scale-[0.98]"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>View Full Business Use Cases Matrix →</span>
+            <span>View Full Case Studies & Impact Matrix →</span>
           </Link>
         </div>
       </div>

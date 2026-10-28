@@ -34,7 +34,6 @@ export function Navbar() {
           <span className="font-display font-semibold text-sm tracking-tight text-black dark:text-white transition-colors">
             TYSONLABS
           </span>
-          <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
         </Link>
 
         {/* Desktop Navigation */}

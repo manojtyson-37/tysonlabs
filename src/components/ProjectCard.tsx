@@ -14,12 +14,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const isLive = project.status === 'live';
 
   return (
-    <article className="group bg-white dark:bg-[#15171E] border border-zinc-200/90 dark:border-white/[0.08] hover:border-zinc-300 dark:hover:border-white/[0.2] rounded-2xl overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-[0_12px_24px_-6px_rgba(0,0,0,0.08)] dark:hover:shadow-black/70">
+    <article className="group bg-white dark:bg-[#111216] border border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 rounded-2xl overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] flex flex-col justify-between shadow-xs">
       <div>
-        {/* Top Graphical UI Snapshot (Bespoke Product Screen Preview) */}
+        {/* Top Graphical UI Snapshot */}
         <Link 
           href={`/projects/${project.slug}`} 
-          className="block focus-visible:outline-none border-b border-zinc-100 dark:border-white/[0.06] overflow-hidden" 
+          className="block focus-visible:outline-none border-b border-zinc-100 dark:border-zinc-800/80 overflow-hidden" 
           tabIndex={-1}
         >
           <ProjectGraphic slug={project.slug} name={project.name} category={project.categoryLabel} />
@@ -35,19 +35,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
               <span className="uppercase tracking-wider font-medium">{project.categoryLabel}</span>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${isLive ? 'bg-emerald-500' : 'bg-sky-500'}`}></span>
-              <span className={`text-[10px] uppercase font-semibold ${isLive ? 'text-emerald-700 dark:text-emerald-400' : 'text-sky-700 dark:text-sky-400'}`}>
-                {project.statusLabel}
-              </span>
+            <div className="text-[10px] uppercase font-mono text-zinc-500 dark:text-zinc-400">
+              {isLive ? 'Live in Production' : project.statusLabel}
             </div>
           </div>
 
           {/* Project Title */}
-          <h3 className="font-display font-bold text-lg text-zinc-950 dark:text-white transition-colors [text-wrap:balance]">
+          <h3 className="font-display font-semibold text-lg text-zinc-950 dark:text-white transition-colors [text-wrap:balance]">
             <Link
               href={`/projects/${project.slug}`}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white rounded inline-flex items-center gap-1 group-hover:text-zinc-700 dark:group-hover:text-zinc-200"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-white rounded inline-flex items-center gap-1 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
             >
               <span>{project.name}</span>
             </Link>
@@ -63,7 +60,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {project.techStack.slice(0, 3).map((tech) => (
               <span
                 key={tech}
-                className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-[#0B0D11] text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-white/[0.06]"
+                className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800"
               >
                 {tech}
               </span>
@@ -78,12 +75,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
       </div>
 
       {/* Card Action Footer */}
-      <div className="px-5 py-3 border-t border-zinc-100 dark:border-white/[0.06] bg-zinc-50/70 dark:bg-[#111318]/60 flex items-center justify-between text-xs">
+      <div className="px-5 py-3 border-t border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-[#14151B]/60 flex items-center justify-between text-xs font-mono">
         <Link
           href={`/projects/${project.slug}`}
-          className="btn-tactile inline-flex items-center gap-1 text-zinc-900 dark:text-white hover:text-zinc-600 dark:hover:text-zinc-300 font-mono text-[11px] font-semibold transition-colors active:scale-[0.98]"
+          className="btn-tactile inline-flex items-center gap-1 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white text-[11px] font-semibold transition-colors active:scale-[0.98]"
         >
-          <span>Architecture & Case Study</span>
+          <span>Case Study</span>
           <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </Link>
 
@@ -93,8 +90,8 @@ export function ProjectCard({ project }: ProjectCardProps) {
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-tactile inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400 hover:text-white hover:bg-emerald-600 dark:hover:bg-emerald-600 transition-all text-[11px] font-mono font-semibold active:scale-[0.98]"
-              title="Launch Live Production App"
+              className="btn-tactile inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-colors text-[11px] font-semibold active:scale-[0.98]"
+              title="Launch Live App"
             >
               <span>Launch</span>
               <ExternalLink className="w-3 h-3" />
@@ -105,7 +102,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               href={project.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 rounded text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors"
+              className="p-1 rounded text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-white transition-colors"
               title="Inspect Source Code on GitHub"
             >
               <GithubIcon className="w-3.5 h-3.5" />

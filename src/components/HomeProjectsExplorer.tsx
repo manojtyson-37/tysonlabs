@@ -23,8 +23,8 @@ export function HomeProjectsExplorer({ initialProjects }: HomeProjectsExplorerPr
   });
 
   const filterTabs: { id: FilterTag; label: string; count: number }[] = [
-    { id: 'all', label: 'All 16 Flagships', count: initialProjects.length },
-    { id: 'live', label: 'Live in Production', count: initialProjects.filter(p => p.status === 'live').length },
+    { id: 'all', label: 'All 16 Codebases', count: initialProjects.length },
+    { id: 'live', label: 'Live Deployments', count: initialProjects.filter(p => p.status === 'live').length },
     { id: 'business', label: 'Business & Operations OS', count: initialProjects.filter(p => p.category === 'business-tools' || p.category === 'saas-cloud').length },
     { id: 'ai', label: 'AI & Smart Workflows', count: initialProjects.filter(p => p.category === 'ai-agents' || p.techStack.some(t => t.toLowerCase().includes('agent') || t.toLowerCase().includes('gemini') || t.toLowerCase().includes('ai'))).length },
     { id: 'interactive', label: 'Interactive Consumer Apps', count: initialProjects.filter(p => p.category === 'web-experiences' || p.slug === 'tysonchess' || p.slug === 'expense-manager').length },
@@ -33,7 +33,7 @@ export function HomeProjectsExplorer({ initialProjects }: HomeProjectsExplorerPr
   return (
     <div className="space-y-6">
       {/* Minimalist Filter Bar */}
-      <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-black/[0.08] dark:border-white/[0.06]">
+      <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-zinc-200/80 dark:border-zinc-800">
         <div className="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar">
           {filterTabs.map((tab) => {
             const isActive = activeFilter === tab.id;
@@ -42,15 +42,15 @@ export function HomeProjectsExplorer({ initialProjects }: HomeProjectsExplorerPr
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveFilter(tab.id)}
-                className={`btn-tactile inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] ${
+                className={`btn-tactile inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 active:scale-[0.98] ${
                   isActive
-                    ? 'bg-black text-white dark:bg-white dark:text-black font-semibold shadow-sm'
-                    : 'bg-zinc-100 dark:bg-[#181818] text-zinc-600 dark:text-[#9B9B9B] border border-black/[0.08] dark:border-white/[0.08] hover:text-black dark:hover:text-white hover:border-black/[0.2] dark:hover:border-white/[0.2]'
+                    ? 'bg-black text-white dark:bg-white dark:text-black font-semibold shadow-xs'
+                    : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200/80 dark:border-zinc-800 hover:text-black dark:hover:text-white'
                 }`}
               >
                 <span>{tab.label}</span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                  isActive ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-black font-bold' : 'bg-zinc-200 dark:bg-[#272727] text-zinc-600 dark:text-[#666666]'
+                  isActive ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-black font-bold' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
                 }`}>
                   {tab.count}
                 </span>

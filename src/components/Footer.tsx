@@ -24,9 +24,8 @@ export function Footer() {
             <p className="text-xs leading-relaxed text-zinc-600 dark:text-[#9B9B9B] max-w-sm">
               An independent technology studio engineering digital products, vertical operating systems, and high leverage business applications.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-xs font-mono text-zinc-500 dark:text-[#666666]">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>Available for select product builds and architectural sprints</span>
+            <div className="pt-2 text-xs font-mono text-zinc-500 dark:text-zinc-400">
+              Available for select product builds and architectural sprints
             </div>
           </div>
 
