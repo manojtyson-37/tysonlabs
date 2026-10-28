@@ -2,14 +2,8 @@
 
 import React, { useState } from 'react';
 import { 
-  Cpu, 
-  Workflow, 
   ShieldCheck, 
   RotateCw, 
-  Activity, 
-  Layers,
-  Terminal,
-  ArrowRight,
   Check
 } from 'lucide-react';
 
@@ -47,7 +41,7 @@ export function HeroTelemetryDeck() {
             LIVE ARCHITECTURE BENCHMARKS
           </span>
           <span className="text-[#666666] text-[10px] hidden sm:inline">
-            // SHIPPED PRODUCTION ENGINES
+            {"// SHIPPED PRODUCTION ENGINES"}
           </span>
         </div>
 

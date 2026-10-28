@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { Project } from '@/data/projects';
 import { ProjectCard } from '@/components/ProjectCard';
-import { ArrowUpRight } from 'lucide-react';
 
 interface HomeProjectsExplorerProps {
   initialProjects: Project[];

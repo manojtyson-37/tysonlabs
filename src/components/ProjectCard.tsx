@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Project } from '@/data/projects';
 import { ProjectGraphic } from '@/components/ProjectGraphic';
-import { ArrowUpRight, ExternalLink, ChevronRight } from 'lucide-react';
+import { ExternalLink, ChevronRight } from 'lucide-react';
 import { GithubIcon } from '@/components/Icons';
 
 interface ProjectCardProps {
@@ -10,7 +10,7 @@ interface ProjectCardProps {
   featured?: boolean;
 }
 
-export function ProjectCard({ project, featured = false }: ProjectCardProps) {
+export function ProjectCard({ project }: ProjectCardProps) {
   const isLive = project.status === 'live';
 
   return (
