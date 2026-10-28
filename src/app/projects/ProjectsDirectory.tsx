@@ -95,7 +95,7 @@ export function ProjectsDirectory() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search projects by name, technology, or keywords (e.g. Next.js, POS, WASM)..."
+              placeholder="Search projects by name, industry, or features (e.g. Next.js, Restaurant POS, UPI, AI)..."
               className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white dark:bg-[#090A0D] border border-black/[0.08] dark:border-white/[0.08] text-sm text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-[#64748B] focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-colors"
             />
             {searchQuery && (

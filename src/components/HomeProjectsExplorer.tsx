@@ -8,7 +8,7 @@ interface HomeProjectsExplorerProps {
   initialProjects: Project[];
 }
 
-type FilterTag = 'all' | 'live' | 'industry' | 'ai' | 'wasm';
+type FilterTag = 'all' | 'live' | 'business' | 'ai' | 'interactive';
 
 export function HomeProjectsExplorer({ initialProjects }: HomeProjectsExplorerProps) {
   const [activeFilter, setActiveFilter] = useState<FilterTag>('all');
@@ -16,18 +16,18 @@ export function HomeProjectsExplorer({ initialProjects }: HomeProjectsExplorerPr
   const filteredProjects = initialProjects.filter((p) => {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'live') return p.status === 'live';
-    if (activeFilter === 'industry') return p.category === 'business-tools' || p.category === 'saas-cloud';
-    if (activeFilter === 'ai') return p.category === 'ai-agents' || p.techStack.some(t => t.toLowerCase().includes('agent') || t.toLowerCase().includes('gemini'));
-    if (activeFilter === 'wasm') return p.slug === 'tysonchess' || p.techStack.some(t => t.toLowerCase().includes('wasm'));
+    if (activeFilter === 'business') return p.category === 'business-tools' || p.category === 'saas-cloud';
+    if (activeFilter === 'ai') return p.category === 'ai-agents' || p.techStack.some(t => t.toLowerCase().includes('agent') || t.toLowerCase().includes('gemini') || t.toLowerCase().includes('ai'));
+    if (activeFilter === 'interactive') return p.category === 'web-experiences' || p.slug === 'tysonchess' || p.slug === 'expense-manager';
     return true;
   });
 
   const filterTabs: { id: FilterTag; label: string; count: number }[] = [
-    { id: 'all', label: 'All Flagships', count: initialProjects.length },
-    { id: 'live', label: 'Live Deployments', count: initialProjects.filter(p => p.status === 'live').length },
-    { id: 'industry', label: 'Industry OS & POS', count: initialProjects.filter(p => p.category === 'business-tools' || p.category === 'saas-cloud').length },
-    { id: 'ai', label: 'AI & Copilots', count: initialProjects.filter(p => p.category === 'ai-agents' || p.techStack.some(t => t.toLowerCase().includes('agent') || t.toLowerCase().includes('gemini'))).length },
-    { id: 'wasm', label: 'WASM & Systems', count: initialProjects.filter(p => p.slug === 'tysonchess').length },
+    { id: 'all', label: 'All 16 Flagships', count: initialProjects.length },
+    { id: 'live', label: 'Live in Production', count: initialProjects.filter(p => p.status === 'live').length },
+    { id: 'business', label: 'Business & Operations OS', count: initialProjects.filter(p => p.category === 'business-tools' || p.category === 'saas-cloud').length },
+    { id: 'ai', label: 'AI & Smart Workflows', count: initialProjects.filter(p => p.category === 'ai-agents' || p.techStack.some(t => t.toLowerCase().includes('agent') || t.toLowerCase().includes('gemini') || t.toLowerCase().includes('ai'))).length },
+    { id: 'interactive', label: 'Interactive Consumer Apps', count: initialProjects.filter(p => p.category === 'web-experiences' || p.slug === 'tysonchess' || p.slug === 'expense-manager').length },
   ];
 
   return (

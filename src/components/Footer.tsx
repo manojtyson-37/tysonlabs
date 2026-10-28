@@ -53,7 +53,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/labs" className="hover:text-black dark:hover:text-white transition-colors duration-200">
-                  Labs and WASM
+                  Proving Grounds & Labs
                 </Link>
               </li>
               <li>

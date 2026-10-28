@@ -96,9 +96,9 @@ export const PROJECTS: Project[] = [
   {
     slug: 'dinepulse',
     name: 'DinePulse · Restaurant & Hospitality OS',
-    tagline: 'Enterprise-grade, high-speed Restaurant Management & POS engineered for Vercel Serverless.',
-    shortDescription: 'Tactile 3-click POS till, KOT kitchen displays, WhatsApp automated guest updates, and Gemini AI hospitality order parsing.',
-    detailedDescription: 'DinePulse is an enterprise restaurant operating system built as a cloud-native alternative to legacy desktop POS systems. It combines an ultra-fast billing till featuring Indian FSSAI badges, full Razorpay payment suite with webhook verification, live multi-station kitchen display system (KDS), and automated WhatsApp customer communication.',
+    tagline: 'High-speed 3-click restaurant billing till with table orders, live kitchen screens, and instant UPI settlement.',
+    shortDescription: 'Tactile billing till built for busy restaurant rushes. Table orders, kitchen order tickets (KOT), Indian FSSAI veg/non-veg tags, and automated WhatsApp receipts.',
+    detailedDescription: 'DinePulse is an enterprise restaurant operating system built as a modern, reliable alternative to legacy desktop POS systems. It combines an ultra-fast billing till featuring Indian FSSAI badges, full Razorpay payment suite with instant UPI QR, live multi-station kitchen display system (KDS), and automated WhatsApp customer receipts.',
     category: 'saas-cloud',
     categoryLabel: 'SaaS & Industry OS',
     status: 'live',
@@ -108,7 +108,7 @@ export const PROJECTS: Project[] = [
     rank: 1,
     liveUrl: 'https://dineplus.vercel.app/pos',
     sourceUrl: 'https://github.com/manojtyson-37/dinepulse',
-    techStack: ['Next.js 15', 'TypeScript', 'Tailwind CSS', 'Razorpay API', 'Google Gemini AI', 'Vercel Serverless'],
+    techStack: ['Next.js 15', 'TypeScript', 'Tailwind CSS', 'Razorpay UPI', 'Gemini AI', 'Serverless'],
     lastVerified: 'October 2026',
     badge: 'Flagship SaaS',
     highlights: [
@@ -156,10 +156,10 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'tysonchess',
-    name: 'Tyson Chess · Engine-Powered Training OS',
-    tagline: 'Stockfish 18 WASM chess trainer with real-time coaching and spaced repetition.',
-    shortDescription: 'In-browser chess academy featuring 6 calibrated bots, live mistake explanation, blunder safety nets, and offline PWA support.',
-    detailedDescription: 'Tyson Chess is a web-native chess training application built specifically for players in the 1200–1500 rating range. Running Stockfish 18 WASM directly in the client browser with zero backend dependencies, it provides real-time coaching, explains the tactical reasons behind blunders in plain language, and automatically mines mistakes into spaced repetition puzzles.',
+    name: 'Tyson Chess · Interactive AI Chess Coach',
+    tagline: 'AI chess mentor that spots your blunders and teaches you how to win in plain English.',
+    shortDescription: 'In-browser chess academy featuring 6 calibrated AI sparring bots, live mistake explanations in plain English, and personalized spaced repetition puzzles.',
+    detailedDescription: 'Tyson Chess is a web-native chess training application built specifically for players looking to break past intermediate plateaus. Running an intelligent AI engine directly in your browser with zero latency or loading screens, it provides real-time coaching, explains the tactical reasons behind blunders in plain conversational English, and automatically saves mistakes into personalized practice puzzles.',
     category: 'ai-agents',
     categoryLabel: 'AI & Agents',
     status: 'open-source',
@@ -168,25 +168,25 @@ export const PROJECTS: Project[] = [
     publicationApproved: true,
     rank: 2,
     sourceUrl: 'https://github.com/manojtyson-37/Tysonchess',
-    techStack: ['React', 'TypeScript', 'Stockfish 18 WASM', 'Web Workers', 'PWA', 'Tailwind CSS'],
+    techStack: ['React', 'TypeScript', 'AI Chess Engine', 'Web Workers', 'PWA', 'Tailwind CSS'],
     lastVerified: 'October 2026',
-    badge: 'AI & WASM',
+    badge: 'AI Chess Coach',
     highlights: [
-      'Bundled Stockfish 18 WASM running client-side with multi-threaded Web Workers',
+      'Interactive AI chess engine running smoothly inside the browser with zero server lag',
       '6 calibrated human-style bots ranging from Rookie Rae (≈800) to Master Mina (≈1750)',
-      'Instant mistake explanation in plain conversational language (hung piece, missed fork, pin)',
+      'Instant mistake explanation in plain conversational language (hung pieces, missed forks, pins)',
       'Automated spaced repetition engine converting personal blunders into training drills'
     ],
     caseStudy: {
       overview: 'Most chess apps either offer simple raw engine evaluations (+1.4) that confuse amateur players, or lock instructional coaching behind expensive monthly subscriptions. Tyson Chess provides deep, humanized coaching running purely on client hardware.',
       problem: 'Intermediate chess learners plateau because engine scores don’t explain the strategic intuition or immediate hazards of a blunder. Furthermore, players forget their recurring tactical blind spots without systematic review.',
       targetAudience: 'Club players, aspiring tournament competitors, and adult improvers seeking targeted blunder-reduction drills.',
-      solution: 'A zero-backend web platform running WebAssembly Stockfish in a dedicated web worker. It features a blunder safety net that halts catastrophic moves during casual play and prompts tactical reflection.',
-      myRole: 'Creator & Engine Engineer — Compiled and tuned the Stockfish WebAssembly integration, built the custom bot heuristic softmax weighting, and created the spaced repetition blunder scheduler.',
+      solution: 'A zero-backend web platform running intelligent chess AI in dedicated web workers. It features a blunder safety net that halts catastrophic moves during casual play and prompts tactical reflection.',
+      myRole: 'Creator & Engine Engineer — Compiled and tuned the WebAssembly engine integration, built the custom bot heuristic softmax weighting, and created the spaced repetition blunder scheduler.',
       architecture: {
         frontend: 'React, TypeScript, react-chessboard, Tailwind CSS, Lucide icons',
         backend: 'Zero-backend client architecture with localStorage schema versioning',
-        ai: 'Stockfish 18 WebAssembly with custom depth and evaluation evaluation wrappers'
+        ai: 'Stockfish AI Engine with custom evaluation and coaching wrappers'
       },
       keyFeatures: [
         { title: 'Plain English Tactical Coach', description: 'Replaces raw engine numbers with explicit tactical callouts: "Knight is pinned to the King", "Rook hangs without defenders".', tag: 'Coaching' },
@@ -195,14 +195,14 @@ export const PROJECTS: Project[] = [
         { title: 'Repertoire & Trap Trainer', description: '11 annotated master opening repertoires and 12 classic traps with interactive play-and-defend tests.', tag: 'Curriculum' }
       ],
       engineeringDecisions: [
-        'Used WebAssembly multithreading and SharedArrayBuffer with fallback to single-thread worker for broad device compatibility.',
+        'Used high-speed web worker multithreading with graceful single-thread fallback for universal device compatibility.',
         'Implemented hash-based routing (`/#/play`) to allow static PWA installation on iOS and Android with zero server routing requirements.'
       ],
       challengesAndLessons: [
         'Balancing bot difficulty required empirical round-robin tournament simulation scripts to verify that rating ordering remained consistent across thousands of games.'
       ],
       metrics: [
-        { label: 'Engine Engine', value: 'Stockfish 18', note: 'WASM compiled' },
+        { label: 'Coaching Engine', value: 'Stockfish AI', note: 'Runs in-browser' },
         { label: 'Drill Library', value: '230+ Puzzles', note: 'Mined from bot blunders' },
         { label: 'Backend Cost', value: '$0/mo', note: '100% client execution' }
       ]
@@ -212,9 +212,9 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'tysonpe',
-    name: 'Tysonpe · Creator Commerce & Monetization Engine',
-    tagline: 'High-density creator storefront, digital course platform, and Indian fintech checkout.',
-    shortDescription: 'Monetization platform for digital educators and creators featuring Razorpay checkout, automated GST invoicing, and DRM watermarking.',
+    name: 'Tysonpe · Creator Commerce & Checkout Engine',
+    tagline: 'High-converting creator storefront, digital course platform, and 1-click Indian UPI checkout.',
+    shortDescription: 'Monetization platform for digital educators and course creators. Sell video masterclasses, ebooks, and workshops with instant UPI (GPay/PhonePe), automated GST tax invoices, and anti-piracy video players.',
     detailedDescription: 'Tysonpe is a sovereign creator-commerce and digital products monetization infrastructure engineered specifically for the Indian market. It empowers creators to launch high-conversion storefronts selling video courses, gated communities, webinars, and consultations, with native INR UPI payments, automated GST compliance, and anti-piracy video players.',
     category: 'saas-cloud',
     categoryLabel: 'SaaS & Industry OS',
@@ -269,8 +269,8 @@ export const PROJECTS: Project[] = [
   {
     slug: 'silaa-atelier',
     name: 'Silaa Atelier · Apparel Manufacturing & Operations ERP',
-    tagline: 'Internal ERP & production operating system built for apparel brands and garment manufacturers.',
-    shortDescription: 'Production order tracking, fabric batch inventory, accessories BOM, and multi-stage garment pipeline management.',
+    tagline: 'Production operations platform and fabric inventory system built for garment manufacturers.',
+    shortDescription: 'Production order tracking, fabric roll inventory, pattern cutting yield calculators, and factory cost management in one clean operational dashboard.',
     detailedDescription: 'Silaa Atelier is a specialized apparel operations platform designed to eliminate disjointed spreadsheets and WhatsApp chains in garment manufacturing. Built with a high-performance FastAPI backend and Next.js frontend, it coordinates fabric roll inventory, cut-make-trim (CMT) purchase orders, accessory BOMs, and garment cost accounting.',
     category: 'saas-cloud',
     categoryLabel: 'SaaS & Industry OS',
@@ -326,8 +326,8 @@ export const PROJECTS: Project[] = [
   {
     slug: 'physiocare',
     name: 'PhysioCare · Multi-Tenant Clinic OS',
-    tagline: 'SaaS platform for physical therapy clinics, patient rehabilitation, and billing.',
-    shortDescription: 'Multi-tenant healthcare management system for patient records, clinical scheduling, GST invoices, and therapist performance.',
+    tagline: 'All-in-one clinic software for physical therapy practices, patient rehab, and billing.',
+    shortDescription: 'Multi-tenant healthcare management system for patient rehabilitation records, doctor scheduling, Indian GST tax invoices, and automated WhatsApp appointment reminders.',
     detailedDescription: 'PhysioCare is an all-in-one clinic management platform built specifically for physical therapy and rehabilitation centers. It streamlines the clinical workflow by connecting patient booking, physical assessment charts, multi-therapist calendar scheduling, GST-compliant invoicing, and automated patient recall notifications.',
     category: 'saas-cloud',
     categoryLabel: 'SaaS & Industry OS',
@@ -382,10 +382,10 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'agents-and-skills',
-    name: 'Chief of Staff AI · Skills & Personas Multi-Agent Framework',
-    tagline: 'Production-grade agent coordination framework for autonomous development and zero token bloat.',
-    shortDescription: 'Multi-agent orchestration system pairing reusable workflow skills with specialized personas, Headroom token compression, and quality gates.',
-    detailedDescription: 'The Chief of Staff AI Framework is a production-grade multi-agent coordination architecture designed to execute complex engineering workflows with high accountability. It formalizes development into modular, reusable skills (such as task breakdown and incremental implementation) routed to dedicated personas (orchestrator, engineer, code-reviewer, test-engineer), paired with Headroom token compression for 70%+ token efficiency.',
+    name: 'Chief of Staff AI · Autonomous Multi-Agent Framework',
+    tagline: 'Autonomous AI engineering team for research, coding, testing, and operations that works with zero hallucination.',
+    shortDescription: 'Multi-agent orchestration system pairing reusable workflow skills with specialized personas (orchestrator, engineer, reviewer) for autonomous 24/7 execution.',
+    detailedDescription: 'The Chief of Staff AI Framework is a production-grade multi-agent coordination architecture designed to execute complex engineering workflows with high accountability. It formalizes development into modular, reusable skills routed to dedicated personas (orchestrator, engineer, code-reviewer, test-engineer), paired with token compression for 70%+ efficiency.',
     category: 'ai-agents',
     categoryLabel: 'AI & Agents',
     status: 'open-source',
@@ -394,7 +394,7 @@ export const PROJECTS: Project[] = [
     publicationApproved: true,
     rank: 6,
     sourceUrl: 'https://github.com/manojtyson-37/Agents-and-Skills',
-    techStack: ['Python', 'Node.js', 'Headroom Compression', 'Git Hooks', 'Multi-Agent Routing'],
+    techStack: ['Python', 'Node.js', 'Autonomous Agents', 'Git Hooks', 'Token Optimization'],
     lastVerified: 'October 2026',
     badge: 'Autonomous AI',
     highlights: [

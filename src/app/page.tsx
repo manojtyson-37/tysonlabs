@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { getFeaturedProjects } from '@/data/projects';
 import { HeroOperationalPreview } from '@/components/HeroOperationalPreview';
+import { ProjectsSneakPeekShowcase } from '@/components/ProjectsSneakPeekShowcase';
 import { HomeProjectsExplorer } from '@/components/HomeProjectsExplorer';
 import { TaglineReveal } from '@/components/TaglineReveal';
 import { FaqSection } from '@/components/FaqSection';
@@ -26,8 +27,8 @@ export default function HomePage() {
       id: 'ai-agents',
       number: '01',
       icon: Bot,
-      title: 'Autonomous Multi-Agent Systems',
-      description: 'Production-grade agent frameworks with strict separation of roles (research, code, test, review), token compression, and deterministic execution gates.',
+      title: 'Autonomous Multi-Agent AI Workflows',
+      description: 'Custom AI agent teams that automate complex business tasks like market research, code writing, and automated quality testing without hallucination.',
       highlight: 'Chief of Staff AI · Gemini Hospitality Copilot',
       href: '/projects?category=ai-agents',
     },
@@ -35,9 +36,9 @@ export default function HomePage() {
       id: 'web-experiences',
       number: '02',
       icon: Layout,
-      title: 'High-Performance Web & WASM Platforms',
-      description: 'Zero-layout-shift web applications, responsive editorial storefronts, tactile consumer portals, and client-compiled WebAssembly engines.',
-      highlight: 'ECHORA · Tyson Chess (WASM)',
+      title: 'High-Performance Web Apps & Interactive Systems',
+      description: 'Zero-layout-shift web applications, responsive editorial storefronts, tactile consumer portals, and interactive browser tools.',
+      highlight: 'ECHORA Luxury Boutique · Tyson AI Chess Coach',
       href: '/projects?category=web-experiences',
     },
     {
@@ -53,9 +54,9 @@ export default function HomePage() {
       id: 'experiments',
       number: '04',
       icon: FlaskConical,
-      title: 'Native Systems & Proving Ground Labs',
-      description: 'In-browser Stockfish 18 SIMD chess analysis, automated video synthesis pipelines, and developer telemetry toolkits.',
-      highlight: 'Stockfish 18 WASM · YouTube Synthesis',
+      title: 'Specialized Business Tools & Proving Ground Labs',
+      description: 'Interactive AI coaching algorithms, automated YouTube video synthesis pipelines, and developer telemetry toolkits.',
+      highlight: 'Tyson AI Coach · Autonomous Video Pipeline',
       href: '/labs',
     },
   ];
@@ -79,10 +80,10 @@ export default function HomePage() {
             {/* Main Statement */}
             <div className="space-y-4 max-w-[680px]">
               <h1 className="font-display font-semibold text-4xl sm:text-6xl md:text-7xl bg-gradient-to-r from-black to-zinc-600 dark:from-white dark:to-zinc-400 bg-clip-text text-transparent tracking-tight leading-[1.04] [text-wrap:balance]">
-                Software engineered for real operations.
+                I build software that runs real businesses.
               </h1>
               <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-[640px] font-normal [text-wrap:pretty]">
-                From touch point-of-sale tills and clinic practice systems to in-browser WebAssembly engines and autonomous multi-agent pipelines. We turn operational requirements into hardened, production software with 100% sovereign client ownership.
+                From touch restaurant billing tills and garment factory inventory to interactive AI coaches and 1-click creator checkout. High-craft web applications and custom operating systems — designed, engineered, and delivered in 2 to 4 weeks with 100% sovereign client ownership.
               </p>
             </div>
 
@@ -92,7 +93,7 @@ export default function HomePage() {
                 href="/projects"
                 className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-semibold text-base transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-xl shadow-black/5 dark:shadow-white/5 active:scale-[0.98]"
               >
-                <span>Explore 16 Flagships</span>
+                <span>Explore 16 Live Systems</span>
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
 
@@ -107,38 +108,40 @@ export default function HomePage() {
 
             {/* Shipped Systems Strip */}
             <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 dark:text-zinc-400 flex-wrap pt-1">
-              <span className="text-zinc-950 dark:text-white font-semibold">Active deployments:</span>
-              <span className="text-zinc-800 dark:text-zinc-300">DinePulse POS (Live)</span>
+              <span className="text-zinc-950 dark:text-white font-semibold">Active in production:</span>
+              <span className="text-zinc-800 dark:text-zinc-300">DinePulse (Restaurant Till)</span>
               <span>·</span>
-              <span className="text-zinc-800 dark:text-zinc-300">Tyson Chess (WASM)</span>
+              <span className="text-zinc-800 dark:text-zinc-300">Silaa (Garment ERP)</span>
+              <span>·</span>
+              <span className="text-zinc-800 dark:text-zinc-300">Tyson Chess (AI Coach)</span>
               <span>·</span>
               <span className="text-zinc-800 dark:text-zinc-300">Tysonpe (Fintech)</span>
               <span>·</span>
-              <span className="text-zinc-800 dark:text-zinc-300">Silaa ERP (Live)</span>
+              <span className="text-zinc-800 dark:text-zinc-300">PhysioCare (Clinic OS)</span>
             </div>
 
-            {/* Studio Engineering Proof Ledger (Replaces generic AI floating boxes) */}
+            {/* Concrete Value Pillars for Clients & Buyers */}
             <div className="pt-6 border-t border-black/[0.08] dark:border-white/[0.08]">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs font-mono">
                 <div>
-                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">PROVEN ARCHITECTURE</div>
+                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">PROVEN RECORD</div>
                   <div className="font-semibold text-zinc-950 dark:text-white text-base">16 Shipped Builds</div>
-                  <div className="text-zinc-500 text-[11px] mt-0.5">Zero synthetic slop</div>
+                  <div className="text-zinc-500 text-[11px] mt-0.5">Tested with real users</div>
                 </div>
                 <div>
-                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">LOCAL-FIRST RELIABILITY</div>
-                  <div className="font-semibold text-emerald-600 dark:text-emerald-400 text-base">Offline Resilient</div>
-                  <div className="text-zinc-500 text-[11px] mt-0.5">High-speed till sync</div>
+                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">FAST TIME TO MARKET</div>
+                  <div className="font-semibold text-emerald-600 dark:text-emerald-400 text-base">2 to 4 Weeks</div>
+                  <div className="text-zinc-500 text-[11px] mt-0.5">Zero agency bloat</div>
                 </div>
                 <div>
-                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">LATENCY BUDGET</div>
-                  <div className="font-semibold text-zinc-950 dark:text-white text-base">Sub 12ms TTFB</div>
-                  <div className="text-zinc-500 text-[11px] mt-0.5">Edge Serverless & WASM</div>
+                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">BUILT FOR REVENUE</div>
+                  <div className="font-semibold text-zinc-950 dark:text-white text-base">UPI & GST Ready</div>
+                  <div className="text-zinc-500 text-[11px] mt-0.5">Automated tax invoices</div>
                 </div>
                 <div>
                   <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">CLIENT OWNERSHIP</div>
                   <div className="font-semibold text-sky-600 dark:text-sky-400 text-base">100% Sovereign IP</div>
-                  <div className="text-zinc-500 text-[11px] mt-0.5">Zero recurring lock-in</div>
+                  <div className="text-zinc-500 text-[11px] mt-0.5">You own code & DB</div>
                 </div>
               </div>
             </div>
@@ -189,7 +192,7 @@ export default function HomePage() {
               className="btn-tactile px-3 py-1.5 rounded-lg bg-white dark:bg-[#0B0D11] border border-black/[0.08] dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:border-black/20 dark:hover:border-white/30 transition-all flex items-center gap-1.5 active:scale-[0.98]"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
-              <span>PhysioCare EHR</span>
+              <span>PhysioCare Clinic</span>
               <ExternalLink className="w-3 h-3 text-zinc-400" />
             </a>
             <a
@@ -199,15 +202,21 @@ export default function HomePage() {
               className="btn-tactile px-3 py-1.5 rounded-lg bg-white dark:bg-[#0B0D11] border border-black/[0.08] dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:border-black/20 dark:hover:border-white/30 transition-all flex items-center gap-1.5 active:scale-[0.98]"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-              <span>Stockfish 18 WASM</span>
+              <span>Tyson AI Chess Coach</span>
               <ExternalLink className="w-3 h-3 text-zinc-400" />
             </a>
           </div>
         </div>
       </section>
 
+      {/* NEW: SNEAK PEEK SHOWCASE ACROSS INDUSTRIES */}
+      <ProjectsSneakPeekShowcase />
+
       {/* Mandatory B11 Tagline Reveal Section */}
-      <TaglineReveal />
+      <TaglineReveal 
+        phrase="I engineer custom production software for businesses that need to scale." 
+        subphrase="High-speed restaurant tills. Garment factory inventory. Automated UPI checkouts. Designed, built, and launched in weeks." 
+      />
 
       {/* Selected Work Section with Interactive Explorer */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8">
@@ -244,7 +253,7 @@ export default function HomePage() {
               Engineering capabilities engineered for production.
             </h2>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
-              We don&apos;t build static brochure sites or assemble bloated templates. Every system is engineered to handle edge latency, concurrency, payment compliance, and local-first reliability.
+              We don&apos;t build static brochure sites or assemble bloated templates. Every system is engineered to handle edge speed, concurrency, payment compliance, and local-first reliability.
             </p>
             <div className="pt-2">
               <Link
@@ -306,7 +315,7 @@ export default function HomePage() {
               Hardened systems. Built for operators.
             </h2>
             <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
-              Every codebase in TysonLabs was engineered to eliminate high-stakes operational friction, from sub-10ms restaurant billing under peak dining rushes to zero-waste garment marker calculation. No placeholder mockups, no generic templates, and no fabricated metrics.
+              Every codebase in TysonLabs was engineered to eliminate high-stakes operational friction, from sub-second restaurant billing under peak dining rushes to zero-waste garment marker calculation. No placeholder mockups, no generic templates, and no fabricated metrics.
             </p>
           </div>
 
@@ -334,10 +343,10 @@ export default function HomePage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
                 <Cpu className="w-4 h-4 shrink-0" />
-                <h4 className="text-sm font-bold text-zinc-950 dark:text-white">Sovereign Architecture</h4>
+                <h4 className="text-sm font-bold text-zinc-950 dark:text-white">100% Client Ownership</h4>
               </div>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
-                Client-side WASM, serverless edge routes, and self-hosted databases that run without recurring vendor rent.
+                Self-hosted databases, clean codebases, and sovereign cloud deployments that run without recurring vendor rent.
               </p>
             </div>
 

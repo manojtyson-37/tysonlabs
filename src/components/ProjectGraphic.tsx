@@ -4,9 +4,15 @@ import React from 'react';
 import { 
   Check, 
   ShieldCheck, 
-  Receipt, 
-  Activity, 
-  Cpu
+  Sparkles,
+  Building2,
+  MessageSquare,
+  TrendingUp,
+  ShoppingBag,
+  Star,
+  Hotel,
+  Video,
+  Layers
 } from 'lucide-react';
 
 interface ProjectGraphicProps {
@@ -17,64 +23,57 @@ interface ProjectGraphicProps {
 }
 
 export function ProjectGraphic({ slug, className = '' }: ProjectGraphicProps) {
-  // Base container for the visual card preview
   const baseContainer = `w-full h-48 p-4 flex flex-col justify-between relative overflow-hidden transition-all duration-300 select-none ${className}`;
 
   switch (slug) {
     /* -------------------------------------------------------------------------
-       1. DinePulse — Authentic Restaurant POS Till & KOT Ticket
+       1. DinePulse — Restaurant Till & POS
        ------------------------------------------------------------------------- */
     case 'dinepulse':
       return (
         <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0E1015]`}>
-          {/* Header Strip */}
           <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
             <div className="flex items-center gap-2">
-              <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]">
-                TABLE 04
+              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">
+                RESTAURANT BILLING TILL
               </span>
-              <span className="text-zinc-400 text-[10px]">Dine-In · 4 Covers</span>
+              <span className="text-zinc-400 text-[10px]">Table 04 · 4 Guests</span>
             </div>
-            <span className="text-zinc-500 text-[10px]">KOT #108 · Active</span>
+            <span className="text-emerald-400 font-semibold text-[10px]">Active Order</span>
           </div>
 
-          {/* Running Ticket Items with FSSAI Veg / Non-Veg Badges */}
           <div className="space-y-1.5 py-1">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                {/* FSSAI Veg Green Dot */}
                 <span className="w-3 h-3 rounded-[2px] border border-emerald-500 flex items-center justify-center shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 </span>
                 <span className="text-zinc-200 font-medium">Paneer Butter Masala</span>
-                <span className="text-zinc-500 text-[11px]">×1</span>
+                <span className="text-zinc-400 text-[11px]">×1</span>
               </div>
-              <span className="font-mono text-zinc-300">₹280</span>
+              <span className="font-mono text-zinc-200 font-bold">₹280</span>
             </div>
 
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                {/* FSSAI Veg Green Dot */}
                 <span className="w-3 h-3 rounded-[2px] border border-emerald-500 flex items-center justify-center shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 </span>
                 <span className="text-zinc-200 font-medium">Garlic Butter Naan</span>
-                <span className="text-zinc-500 text-[11px]">×2</span>
+                <span className="text-zinc-400 text-[11px]">×2</span>
               </div>
-              <span className="font-mono text-zinc-300">₹120</span>
+              <span className="font-mono text-zinc-200 font-bold">₹120</span>
             </div>
           </div>
 
-          {/* Bottom Settlement & Tax Bar */}
-          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between">
-            <div className="text-[10px] font-mono text-zinc-400">
-              <span>GST 5% Split</span>
-              <span className="ml-1 text-zinc-500">₹20</span>
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs">
+            <div className="text-[10px] text-zinc-400 font-mono">
+              <span>GST 5% Split Included</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-mono font-bold text-sm text-white">₹420</span>
-              <span className="px-2 py-0.5 rounded bg-emerald-500 text-black font-semibold text-[10px] flex items-center gap-1 shadow-xs">
-                <span>⚡ UPI Settle</span>
+              <span className="px-2.5 py-1 rounded bg-emerald-500 text-black font-bold text-[10px] flex items-center gap-1 shadow-xs">
+                <span>⚡ Pay via UPI QR</span>
               </span>
             </div>
           </div>
@@ -82,23 +81,21 @@ export function ProjectGraphic({ slug, className = '' }: ProjectGraphicProps) {
       );
 
     /* -------------------------------------------------------------------------
-       2. Tyson Chess — In-Browser Stockfish 18 WASM Academy
+       2. Tyson Chess — AI Chess Coach & Academy
        ------------------------------------------------------------------------- */
     case 'tysonchess':
       return (
         <div className={`${baseContainer} bg-zinc-950 text-white dark:bg-[#0A0C10]`}>
-          {/* Top Engine Telemetry Bar */}
-          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
-            <div className="flex items-center gap-1.5 text-sky-400">
-              <Cpu className="w-3 h-3" />
-              <span className="text-[10px] font-semibold">STOCKFISH 18 WASM</span>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px]">
+            <div className="flex items-center gap-1.5 text-sky-400 font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-[10px]">AI CHESS COACH & ACADEMY</span>
             </div>
-            <span className="text-zinc-500 text-[10px]">1.84M NODES/S</span>
+            <span className="text-zinc-400 font-mono text-[10px]">Live Game Analysis</span>
           </div>
 
-          {/* Graphical Chessboard & Evaluation Split */}
           <div className="flex items-center gap-3 py-1">
-            {/* 4x4 Mini Tactical Board Representation */}
+            {/* Visual Mini Board */}
             <div className="grid grid-cols-4 grid-rows-4 w-20 h-20 rounded border border-zinc-700 overflow-hidden shrink-0 shadow-inner">
               {['♜', '♞', '♝', '♛', '♟', '♟', '♟', '♟', ' ', ' ', '♘', ' ', '♙', '♙', '♙', '♔'].map((piece, i) => {
                 const isDark = (Math.floor(i / 4) + (i % 4)) % 2 === 1;
@@ -106,7 +103,7 @@ export function ProjectGraphic({ slug, className = '' }: ProjectGraphicProps) {
                   <div
                     key={i}
                     className={`flex items-center justify-center text-xs font-serif ${
-                      isDark ? 'bg-zinc-800 text-zinc-200' : 'bg-zinc-700 text-white'
+                      isDark ? 'bg-amber-900/60 text-zinc-200' : 'bg-amber-100/20 text-white'
                     }`}
                   >
                     {piece}
@@ -115,318 +112,559 @@ export function ProjectGraphic({ slug, className = '' }: ProjectGraphicProps) {
               })}
             </div>
 
-            {/* Tactical Coach Advice Box */}
-            <div className="flex-1 space-y-1.5">
+            {/* Plain-English Coach Hint */}
+            <div className="flex-1 space-y-1">
               <div className="flex items-center gap-1.5">
-                <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-400 font-mono text-[10px] font-bold">
-                  +1.84
+                <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">
+                  +1.84 White Leads
                 </span>
-                <span className="text-[10px] font-mono text-zinc-400">Depth: 24 ply</span>
               </div>
-              <p className="text-[11px] text-zinc-300 leading-tight">
-                Knight pin on f6. Opponent cannot defend the d5 outpost.
+              <p className="text-[11px] text-zinc-200 leading-snug">
+                Moving your Knight to d5 forks opponent&apos;s Queen and Bishop.
               </p>
-              <div className="text-[10px] font-mono text-zinc-500">
-                Move: <span className="text-white font-semibold">24. Nd5!</span>
+              <div className="text-[10px] text-zinc-400">
+                Play move: <span className="text-white font-bold">24. Nd5!</span>
               </div>
             </div>
           </div>
 
-          {/* Bottom Status */}
-          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
-            <span>ZERO SERVER COST</span>
-            <span className="text-emerald-400">8 Web Workers</span>
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] text-zinc-400">
+            <span>Plays offline in browser</span>
+            <span className="text-emerald-400 font-medium">Zero lag or loading</span>
           </div>
         </div>
       );
 
     /* -------------------------------------------------------------------------
-       3. Tysonpe — Creator Commerce & Razorpay Checkout
+       3. Tysonpe — Creator Store & 1-Click Checkout
        ------------------------------------------------------------------------- */
     case 'tysonpe':
       return (
         <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0F1117]`}>
-          {/* Header */}
           <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
-            <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+            <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span className="text-[10px]">RAZORPAY 1-CLICK CHECKOUT</span>
+              <span className="text-[10px]">CREATOR STORE CHECKOUT</span>
             </div>
-            <span className="text-zinc-500 text-[10px]">INR 100% SECURE</span>
+            <span className="text-zinc-400 text-[10px]">Razorpay Secured</span>
           </div>
 
-          {/* Product Offer Card */}
           <div className="py-1 space-y-2">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs font-semibold text-white">Full-Stack System Architecture</div>
-                <div className="text-[10px] text-zinc-400">Lifetime Access · DRM Watermarked</div>
+                <div className="text-xs font-bold text-white">Full-Stack Software Masterclass</div>
+                <div className="text-[10px] text-zinc-400">Instant Access · Video + Code Repo</div>
               </div>
               <div className="text-right">
                 <div className="font-mono font-bold text-sm text-emerald-400">₹2,499</div>
-                <div className="text-[9px] font-mono text-zinc-500">+18% GST</div>
+                <div className="text-[9px] text-zinc-400">GST Invoice Included</div>
               </div>
             </div>
 
-            {/* UPI Payment Pill Strip */}
             <div className="flex items-center gap-1.5 bg-zinc-800/80 p-1.5 rounded-lg border border-zinc-700/60 text-[10px] font-mono">
-              <span className="text-zinc-400">Pay via:</span>
-              <span className="px-1.5 py-0.5 rounded bg-zinc-700 text-white font-medium">GPay</span>
-              <span className="px-1.5 py-0.5 rounded bg-zinc-700 text-white font-medium">PhonePe</span>
-              <span className="px-1.5 py-0.5 rounded bg-zinc-700 text-white font-medium">Paytm</span>
-              <span className="ml-auto text-emerald-400 font-semibold">Instant UPI</span>
+              <span className="text-zinc-400">1-Click UPI:</span>
+              <span className="px-1.5 py-0.5 rounded bg-zinc-700 text-white font-bold">GPay</span>
+              <span className="px-1.5 py-0.5 rounded bg-zinc-700 text-white font-bold">PhonePe</span>
+              <span className="px-1.5 py-0.5 rounded bg-zinc-700 text-white font-bold">Paytm</span>
+              <span className="ml-auto text-emerald-400 font-bold">Unlock</span>
             </div>
           </div>
 
-          {/* Invoice Receipt Status */}
           <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
-            <span className="flex items-center gap-1 text-emerald-400">
+            <span className="flex items-center gap-1 text-emerald-400 font-medium">
               <Check className="w-3 h-3" />
-              <span>Automated GST Invoice</span>
+              <span>Instant WhatsApp Invoice</span>
             </span>
-            <span>HMAC Verified</span>
+            <span>Zero Platform Cuts</span>
           </div>
         </div>
       );
 
     /* -------------------------------------------------------------------------
-       4. Silaa Atelier — Garment Manufacturing Production Kanban
+       4. Silaa Atelier — Factory Production Manager
        ------------------------------------------------------------------------- */
     case 'silaa':
     case 'silaa-atelier':
       return (
         <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0E1015]`}>
-          {/* Header */}
           <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
-            <div className="flex items-center gap-1.5 text-purple-400 font-semibold">
-              <Receipt className="w-3.5 h-3.5" />
-              <span className="text-[10px]">PRODUCTION BATCH #842</span>
+            <div className="flex items-center gap-1.5 text-purple-400 font-bold">
+              <Building2 className="w-3.5 h-3.5" />
+              <span className="text-[10px]">FACTORY ORDER #842</span>
             </div>
-            <span className="text-zinc-400 text-[10px]">500 Pcs · Linen Shirt</span>
+            <span className="text-zinc-300 text-[10px] font-semibold">500 Linen Shirts</span>
           </div>
 
-          {/* Multi-Stage Factory Pipeline */}
           <div className="space-y-2 py-1">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-300 font-medium">Batch Progress:</span>
-              <span className="font-mono text-emerald-400 text-[11px]">Sewing (68% complete)</span>
+              <span className="text-zinc-300 font-medium">Production Stage:</span>
+              <span className="font-bold text-emerald-400 text-[11px]">Sewing in progress (68%)</span>
             </div>
 
-            {/* Stepped Progress Bar */}
             <div className="grid grid-cols-4 gap-1.5">
               <div className="space-y-1">
-                <div className="h-1.5 rounded-full bg-emerald-500"></div>
-                <div className="text-[9px] font-mono text-zinc-400 text-center">Procure</div>
+                <div className="h-2 rounded-full bg-emerald-500"></div>
+                <div className="text-[9px] font-mono text-zinc-300 text-center font-medium">Fabric Lot</div>
               </div>
               <div className="space-y-1">
-                <div className="h-1.5 rounded-full bg-emerald-500"></div>
-                <div className="text-[9px] font-mono text-zinc-400 text-center">Cutting</div>
+                <div className="h-2 rounded-full bg-emerald-500"></div>
+                <div className="text-[9px] font-mono text-zinc-300 text-center font-medium">Cutting</div>
               </div>
               <div className="space-y-1">
-                <div className="h-1.5 rounded-full bg-purple-500"></div>
-                <div className="text-[9px] font-mono text-purple-400 font-bold text-center">Sewing</div>
+                <div className="h-2 rounded-full bg-purple-500"></div>
+                <div className="text-[9px] font-mono text-purple-300 font-bold text-center">Sewing</div>
               </div>
               <div className="space-y-1">
-                <div className="h-1.5 rounded-full bg-zinc-700"></div>
-                <div className="text-[9px] font-mono text-zinc-500 text-center">QC Pack</div>
+                <div className="h-2 rounded-full bg-zinc-700"></div>
+                <div className="text-[9px] font-mono text-zinc-500 text-center">Packing</div>
               </div>
             </div>
           </div>
 
-          {/* Efficiency Metric */}
           <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
-            <span>YIELD: <span className="text-white font-bold">99.2%</span></span>
-            <span className="text-emerald-400">Zero Fabric Leakage</span>
+            <span>FABRIC YIELD: <span className="text-white font-bold">99.2%</span></span>
+            <span className="text-emerald-400 font-medium">Zero Material Wastage</span>
           </div>
         </div>
       );
 
     /* -------------------------------------------------------------------------
-       5. PhysioCare — Clinical Practice EHR & Patient Chart
+       5. PhysioCare — Clinic & Patient Portal
        ------------------------------------------------------------------------- */
     case 'physiocare':
       return (
         <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0D1016]`}>
-          {/* Header */}
           <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
-            <div className="flex items-center gap-1.5 text-sky-400 font-semibold">
-              <Activity className="w-3.5 h-3.5" />
-              <span className="text-[10px]">PATIENT CHART · CLINIC EHR</span>
-            </div>
-            <span className="text-zinc-500 text-[10px]">TENANT #04</span>
+            <span className="text-sky-400 font-bold text-[10px]">DOCTOR & CLINIC PORTAL</span>
+            <span className="text-zinc-400 text-[10px]">Dr. Sarah Rao</span>
           </div>
 
-          {/* Patient Card Preview */}
           <div className="space-y-2 py-1">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs font-semibold text-white">Rahul Verma (34 M)</div>
-                <div className="text-[10px] text-zinc-400">Post-Op ACL Rehab · Session 4 of 12</div>
+                <div className="text-xs font-bold text-white">Rahul Verma (34 M)</div>
+                <div className="text-[10px] text-zinc-400">Post-Op Knee Rehab · Visit 4 of 12</div>
               </div>
-              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-semibold">
-                ACTIVE
+              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">
+                CONFIRMED
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-[10px] font-mono bg-zinc-800/80 p-2 rounded-lg border border-zinc-700/60">
+            <div className="flex items-center justify-between text-[10px] bg-zinc-800/80 p-2 rounded-lg border border-zinc-700/60">
               <div>
-                <span className="text-zinc-500">Range of Motion: </span>
-                <span className="text-white font-bold">115° (+15°)</span>
+                <span className="text-zinc-400">Knee Flexibility: </span>
+                <span className="text-white font-bold">115° (+15° gain)</span>
               </div>
-              <div className="text-emerald-400">Good Progression</div>
-            </div>
-          </div>
-
-          {/* Bottom Security Note */}
-          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
-            <span>NEON POSTGRES RLS</span>
-            <span className="text-sky-400">Isolated Multi-Tenant</span>
-          </div>
-        </div>
-      );
-
-    /* -------------------------------------------------------------------------
-       6. Agents & Skills — Autonomous Multi-Agent Terminal
-       ------------------------------------------------------------------------- */
-    case 'agents-and-skills':
-      return (
-        <div className={`${baseContainer} bg-zinc-950 text-white dark:bg-[#0A0C10] font-mono`}>
-          {/* Terminal Titlebar */}
-          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px]">
-            <div className="flex items-center gap-2">
-              <span className="flex gap-1">
-                <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              </span>
-              <span className="text-[10px] text-zinc-400">agent-coordinator.zsh</span>
-            </div>
-            <span className="text-purple-400 text-[10px]">CHIEF OF STAFF</span>
-          </div>
-
-          {/* Live Agent Terminal Log Steps */}
-          <div className="space-y-1.5 py-1 text-[11px]">
-            <div className="flex items-center gap-2">
-              <span className="px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-400 text-[9px] font-bold">PLANNER</span>
-              <span className="text-zinc-300">Spec architecture defined</span>
-              <Check className="w-3 h-3 text-emerald-400 ml-auto" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-400 text-[9px] font-bold">CODER</span>
-              <span className="text-zinc-300">14 unit tests executed</span>
-              <span className="text-emerald-400 text-[10px] ml-auto">100% PASS</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">GATE</span>
-              <span className="text-zinc-400">Security audit verified</span>
-              <span className="text-zinc-500 text-[10px] ml-auto">0 CVEs</span>
-            </div>
-          </div>
-
-          {/* Bottom Metric */}
-          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] text-zinc-400">
-            <span>HEADROOM COMPRESSION</span>
-            <span className="text-emerald-400">-78% TOKENS</span>
-          </div>
-        </div>
-      );
-
-    /* -------------------------------------------------------------------------
-       7. KBD Books — Indian GST Invoicing & Accounting
-       ------------------------------------------------------------------------- */
-    case 'kbd-books':
-      return (
-        <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0E1015]`}>
-          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
-            <span className="text-emerald-400 font-semibold text-[10px]">TAX INVOICE #INV-2026-084</span>
-            <span className="text-zinc-400 text-[10px]">HSN 998314</span>
-          </div>
-
-          <div className="space-y-1.5 py-1 text-xs">
-            <div className="flex justify-between">
-              <span className="text-zinc-300">Software Engineering Retainer</span>
-              <span className="font-mono text-zinc-200">₹1,20,000</span>
-            </div>
-            <div className="flex justify-between text-[11px] text-zinc-400 font-mono">
-              <span>CGST (9%) + SGST (9%)</span>
-              <span>₹21,600</span>
-            </div>
-            <div className="p-1.5 bg-zinc-800/80 rounded border border-zinc-700/60 flex justify-between font-mono font-bold text-xs">
-              <span className="text-white">Total Payable (INR)</span>
-              <span className="text-emerald-400">₹1,41,600</span>
+              <div className="text-emerald-400 font-medium">On Track for Full Recovery</div>
             </div>
           </div>
 
           <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
-            <span>GSTIN: 29AAAAA0000A1Z5</span>
-            <span className="text-emerald-400">✓ E-Way Ready</span>
+            <span>Private Patient Records</span>
+            <span className="text-sky-400">WhatsApp Reminders</span>
           </div>
         </div>
       );
 
     /* -------------------------------------------------------------------------
-       8. Kusum Dental Care — Bilingual Clinic EHR
+       6. Kusum Dental Care — Bilingual Clinic Portal
        ------------------------------------------------------------------------- */
     case 'kusum-dental-care':
       return (
         <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0E1015]`}>
           <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
-            <span className="text-emerald-400 font-semibold text-[10px]">CLINIC PORTAL (KN/EN)</span>
-            <span className="text-zinc-400 text-[10px]">DR. KUSUM DENTAL</span>
+            <span className="text-emerald-400 font-bold text-[10px]">DENTAL CLINIC BOOKING</span>
+            <span className="text-zinc-400 text-[10px]">Bangalore, KA</span>
           </div>
 
           <div className="space-y-2 py-1">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs font-semibold text-white">Root Canal Treatment (RCT)</div>
-                <div className="text-[10px] text-zinc-400">Slot Held: Today at 4:30 PM</div>
+                <div className="text-xs font-bold text-white">Root Canal Treatment (RCT)</div>
+                <div className="text-[10px] text-zinc-400">Today at 4:30 PM · Dr. Kusum</div>
               </div>
-              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold">
-                CONFIRMED
+              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">
+                SLOT HELD
               </span>
             </div>
 
-            <div className="text-[10px] font-mono bg-zinc-800/80 p-1.5 rounded text-zinc-300">
-              ರೋಗಿಯ ದೃಢೀಕರಣ ಕಳುಹಿಸಲಾಗಿದೆ · WhatsApp confirmation sent
+            <div className="text-[10px] bg-zinc-800/80 p-1.5 rounded text-zinc-300 font-sans">
+              ದೃಢೀಕರಣ ಕಳುಹಿಸಲಾಗಿದೆ · Instant WhatsApp confirmation sent to patient.
             </div>
           </div>
 
           <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
-            <span>REALTIME CONCURRENCY</span>
-            <span className="text-emerald-400">Zero Double Booking</span>
+            <span>Zero Double Bookings</span>
+            <span className="text-emerald-400 font-medium">Bilingual (KN / EN)</span>
           </div>
         </div>
       );
 
     /* -------------------------------------------------------------------------
-       Default: Production Application Engine View
+       7. Agents & Skills — Autonomous AI Business Workflows
+       ------------------------------------------------------------------------- */
+    case 'agents-and-skills':
+      return (
+        <div className={`${baseContainer} bg-zinc-950 text-white dark:bg-[#0A0C10]`}>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px]">
+            <span className="text-purple-400 font-bold text-[10px]">AUTONOMOUS AI WORKFLOWS</span>
+            <span className="text-zinc-400 font-mono text-[10px]">3 Agents Working</span>
+          </div>
+
+          <div className="space-y-1.5 py-1 text-xs">
+            <div className="flex items-center justify-between p-1.5 rounded bg-zinc-900/80 border border-zinc-800">
+              <span className="text-zinc-200">1. Market Research & Competitor Audit</span>
+              <span className="text-emerald-400 font-bold text-[10px]">COMPLETED</span>
+            </div>
+            <div className="flex items-center justify-between p-1.5 rounded bg-zinc-900/80 border border-zinc-800">
+              <span className="text-zinc-200">2. Software Code Generation (14 Tests)</span>
+              <span className="text-emerald-400 font-bold text-[10px]">100% PASS</span>
+            </div>
+            <div className="flex items-center justify-between p-1.5 rounded bg-zinc-900/80 border border-zinc-800">
+              <span className="text-zinc-200">3. Final Security & Bug Review</span>
+              <span className="text-purple-400 font-bold text-[10px]">APPROVED</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span>Automates manual business tasks</span>
+            <span className="text-emerald-400">24/7 Execution</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       8. KBD Books — Indian GST Invoicing & Accounting
+       ------------------------------------------------------------------------- */
+    case 'kbd-books':
+      return (
+        <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0E1015]`}>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
+            <span className="text-emerald-400 font-bold text-[10px]">GST TAX INVOICE #084</span>
+            <span className="text-zinc-400 text-[10px]">HSN 998314</span>
+          </div>
+
+          <div className="space-y-1.5 py-1 text-xs">
+            <div className="flex justify-between">
+              <span className="text-zinc-300">Software Architecture Sprint</span>
+              <span className="font-mono text-zinc-200 font-bold">₹1,20,000</span>
+            </div>
+            <div className="flex justify-between text-[11px] text-zinc-400 font-mono">
+              <span>CGST 9% + SGST 9% Split</span>
+              <span>₹21,600</span>
+            </div>
+            <div className="p-1.5 bg-zinc-800/80 rounded border border-zinc-700/60 flex justify-between font-mono font-bold text-xs">
+              <span className="text-white">Total Amount Paid</span>
+              <span className="text-emerald-400">₹1,41,600</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span>Automated GST Calculation</span>
+            <span className="text-emerald-400">Printable PDF Invoices</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       9. ECHORA — Luxury Ethnic Wear Storefront
+       ------------------------------------------------------------------------- */
+    case 'echora':
+      return (
+        <div className={`${baseContainer} bg-[#181412] text-white`}>
+          <div className="flex items-center justify-between pb-2 border-b border-[#2D2520] text-[11px] font-mono">
+            <div className="flex items-center gap-1.5 text-amber-300 font-bold">
+              <ShoppingBag className="w-3.5 h-3.5" />
+              <span className="text-[10px]">LUXURY ETHNIC WEAR</span>
+            </div>
+            <span className="text-amber-200/60 text-[10px]">Bangalore Studio</span>
+          </div>
+
+          <div className="py-1 space-y-1.5">
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="text-xs font-serif font-bold text-amber-100">Raw Silk Anarkali · Crimson</div>
+                <div className="text-[10px] text-zinc-400">Handcrafted Zari Embroidery · Size M</div>
+              </div>
+              <span className="font-mono text-xs font-bold text-amber-300">₹8,499</span>
+            </div>
+
+            <div className="flex items-center gap-2 p-1.5 rounded bg-[#251E19] border border-[#3A2E26] text-[10px]">
+              <span className="text-emerald-400 font-bold">● In Stock</span>
+              <span className="text-zinc-400">Ships in 24 Hours</span>
+              <span className="ml-auto text-amber-200 font-medium">1-Click WhatsApp Order 💬</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-[#2D2520] flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span>Near-instant mobile catalog</span>
+            <span className="text-amber-300">Zero loading delay</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       10. Nexify Dashboard — Agency Operations & Cashflow
+       ------------------------------------------------------------------------- */
+    case 'nexify-dashboard':
+      return (
+        <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0D1117]`}>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
+            <div className="flex items-center gap-1.5 text-sky-400 font-bold">
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span className="text-[10px]">AGENCY FINANCIAL HUB</span>
+            </div>
+            <span className="text-zinc-400 text-[10px]">Runway: 14 Months</span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 py-1">
+            <div className="p-2 rounded bg-zinc-800/80 border border-zinc-700/60">
+              <div className="text-[10px] text-zinc-400">Monthly Revenue</div>
+              <div className="text-sm font-mono font-bold text-white">₹14,80,000</div>
+              <div className="text-[9px] text-emerald-400 font-medium">+18% vs Last Month</div>
+            </div>
+            <div className="p-2 rounded bg-zinc-800/80 border border-zinc-700/60">
+              <div className="text-[10px] text-zinc-400">Gross Margin</div>
+              <div className="text-sm font-mono font-bold text-emerald-400">74.2%</div>
+              <div className="text-[9px] text-zinc-300">12 Active Retainers</div>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span>Automated Profit Forecasts</span>
+            <span className="text-sky-400">Zero Spreadsheets</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       11. Expense Manager — Offline-First Personal Finance
+       ------------------------------------------------------------------------- */
+    case 'expense-manager':
+      return (
+        <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0A120E]`}>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
+            <span className="text-emerald-400 font-bold text-[10px]">PERSONAL FINANCE APP</span>
+            <span className="text-emerald-300 text-[10px]">⚡ Offline-First</span>
+          </div>
+
+          <div className="space-y-1.5 py-1">
+            <div className="text-[10px] text-zinc-400">Auto-Parsed Bank SMS:</div>
+            <div className="p-1.5 rounded bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-between text-xs">
+              <span className="text-zinc-200">Swiggy Food Delivery</span>
+              <span className="font-mono text-amber-400 font-bold">-₹640</span>
+            </div>
+            <div className="flex justify-between items-center text-[10px] text-zinc-400">
+              <span>Monthly Dining Budget</span>
+              <span className="text-zinc-200 font-mono font-bold">₹4,200 / ₹10,000</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span>Works without internet</span>
+            <span className="text-emerald-400 font-medium">Encrypted Cloud Backup</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       12. ReviewAssist AI — Google Reviews Engine
+       ------------------------------------------------------------------------- */
+    case 'reviewassist-ai':
+      return (
+        <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#130E14]`}>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
+            <div className="flex items-center gap-1.5 text-pink-400 font-bold">
+              <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+              <span className="text-[10px]">GOOGLE REPUTATION ENGINE</span>
+            </div>
+            <span className="text-zinc-400 text-[10px]">FTC Compliant</span>
+          </div>
+
+          <div className="space-y-1.5 py-1">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-zinc-300 font-medium">Guest: Priya Sharma</span>
+              <span className="text-amber-400 text-xs">★★★★★</span>
+            </div>
+            <div className="p-2 rounded bg-zinc-800/80 border border-zinc-700/60 text-[11px] text-zinc-200 italic line-clamp-2">
+              &ldquo;The paneer tikka was delicious and the hospitality was exceptional. Will definitely bring family again!&rdquo;
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span className="text-pink-400 font-medium">1-Tap Google Post</span>
+            <span className="text-emerald-400">+42% 5-Star Reviews</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       13. Jaya Mahal Palace — Luxury Hotel Booking
+       ------------------------------------------------------------------------- */
+    case 'jayamahal-palace':
+      return (
+        <div className={`${baseContainer} bg-[#16120D] text-white`}>
+          <div className="flex items-center justify-between pb-2 border-b border-[#2E241B] text-[11px] font-mono">
+            <div className="flex items-center gap-1.5 text-amber-400 font-bold">
+              <Hotel className="w-3.5 h-3.5" />
+              <span className="text-[10px]">HERITAGE HOTEL SUITE</span>
+            </div>
+            <span className="text-amber-200/70 text-[10px]">Palace Grounds</span>
+          </div>
+
+          <div className="space-y-1.5 py-1">
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="text-xs font-serif font-bold text-amber-100">Royal Pavilion Suite #104</div>
+                <div className="text-[10px] text-zinc-400">14 Nov – 16 Nov · 2 Nights (Breakfast)</div>
+              </div>
+              <div className="text-right font-mono font-bold text-amber-300 text-xs">
+                ₹18,500<span className="text-[9px] text-zinc-400 font-normal">/nt</span>
+              </div>
+            </div>
+            <div className="p-1.5 rounded bg-[#2A1F15] border border-[#3E2E20] flex items-center justify-between text-[10px]">
+              <span className="text-amber-300">Room Held for 30 Mins</span>
+              <span className="text-emerald-400 font-bold">Razorpay Verified</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-[#2E241B] flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span>Zero Double Bookings</span>
+            <span className="text-amber-400">Cinematic Guest Experience</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       14. YouTube Automation — Autonomous Video Production
+       ------------------------------------------------------------------------- */
+    case 'youtube-automation':
+      return (
+        <div className={`${baseContainer} bg-zinc-950 text-white dark:bg-[#120B0B]`}>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px]">
+            <div className="flex items-center gap-1.5 text-red-400 font-bold">
+              <Video className="w-3.5 h-3.5" />
+              <span className="text-[10px]">AUTONOMOUS VIDEO ENGINE</span>
+            </div>
+            <span className="text-zinc-400 font-mono text-[10px]">7 Agents Chained</span>
+          </div>
+
+          <div className="space-y-1.5 py-1 text-xs">
+            <div className="flex items-center justify-between p-1 rounded bg-zinc-900 border border-zinc-800">
+              <span className="text-zinc-300 text-[11px]">Hook & Competitor Research</span>
+              <span className="text-emerald-400 font-bold text-[10px]">COMPLETE</span>
+            </div>
+            <div className="flex items-center justify-between p-1 rounded bg-zinc-900 border border-zinc-800">
+              <span className="text-zinc-300 text-[11px]">10-Min Script (1,840 Words)</span>
+              <span className="text-emerald-400 font-bold text-[10px]">APPROVED</span>
+            </div>
+            <div className="flex items-center justify-between p-1 rounded bg-zinc-900 border border-zinc-800">
+              <span className="text-zinc-300 text-[11px]">Voiceover (ElevenLabs Studio)</span>
+              <span className="text-sky-400 font-bold text-[10px]">SYNTHESIZED</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span>From idea to voiced video</span>
+            <span className="text-red-400">10x Production Speed</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       15. WhatsApp SaaS Gateway — Direct Integration Toolkit
+       ------------------------------------------------------------------------- */
+    case 'whatsapp-saas-gateway':
+      return (
+        <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0A140F]`}>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
+            <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span className="text-[10px]">WHATSAPP BUSINESS GATEWAY</span>
+            </div>
+            <span className="text-zinc-400 text-[10px]">Live Webhooks</span>
+          </div>
+
+          <div className="space-y-1.5 py-1">
+            <div className="text-[10px] text-zinc-400">Automated Delivery Notification:</div>
+            <div className="p-2 rounded bg-zinc-800/80 border border-zinc-700/60 text-[11px] text-zinc-200">
+              <div className="font-bold text-white mb-0.5">Order #8421 Out for Delivery 🚚</div>
+              <div className="text-[10px] text-zinc-400">Your package will arrive by 2:00 PM. Track live on our portal.</div>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span className="text-emerald-400 font-bold">✔✔ Read by customer</span>
+            <span>Zero manual messaging</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       16. Pooja Shekar — Product Designer Portfolio
+       ------------------------------------------------------------------------- */
+    case 'pooja-portfolio':
+      return (
+        <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#121015]`}>
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
+            <div className="flex items-center gap-1.5 text-pink-400 font-bold">
+              <Layers className="w-3.5 h-3.5" />
+              <span className="text-[10px]">PRODUCT DESIGN SYSTEM</span>
+            </div>
+            <span className="text-emerald-400 text-[10px] font-bold">100 Lighthouse</span>
+          </div>
+
+          <div className="space-y-1.5 py-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-bold text-white">Fintech Checkout Redesign</div>
+                <div className="text-[10px] text-zinc-400">Case Study · 32 Modular Design Components</div>
+              </div>
+              <span className="px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 font-bold text-[10px]">
+                FEATURED
+              </span>
+            </div>
+            <div className="p-1.5 rounded bg-zinc-800/80 border border-zinc-700/60 text-[10px] text-zinc-300">
+              Measured Outcome: Cart abandonment reduced from 24% to 9%.
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span>Statically Pre-Rendered</span>
+            <span className="text-pink-400 font-medium">Bespoke Editorial Typography</span>
+          </div>
+        </div>
+      );
+
+    /* -------------------------------------------------------------------------
+       Default: Production Application Preview
        ------------------------------------------------------------------------- */
     default:
       return (
         <div className={`${baseContainer} bg-zinc-900 text-white dark:bg-[#0E1015]`}>
           <div className="flex items-center justify-between pb-2 border-b border-zinc-800 text-[11px] font-mono">
-            <span className="text-zinc-400 font-semibold text-[10px]">PRODUCTION ARCHITECTURE</span>
-            <span className="text-emerald-400 text-[10px]">SOVEREIGN STACK</span>
+            <span className="text-zinc-300 font-bold text-[10px]">CUSTOM PRODUCTION SOFTWARE</span>
+            <span className="text-emerald-400 text-[10px]">LIVE PRODUCT</span>
           </div>
 
           <div className="space-y-2 py-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-200 font-medium">Cloud Infrastructure</span>
-              <span className="font-mono text-emerald-400 text-[11px]">Vercel Edge</span>
+              <span className="text-zinc-200 font-medium">Reliable Cloud Architecture</span>
+              <span className="text-emerald-400 font-bold text-[11px]">99.9% Uptime</span>
             </div>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-200 font-medium">Data Layer</span>
-              <span className="font-mono text-sky-400 text-[11px]">PostgreSQL + RLS</span>
+              <span className="text-zinc-200 font-medium">Data Storage & Security</span>
+              <span className="text-sky-400 font-bold text-[11px]">Client-Owned DB</span>
             </div>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-200 font-medium">Compliance</span>
-              <span className="font-mono text-purple-400 text-[11px]">Strict Security</span>
+              <span className="text-zinc-200 font-medium">Speed & User Experience</span>
+              <span className="text-amber-400 font-bold text-[11px]">Instant Click Load</span>
             </div>
           </div>
 
           <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
-            <span>ZERO SYNTHETIC SLOP</span>
-            <span className="text-white font-medium">Verified Code</span>
+            <span>Ready for real customers</span>
+            <span className="text-white font-medium">Fully Deployed</span>
           </div>
         </div>
       );
