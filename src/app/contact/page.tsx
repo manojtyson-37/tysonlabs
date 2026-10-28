@@ -78,7 +78,7 @@ export default function ContactPage() {
           <div className="p-8 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] shadow-xs dark:shadow-xl dark:shadow-black/40">
             {status === 'success' ? (
               <div className="py-12 text-center space-y-4">
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-950 dark:text-white mx-auto flex items-center justify-center">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <h3 className="font-display font-bold text-2xl text-zinc-950 dark:text-white">
@@ -254,10 +254,10 @@ export default function ContactPage() {
 
               <li className="p-3.5 rounded-xl bg-white dark:bg-[#090A0D] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-zinc-800 dark:text-zinc-300">
                 <div className="flex items-center gap-2.5">
-                  <Mail className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <Mail className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
                   <span>Direct Studio Email</span>
                 </div>
-                <span className="text-[10px] text-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-400 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/60 font-semibold">
+                <span className="text-[10px] text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded border border-zinc-200 dark:border-zinc-700 font-mono">
                   MONITORED
                 </span>
               </li>

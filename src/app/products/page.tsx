@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getApprovedProjects } from '@/data/projects';
-import { ExternalLink, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { ExternalLink, ArrowUpRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Live Products & Systems · Built to Solve Business Bottlenecks',
@@ -76,21 +76,21 @@ export default function ProductsPage() {
                   {product.shortDescription}
                 </p>
 
-                {/* Problem & Solution Callout */}
+                {/* Problem & Solution Callout — Clean Monochrome Editorial */}
                 {product.businessUseCase && (
                   <div className="space-y-2 pt-1 text-xs">
-                    <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/15 text-zinc-700 dark:text-zinc-300">
-                      <strong className="text-red-700 dark:text-red-400 block mb-0.5 font-mono text-[10px] uppercase">
-                        The Business Problem Solved:
+                    <div className="p-3 rounded-lg bg-white dark:bg-[#15161C] border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
+                      <strong className="text-zinc-500 dark:text-zinc-400 block mb-0.5 font-mono text-[10px] uppercase font-semibold">
+                        The Operational Bottleneck:
                       </strong>
                       <p className="line-clamp-2 leading-relaxed">
                         {product.businessUseCase.problemSolved}
                       </p>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/15 text-zinc-700 dark:text-zinc-300">
-                      <strong className="text-emerald-700 dark:text-emerald-400 block mb-0.5 font-mono text-[10px] uppercase">
-                        Why I Built It:
+                    <div className="p-3 rounded-lg bg-white dark:bg-[#15161C] border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
+                      <strong className="text-zinc-500 dark:text-zinc-400 block mb-0.5 font-mono text-[10px] uppercase font-semibold">
+                        What Was Engineered:
                       </strong>
                       <p className="line-clamp-2 leading-relaxed">
                         {product.businessUseCase.whyBuilt}
@@ -102,15 +102,16 @@ export default function ProductsPage() {
                 {/* Business Impact Pills */}
                 {product.businessUseCase?.businessImpact && (
                   <div className="space-y-1.5 pt-1">
-                    <div className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">
-                      Measured Real-World Impact:
+                    <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider font-semibold">
+                      Measured Impact:
                     </div>
-                    {product.businessUseCase.businessImpact.slice(0, 2).map((impact, i) => (
-                      <div key={i} className="flex items-start gap-2 text-xs text-zinc-800 dark:text-zinc-300 font-mono">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <span>{impact}</span>
-                      </div>
-                    ))}
+                    <div className="flex flex-wrap gap-2 text-xs text-zinc-800 dark:text-zinc-300 font-mono">
+                      {product.businessUseCase.businessImpact.slice(0, 2).map((impact, i) => (
+                        <span key={i} className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/70 dark:border-zinc-800">
+                          {impact}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

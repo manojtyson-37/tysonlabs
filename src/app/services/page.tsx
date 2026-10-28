@@ -8,7 +8,6 @@ import {
   CreditCard,
   MessageSquareCode,
   ArrowUpRight,
-  CheckCircle2,
   Compass,
   Hammer,
   ShieldCheck,
@@ -176,7 +175,7 @@ export default function ServicesPage() {
                     </div>
                     {cap.deliverables.map((deliv, i) => (
                       <div key={i} className="flex items-start gap-2 text-xs text-zinc-800 dark:text-zinc-300">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-zinc-400 font-mono shrink-0 mt-0.5">•</span>
                         <span>{deliv}</span>
                       </div>
                     ))}

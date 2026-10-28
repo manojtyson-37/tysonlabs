@@ -195,7 +195,7 @@ export function ProjectsDirectory() {
           Showing <span className="text-zinc-950 dark:text-white font-bold">{filteredProjects.length}</span> of {allProjects.length} sovereign builds
         </div>
         {hasActiveFilters && (
-          <div className="text-amber-600 dark:text-amber-400">
+          <div className="text-zinc-700 dark:text-zinc-300 font-semibold">
             Active filters applied
           </div>
         )}

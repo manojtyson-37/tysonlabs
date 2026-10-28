@@ -59,7 +59,7 @@ export default function PrivacyPage() {
         <section className="space-y-2 pt-4 border-t border-black/[0.08] dark:border-[#30333B]">
           <p className="text-xs text-zinc-500 dark:text-[#717684]">
             For questions regarding this policy, please reach out via our{' '}
-            <Link href="/contact" className="text-emerald-600 dark:text-[#B99AFF] hover:underline font-medium">
+            <Link href="/contact" className="text-zinc-900 dark:text-white underline font-medium">
               contact form
             </Link>.
           </p>

@@ -9,8 +9,6 @@ import {
   ArrowLeft,
   ArrowUpRight,
   ExternalLink,
-  CheckCircle2,
-  AlertCircle,
   Clock,
 } from 'lucide-react';
 import { GithubIcon } from '@/components/Icons';
@@ -180,7 +178,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         <section className="p-6 sm:p-8 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-6">
           <div className="flex items-center justify-between flex-wrap gap-2 pb-4 border-b border-black/[0.08] dark:border-white/[0.08]">
             <div>
-              <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-emerald-600 dark:text-emerald-400 block mb-1">
+              <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 block mb-1">
                 BUSINESS OPERATIONAL CONTEXT
               </span>
               <h2 className="font-display font-bold text-xl sm:text-2xl text-zinc-950 dark:text-white">
@@ -243,8 +241,8 @@ export default async function ProjectDetailPage({ params }: Props) {
             </h2>
             <div className="prose dark:prose-invert max-w-none text-zinc-600 dark:text-[#94A3B8] text-base leading-relaxed space-y-4">
               <p>{caseStudy.overview}</p>
-              <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-3">
-                <div className="text-xs uppercase font-mono tracking-wider font-semibold text-rose-600 dark:text-rose-400">
+              <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800 space-y-3">
+                <div className="text-xs uppercase font-mono tracking-wider font-semibold text-zinc-500">
                   The Operational Friction:
                 </div>
                 <p className="text-sm text-zinc-800 dark:text-zinc-300">
@@ -268,8 +266,8 @@ export default async function ProjectDetailPage({ params }: Props) {
             <p className="text-zinc-600 dark:text-[#94A3B8] text-base leading-relaxed">
               {caseStudy.solution}
             </p>
-            <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-2">
-              <div className="text-xs uppercase font-mono tracking-wider font-semibold text-emerald-600 dark:text-emerald-400">
+            <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+              <div className="text-xs uppercase font-mono tracking-wider font-semibold text-zinc-500">
                 Direct Responsibility & Engineering Role:
               </div>
               <p className="text-sm text-zinc-800 dark:text-zinc-200">
@@ -354,14 +352,14 @@ export default async function ProjectDetailPage({ params }: Props) {
             </h2>
             <div className="space-y-3">
               {caseStudy.engineeringDecisions.map((dec, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08]">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
+                <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800">
+                  <span className="text-xs font-mono font-bold text-zinc-400 shrink-0 mt-0.5">#{String(idx + 1).padStart(2, '0')}</span>
                   <p className="text-sm text-zinc-800 dark:text-zinc-300 leading-relaxed">{dec}</p>
                 </div>
               ))}
               {caseStudy.challengesAndLessons.map((les, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08]">
-                  <AlertCircle className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800">
+                  <span className="text-xs font-mono font-bold text-zinc-400 shrink-0 mt-0.5">L{idx + 1}</span>
                   <p className="text-sm text-zinc-800 dark:text-zinc-300 leading-relaxed">{les}</p>
                 </div>
               ))}
@@ -406,8 +404,8 @@ export default async function ProjectDetailPage({ params }: Props) {
             </h3>
             <div className="space-y-2">
               {project.highlights.map((h, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08]">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
+                <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800">
+                  <span className="text-xs font-mono text-zinc-400 shrink-0 mt-0.5">•</span>
                   <span className="text-xs text-zinc-800 dark:text-zinc-300">{h}</span>
                 </div>
               ))}

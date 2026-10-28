@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Mail, Terminal, ShieldCheck, HeartHandshake, Zap } from 'lucide-react';
+import { ArrowUpRight, Mail } from 'lucide-react';
 import { GithubIcon } from '@/components/Icons';
 
 export const metadata: Metadata = {
@@ -49,42 +49,34 @@ export default function AboutPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-3">
-            <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#090A0D] border border-black/[0.1] dark:border-white/[0.1] flex items-center justify-center text-emerald-500 dark:text-emerald-400">
-              <Zap className="w-4 h-4" />
-            </div>
-            <h3 className="font-display font-bold text-base text-zinc-950 dark:text-white">Zero Slop Aesthetic</h3>
-            <p className="text-xs text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
+          <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800 space-y-3 font-mono">
+            <div className="text-xs text-zinc-500 uppercase tracking-wider">01 / DOCTRINE</div>
+            <h3 className="font-display font-semibold text-base text-zinc-950 dark:text-white font-sans">Zero Slop Aesthetic</h3>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
               We strictly forbid generic AI glowing slop, crypto-style neon blobs, and decorative cards with fake metrics. If an element doesn&apos;t serve an operational purpose, it doesn&apos;t belong on the screen.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-3">
-            <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#090A0D] border border-black/[0.1] dark:border-white/[0.1] flex items-center justify-center text-sky-500 dark:text-sky-400">
-              <Terminal className="w-4 h-4" />
-            </div>
-            <h3 className="font-display font-bold text-base text-zinc-950 dark:text-white">High-Contrast Usability</h3>
-            <p className="text-xs text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
+          <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800 space-y-3 font-mono">
+            <div className="text-xs text-zinc-500 uppercase tracking-wider">02 / DOCTRINE</div>
+            <h3 className="font-display font-semibold text-base text-zinc-950 dark:text-white font-sans">High-Contrast Usability</h3>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
               Tools used by factory workers, kitchen chefs, or clinic staff must remain legible under harsh real-world lighting. We design for speed, clear visual contrast, and tactile feedback.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-3">
-            <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#090A0D] border border-black/[0.1] dark:border-white/[0.1] flex items-center justify-center text-purple-500 dark:text-purple-400">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <h3 className="font-display font-bold text-base text-zinc-950 dark:text-white">Sovereign Architecture</h3>
-            <p className="text-xs text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
+          <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800 space-y-3 font-mono">
+            <div className="text-xs text-zinc-500 uppercase tracking-wider">03 / DOCTRINE</div>
+            <h3 className="font-display font-semibold text-base text-zinc-950 dark:text-white font-sans">Sovereign Architecture</h3>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
               We favor client-side WASM, serverless edge routes, and clean PostgreSQL schemas that operators can own and control without recurring vendor lock-in or fragile microservice webs.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-3">
-            <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#090A0D] border border-black/[0.1] dark:border-white/[0.1] flex items-center justify-center text-amber-500 dark:text-amber-400">
-              <HeartHandshake className="w-4 h-4" />
-            </div>
-            <h3 className="font-display font-bold text-base text-zinc-950 dark:text-white">Verified Work Over Hype</h3>
-            <p className="text-xs text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
+          <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800 space-y-3 font-mono">
+            <div className="text-xs text-zinc-500 uppercase tracking-wider">04 / DOCTRINE</div>
+            <h3 className="font-display font-semibold text-base text-zinc-950 dark:text-white font-sans">Verified Work Over Hype</h3>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
               Every project in this studio represents working code that has been inspected, tested, and verified. We don&apos;t publish hypothetical mockups and claim they are finished products.
             </p>
           </div>
