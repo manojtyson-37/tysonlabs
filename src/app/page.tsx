@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { getFeaturedProjects } from '@/data/projects';
-import { HeroTelemetryDeck } from '@/components/HeroTelemetryDeck';
+import { HeroOperationalPreview } from '@/components/HeroOperationalPreview';
 import { HomeProjectsExplorer } from '@/components/HomeProjectsExplorer';
 import { TaglineReveal } from '@/components/TaglineReveal';
 import { FaqSection } from '@/components/FaqSection';
@@ -64,16 +64,13 @@ export default function HomePage() {
           
           {/* Left Column: Manifesto & Tactile CTAs (7 cols) */}
           <div className="lg:col-span-7 space-y-7">
-            {/* Studio Status Pill */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#181818] border border-white/[0.08] text-xs font-mono text-[#9B9B9B]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="uppercase tracking-wider font-semibold text-white">
-                TYSONLABS · INDEPENDENT ENGINEERING STUDIO
-              </span>
-              <span className="text-[#666666] hidden sm:inline">· 16 PRODUCTION CODEBASES</span>
+            {/* Studio Status Marker */}
+            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-md bg-[#181818] border border-white/[0.08] text-xs font-mono text-[#9B9B9B]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span className="text-white font-medium">TysonLabs</span>
+              <span className="text-[#666666]">/</span>
+              <span>Independent Engineering Studio</span>
+              <span className="text-[#666666] hidden sm:inline">· 16 Shipped Builds</span>
             </div>
 
             {/* Main Statement */}
@@ -138,9 +135,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right Column: Studio Runtime Radar (5 cols) */}
+          {/* Right Column: Grounded Operational Preview (5 cols) */}
           <div className="lg:col-span-5 w-full">
-            <HeroTelemetryDeck />
+            <HeroOperationalPreview />
           </div>
 
         </div>
@@ -149,12 +146,9 @@ export default function HomePage() {
       {/* Live Systems Radar Ribbon */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8">
         <div className="bg-[#181818] border border-white/[0.08] rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono shadow-xl shadow-black/80">
-          <div className="flex items-center gap-3">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-white font-bold tracking-wider uppercase">VERIFIED LIVE DEPLOYMENTS</span>
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span className="text-white font-medium tracking-wide">VERIFIED LIVE DEPLOYMENTS</span>
             <span className="text-[#666666] hidden sm:inline">· 5 Live Environments</span>
           </div>
 
