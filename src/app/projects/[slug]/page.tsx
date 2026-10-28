@@ -175,6 +175,69 @@ export default async function ProjectDetailPage({ params }: Props) {
         </div>
       </section>
 
+      {/* Prominent Business Use Case & Operational Impact Section */}
+      {project.businessUseCase && (
+        <section className="p-6 sm:p-8 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-6">
+          <div className="flex items-center justify-between flex-wrap gap-2 pb-4 border-b border-black/[0.08] dark:border-white/[0.08]">
+            <div>
+              <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-emerald-600 dark:text-emerald-400 block mb-1">
+                BUSINESS OPERATIONAL CONTEXT
+              </span>
+              <h2 className="font-display font-bold text-xl sm:text-2xl text-zinc-950 dark:text-white">
+                Why I built this & what it solved
+              </h2>
+            </div>
+            <span className="text-xs font-mono px-3 py-1 rounded-full bg-white dark:bg-[#1A1D24] text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-white/10 font-medium">
+              Vertical: {project.businessUseCase.targetIndustry}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Why Built (The Catalyst) */}
+            <div className="p-5 rounded-xl bg-white dark:bg-[#14161C] border border-black/[0.06] dark:border-white/[0.06] space-y-2">
+              <span className="text-xs font-mono uppercase tracking-wider font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>The Origin & Why I Built It</span>
+              </span>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
+                {project.businessUseCase.whyBuilt}
+              </p>
+            </div>
+
+            {/* What Was Solved */}
+            <div className="p-5 rounded-xl bg-white dark:bg-[#14161C] border border-black/[0.06] dark:border-white/[0.06] space-y-2">
+              <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>The Core Problem Solved</span>
+              </span>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
+                {project.businessUseCase.problemSolved}
+              </p>
+            </div>
+          </div>
+
+          {/* Measured Real-World Business Impact */}
+          <div className="pt-2">
+            <span className="text-xs font-mono uppercase tracking-wider font-bold text-zinc-900 dark:text-white block mb-3">
+              Measurable Business Impact:
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {project.businessUseCase.businessImpact.map((impact, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white dark:bg-[#14161C] border border-zinc-200/80 dark:border-white/[0.06]"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-xs font-medium text-zinc-800 dark:text-zinc-200 leading-snug">
+                    {impact}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Case Study or Extended Breakdown */}
       {caseStudy ? (
         <div className="space-y-14">

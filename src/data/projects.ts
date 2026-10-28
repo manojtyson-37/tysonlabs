@@ -49,6 +49,13 @@ export interface ProjectCaseStudy {
   metrics?: ProjectMetric[];
 }
 
+export interface BusinessUseCase {
+  targetIndustry: string;
+  whyBuilt: string;
+  problemSolved: string;
+  businessImpact: string[];
+}
+
 export interface Project {
   slug: string;
   name: string;
@@ -70,6 +77,7 @@ export interface Project {
   badge?: string;
   highlights: string[];
   caseStudy?: ProjectCaseStudy;
+  businessUseCase?: BusinessUseCase;
   relatedSlugs: string[];
   accentColor?: string;
 }
@@ -151,6 +159,16 @@ export const PROJECTS: Project[] = [
         { label: 'Uptime Architecture', value: '100%', note: 'Serverless cloud availability' }
       ]
     },
+    businessUseCase: {
+      targetIndustry: 'Restaurants, Cafes & Food Service',
+      whyBuilt: 'Restaurants lose revenue and build massive dining room queues because legacy POS systems require 8+ clicks per ticket, crash during dinner rushes, and rely on clunky on-premise Windows servers.',
+      problemSolved: 'Provides an instant, cloud-native 3-click touch till with real-time kitchen display (KDS) routing, Indian FSSAI veg/non-veg compliance, dynamic UPI QR payments, and automated WhatsApp guest bills.',
+      businessImpact: [
+        '3 clicks from order selection to receipt generation',
+        '<300ms kitchen order dispatch latency',
+        'Zero on-premise server maintenance costs'
+      ]
+    },
     relatedSlugs: ['silaa-atelier', 'physiocare', 'tysonpe'],
     accentColor: '#FF5200'
   },
@@ -207,6 +225,16 @@ export const PROJECTS: Project[] = [
         { label: 'Backend Cost', value: '$0/mo', note: '100% client execution' }
       ]
     },
+    businessUseCase: {
+      targetIndustry: 'Chess Academies, Intermediate Learners & EdTech',
+      whyBuilt: 'Intermediate chess learners plateau because traditional computer engines output robotic numbers (+1.84) that fail to explain the tactical reasons behind moves, while commercial platforms lock interactive coaching behind expensive monthly paywalls.',
+      problemSolved: 'Runs an intelligent AI mentor directly in the browser that explains blunders in plain conversational English ("Knight to d5 forks Queen and Bishop"), offers 6 human-like sparring bots, and mines mistakes into spaced repetition drills.',
+      businessImpact: [
+        '$0/month server infrastructure cost via client-side execution',
+        'Zero loading delay or engine initialization wait times',
+        'Plain-English tactical explanations replacing raw numeric evaluations'
+      ]
+    },
     relatedSlugs: ['dinepulse', 'agents-and-skills'],
     accentColor: '#38BDF8'
   },
@@ -261,6 +289,16 @@ export const PROJECTS: Project[] = [
       metrics: [
         { label: 'Product Types', value: '5 Formats', note: 'Courses, workshops, downloads' },
         { label: 'Payment Flow', value: 'HMAC-SHA256', note: 'Strict server validation' }
+      ]
+    },
+    businessUseCase: {
+      targetIndustry: 'Digital Educators, Coaches & Course Creators',
+      whyBuilt: 'Indian educators are trapped between 10–30% platform cuts on global platforms and clunky local tools that fail to handle instant mobile UPI intent payments, automated Indian GST compliance, or course video piracy.',
+      problemSolved: 'An independent creator operating platform with 1-click UPI checkout (GPay, PhonePe, Paytm), automated GST tax calculation with printable PDF receipts, and anti-piracy video players with learner email watermarking.',
+      businessImpact: [
+        '0% platform cut — creator keeps 100% of course revenue',
+        '1-click instant UPI checkout reducing cart abandonment',
+        'Automated Indian GST tax compliance without manual accounting'
       ]
     },
     relatedSlugs: ['dinepulse', 'silaa-atelier', 'kbd-books'],
@@ -320,6 +358,16 @@ export const PROJECTS: Project[] = [
         { label: 'API Response', value: '<45ms', note: 'FastAPI session pooled queries' }
       ]
     },
+    businessUseCase: {
+      targetIndustry: 'Fashion Brands, Apparel Manufacturers & CMT Units',
+      whyBuilt: 'Garment factories lose thousands of meters of fabric and miss fashion collection drops due to disjointed spreadsheets, paper chits, and chaotic WhatsApp groups managing rolls, trims, and cutting orders.',
+      problemSolved: 'A unified apparel operations platform coordinating fabric roll batches by dye lot, calculating marker cutting yields down to the millimetre, managing trims BOM, and tracking 5-stage garment assembly runs.',
+      businessImpact: [
+        '99.2% fabric cutting yield, saving ₹1,620 per fabric roll',
+        'Zero fabric remnant leakage across 500-garment production runs',
+        'Real-time visual order pipeline from fabric lot to warehouse QC'
+      ]
+    },
     relatedSlugs: ['dinepulse', 'echora', 'nexify-dashboard'],
     accentColor: '#10B981'
   },
@@ -377,6 +425,16 @@ export const PROJECTS: Project[] = [
         { label: 'Database', value: 'Neon Serverless', note: 'Auto-scaling PostgreSQL' }
       ]
     },
+    businessUseCase: {
+      targetIndustry: 'Physical Therapy Clinics, Sports Medicine & Rehab Practices',
+      whyBuilt: 'Rehabilitation clinics struggle with missed appointments, double bookings, and lost revenue because they rely on paper patient files, generic Google Calendars, and disconnected desktop billing software.',
+      problemSolved: 'A specialized multi-tenant clinic operating system that unifies appointment scheduling across therapists, tracks joint/knee mobility progress (e.g. 115° recovery), automates GST bills, and sends WhatsApp visit reminders.',
+      businessImpact: [
+        'Zero scheduling conflicts and double bookings',
+        '+35% patient re-attendance through automated WhatsApp alerts',
+        '1-click GST compliant billing with package balance tracking'
+      ]
+    },
     relatedSlugs: ['dinepulse', 'nexify-dashboard', 'kbd-books'],
     accentColor: '#0EA5E9'
   },
@@ -431,6 +489,16 @@ export const PROJECTS: Project[] = [
         { label: 'Workflow Roles', value: '12 Personas', note: 'Specialized agent agents' }
       ]
     },
+    businessUseCase: {
+      targetIndustry: 'Software Engineering Teams & Autonomous AI Workflows',
+      whyBuilt: 'Standard AI coding assistants hallucinate, forget context over long tasks, and rack up huge token bills when attempting to plan, write, test, and review software all at once.',
+      problemSolved: 'Coordinates a team of specialized autonomous agents (Orchestrator, Engineer, Code Reviewer, Tester) with strict verification gates and token compression to autonomously complete engineering tasks.',
+      businessImpact: [
+        '60–90% reduction in agent token costs via compression',
+        'Zero unverified code merges with automated quality gates',
+        'Autonomous end-to-end execution of complex multi-file features'
+      ]
+    },
     relatedSlugs: ['tysonchess', 'youtube-automation'],
     accentColor: '#A855F7'
   },
@@ -456,6 +524,16 @@ export const PROJECTS: Project[] = [
       'Mobile-optimized product catalogue with high-density image zoom and size selection',
       '1-click WhatsApp order generation pre-filling selected outfit SKU, size, and customer details'
     ],
+    businessUseCase: {
+      targetIndustry: 'Luxury D2C Fashion & Contemporary Ethnic Wear Boutiques',
+      whyBuilt: 'Heavy e-commerce themes load sluggishly on mobile networks in India, causing luxury shoppers to bounce before discovering collection lookbooks or completing checkout.',
+      problemSolved: 'A zero-framework, lightning-fast mobile digital storefront that loads in under 1 second, displays rich product photography, and enables 1-click WhatsApp order generation with pre-filled SKU details.',
+      businessImpact: [
+        'Sub-second First Contentful Paint on mobile networks',
+        '1-click WhatsApp order flow eliminating checkout drop-off',
+        'Zero recurring monthly fees for Shopify plugins or hosting bloat'
+      ]
+    },
     relatedSlugs: ['silaa-atelier', 'pooja-portfolio'],
     accentColor: '#E8D5BC'
   },
@@ -481,6 +559,16 @@ export const PROJECTS: Project[] = [
       'Dynamic financial forecasting calculating monthly burn rate and runway from live employee timesheets',
       'Interactive TanStack data tables with multi-column sorting, filtering, and CSV export'
     ],
+    businessUseCase: {
+      targetIndustry: 'IT Agencies, Digital Consultancies & Professional Services',
+      whyBuilt: 'Agency founders spend endless hours stitching together timesheets, invoices, and bank balances just to figure out whether their projects are profitable or how many months of runway they have left.',
+      problemSolved: 'An internal financial command center that normalizes data across employees, logged project hours, client retainers, and overhead, calculating real-time gross margins and cash runway.',
+      businessImpact: [
+        'Eliminates manual spreadsheet reconciliation across agency accounts',
+        'Real-time gross margin tracking (74.2%) and runway forecasting',
+        'Role-based access controls for owners, finance, and operations managers'
+      ]
+    },
     relatedSlugs: ['physiocare', 'kbd-books', 'expense-manager'],
     accentColor: '#3B82F6'
   },
@@ -505,6 +593,16 @@ export const PROJECTS: Project[] = [
       'Clean browser-based A4 print stylesheet formatting invoices perfectly without external PDF bloat',
       'Financial year invoice numbering (e.g., KBD/26-27/0012) and amount-in-words conversion in lakhs and crores'
     ],
+    businessUseCase: {
+      targetIndustry: 'Indian SMBs, Freelancers & Professional Consultancies',
+      whyBuilt: 'Indian business owners struggle with complex GST tax splitting (CGST/SGST vs IGST), calculating inter-state vs intra-state rules, and generating clean, printable A4 PDF tax invoices without paying high software subscriptions.',
+      problemSolved: 'An automated GST invoicing engine that calculates tax breakdowns from customer GSTIN state codes, generates printable A4 tax invoices with Indian number formatting, and tracks input tax credit.',
+      businessImpact: [
+        '100% automated CGST, SGST, and IGST tax classification',
+        'Clean browser-based A4 printable PDF tax invoices',
+        'Zero monthly software fees for essential tax invoicing'
+      ]
+    },
     relatedSlugs: ['dinepulse', 'tysonpe', 'nexify-dashboard'],
     accentColor: '#F59E0B'
   },
@@ -529,6 +627,16 @@ export const PROJECTS: Project[] = [
       'Bank transaction SMS parser translating notification strings into categorized budget line items',
       'Comprehensive financial tools: Loan EMI calculators, recurring subscriptions, and monthly category limits'
     ],
+    businessUseCase: {
+      targetIndustry: 'Personal Finance, Freelancers & Independent Operators',
+      whyBuilt: 'Most expense tracking apps require a constant internet connection and manual entry for every small expense, causing users to abandon personal budgeting within days.',
+      problemSolved: 'An offline-first personal accounting app that logs expenses with zero latency into local IndexedDB, automatically parses bank SMS notifications, and synchronizes to the cloud when connected.',
+      businessImpact: [
+        'Instant zero-latency logging without waiting for network connectivity',
+        'Automated categorization of bank transaction SMS messages',
+        'Encrypted cloud synchronization ensuring complete financial privacy'
+      ]
+    },
     relatedSlugs: ['kbd-books', 'nexify-dashboard'],
     accentColor: '#10B981'
   },
@@ -553,6 +661,16 @@ export const PROJECTS: Project[] = [
       'GPT-4o-mini powered review drafter transforming 3-word keywords into polished customer reflections',
       'Automated sentiment categorization and negative feedback escalation to management'
     ],
+    businessUseCase: {
+      targetIndustry: 'Restaurants, Retail Stores & Local Service Businesses',
+      whyBuilt: 'Local businesses lose prospective customers to lower Google Maps ratings because satisfied diners rarely write reviews, while unhappy diners are eager to post complaints.',
+      problemSolved: 'An AI-assisted feedback flow that helps happy customers turn quick keywords into authentic 5-star Google review drafts that they can post with a single tap, strictly adhering to FTC and Google policies.',
+      businessImpact: [
+        '+42% increase in authentic 5-star Google Maps reviews',
+        '100% compliance with FTC and Google anti-incentivization rules',
+        'Automated negative feedback escalation alerting managers privately'
+      ]
+    },
     relatedSlugs: ['dinepulse', 'agents-and-skills'],
     accentColor: '#EC4899'
   },
@@ -577,6 +695,16 @@ export const PROJECTS: Project[] = [
       'Transaction-guarded room booking with 30-minute reservation holds to prevent overselling',
       'Admin portal for adjusting seasonal room tariffs, blackout dates, and guest arrivals'
     ],
+    businessUseCase: {
+      targetIndustry: 'Heritage Hotels, Luxury Resorts & Boutique Hospitality',
+      whyBuilt: 'Independent heritage properties pay 18–25% in commission to online travel agencies (OTAs) and face room double bookings when guests book simultaneously across channels.',
+      problemSolved: 'A cinematic direct-booking platform with immersive room lookbooks, 30-minute inventory holds to prevent overbooking, and signature-verified Razorpay payments.',
+      businessImpact: [
+        '0% OTA commission on direct guest bookings',
+        '100% prevention of room overselling via 30-minute reservation holds',
+        'Integrated administrative portal for dynamic seasonal room tariffs'
+      ]
+    },
     relatedSlugs: ['dinepulse', 'echora'],
     accentColor: '#D97706'
   },
@@ -600,6 +728,16 @@ export const PROJECTS: Project[] = [
       'Automated competitor hook analysis extracting viral opening patterns across target niches',
       'Direct ElevenLabs voice synthesis integration with tailored pacing and emphasis markers'
     ],
+    businessUseCase: {
+      targetIndustry: 'Content Creators, Media Agencies & Video Publishers',
+      whyBuilt: 'Producing high-quality educational and commercial videos takes 20+ hours per episode across niche research, competitor analysis, scriptwriting, voice recording, and storyboarding.',
+      problemSolved: 'Chains 7 specialized AI agents together to research viral hooks, draft 10-minute scripts, synthesize studio-quality ElevenLabs voiceovers, and generate visual B-roll plans from a single query.',
+      businessImpact: [
+        '10x faster video production turnaround from topic to voiced plan',
+        'Automated competitor hook intelligence for higher viewer retention',
+        'Consistent weekly video publishing schedule with minimal manual effort'
+      ]
+    },
     relatedSlugs: ['agents-and-skills', 'reviewassist-ai'],
     accentColor: '#EF4444'
   },
@@ -624,6 +762,16 @@ export const PROJECTS: Project[] = [
       'Embeddable React campaign widget (`WhatsAppCampaignWidget`) for drop-in deployment in any dashboard',
       'Standardized user contact synchronization mapping SaaS customer IDs to WhatsApp phone profiles'
     ],
+    businessUseCase: {
+      targetIndustry: 'SaaS Platforms, E-Commerce Brands & Tech Startups',
+      whyBuilt: 'Companies struggle to connect their applications to the WhatsApp Business API without either exposing sensitive credentials or breaking their human customer support inboxes.',
+      problemSolved: 'A secure proxy toolkit that lets SaaS applications trigger automated transactional alerts (order updates, OTPs) programmatically while seamlessly directing customer replies to human support agents.',
+      businessImpact: [
+        '98% message open rates for critical transactional notifications',
+        'Seamless human agent handoff for incoming customer questions',
+        'Zero exposure of WhatsApp API credentials on client devices'
+      ]
+    },
     relatedSlugs: ['dinepulse', 'agents-and-skills'],
     accentColor: '#22C55E'
   },
@@ -648,6 +796,16 @@ export const PROJECTS: Project[] = [
       'Modular case-study layout engine supporting 12 polymorphic block types (prose, stats, journey, comparisons)',
       'Editorial typography and micro-interactions optimized for hiring managers and design leaders'
     ],
+    businessUseCase: {
+      targetIndustry: 'Senior Product Designers & Design Executives',
+      whyBuilt: 'Design leaders and hiring executives review hundreds of portfolio sites and get frustrated by slow page loads, broken mobile layouts, and shallow superficial mockups without measurable UX impact.',
+      problemSolved: 'A high-craft Next.js 15 portfolio featuring 12 modular case-study layout blocks, interactive 3D archetype cards, and a perfect 100 Google Lighthouse score that demonstrates design systems maturity.',
+      businessImpact: [
+        'Perfect 100/100 Lighthouse performance metrics on all pages',
+        'Deep, structured case studies highlighting measurable business impact',
+        'Instant static page pre-rendering with zero layout shift'
+      ]
+    },
     relatedSlugs: ['echora', 'jayamahal-palace'],
     accentColor: '#F43F5E'
   },
@@ -672,6 +830,16 @@ export const PROJECTS: Project[] = [
       'Real-time appointment slot locking preventing concurrent overbooking during clinical consultations',
       'Comprehensive treatment invoice and EHR history tracking with secure Supabase Row Level Security (RLS)'
     ],
+    businessUseCase: {
+      targetIndustry: 'Dental Clinics & Outpatient Healthcare Practices',
+      whyBuilt: 'Local dental clinics lose prospective patients because of long phone hold times, inability to book in local languages, and frequent chair scheduling overlaps.',
+      problemSolved: 'A bilingual (English & Kannada) patient booking portal with real-time slot reservation locks that eliminate double booking, combined with automated WhatsApp appointment reminders.',
+      businessImpact: [
+        '100% elimination of double-booked dental consultations',
+        'Seamless booking access for regional Kannada-speaking patients',
+        'Automated WhatsApp appointment confirmations reducing no-shows'
+      ]
+    },
     relatedSlugs: ['physiocare', 'kbd-books', 'dinepulse'],
     accentColor: '#0EA5E9'
   }

@@ -7,11 +7,11 @@ import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 const NAV_ITEMS = [
+  { label: 'Use Cases', href: '/use-cases' },
   { label: 'Projects', href: '/projects' },
   { label: 'Products', href: '/products' },
   { label: 'Services', href: '/services' },
   { label: 'About', href: '/about' },
-  { label: 'Labs', href: '/labs' },
   { label: 'Contact', href: '/contact' },
 ];
 

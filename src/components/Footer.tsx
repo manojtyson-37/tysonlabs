@@ -37,6 +37,11 @@ export function Footer() {
             </h4>
             <ul className="space-y-2 text-zinc-600 dark:text-[#9B9B9B]">
               <li>
+                <Link href="/use-cases" className="hover:text-black dark:hover:text-white transition-colors duration-200">
+                  Business Use Cases
+                </Link>
+              </li>
+              <li>
                 <Link href="/projects" className="hover:text-black dark:hover:text-white transition-colors duration-200">
                   All Projects (#01 to 16)
                 </Link>
