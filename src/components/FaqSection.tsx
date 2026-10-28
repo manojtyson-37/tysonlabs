@@ -44,14 +44,14 @@ export function FaqSection() {
   return (
     <section className="max-w-7xl mx-auto px-6 sm:px-8 py-12 sm:py-16" aria-label="Frequently Asked Questions">
       <div className="mb-10 max-w-2xl">
-        <div className="text-xs uppercase tracking-wider font-semibold text-[#666666] font-mono mb-2 flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <div className="text-xs uppercase tracking-wider font-semibold text-zinc-500 dark:text-[#666666] font-mono mb-2 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
           <span>Clear Answers & Terms</span>
         </div>
-        <h2 className="font-display font-bold text-2xl sm:text-4xl text-white tracking-tight [text-wrap:balance]">
+        <h2 className="font-display font-bold text-2xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
           Frequently asked questions.
         </h2>
-        <p className="text-sm text-[#9B9B9B] mt-2 [text-wrap:pretty]">
+        <p className="text-sm text-zinc-600 dark:text-[#9B9B9B] mt-2 [text-wrap:pretty]">
           Everything you need to know about commissioning software, code ownership, and deployment timelines.
         </p>
       </div>
@@ -60,17 +60,17 @@ export function FaqSection() {
         {FAQS.map((faq, index) => (
           <article
             key={index}
-            className="p-6 rounded-2xl bg-[#181818] border border-white/[0.08] flex flex-col justify-between hover:border-white/[0.18] transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            className="p-6 rounded-2xl bg-white dark:bg-[#181818] border border-black/[0.08] dark:border-white/[0.08] flex flex-col justify-between hover:border-black/[0.2] dark:hover:border-white/[0.18] shadow-xs hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
           >
             <div>
-              <h3 className="text-base font-semibold text-white tracking-tight leading-snug mb-2.5 [text-wrap:balance]">
+              <h3 className="text-base font-semibold text-zinc-950 dark:text-white tracking-tight leading-snug mb-2.5 [text-wrap:balance]">
                 {faq.question}
               </h3>
-              <p className="text-sm text-[#9B9B9B] leading-relaxed [text-wrap:pretty]">
+              <p className="text-sm text-zinc-600 dark:text-[#9B9B9B] leading-relaxed [text-wrap:pretty]">
                 {faq.answer}
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t border-white/[0.04] text-[11px] font-mono text-[#666666]">
+            <div className="mt-4 pt-3 border-t border-black/[0.06] dark:border-white/[0.04] text-[11px] font-mono text-zinc-400 dark:text-[#666666]">
               Verified Studio Policy
             </div>
           </article>

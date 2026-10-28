@@ -10,18 +10,18 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 sm:px-8 py-10 space-y-8">
-      <div className="space-y-2 border-b border-[#30333B] pb-6">
-        <h1 className="font-display font-bold text-3xl sm:text-4xl text-[#F4F3F8]">
+      <div className="space-y-2 border-b border-black/[0.08] dark:border-[#30333B] pb-6">
+        <h1 className="font-display font-bold text-3xl sm:text-4xl text-zinc-950 dark:text-[#F4F3F8]">
           Privacy Policy
         </h1>
-        <p className="text-xs font-mono text-[#717684]">
+        <p className="text-xs font-mono text-zinc-500 dark:text-[#717684]">
           Last revised: October 2026
         </p>
       </div>
 
-      <div className="space-y-6 text-sm text-[#A6A8B3] leading-relaxed">
+      <div className="space-y-6 text-sm text-zinc-600 dark:text-[#A6A8B3] leading-relaxed">
         <section className="space-y-2">
-          <h2 className="font-display font-bold text-lg text-[#F4F3F8]">
+          <h2 className="font-display font-bold text-lg text-zinc-950 dark:text-[#F4F3F8]">
             1. Core Principles
           </h2>
           <p>
@@ -30,7 +30,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-2">
-          <h2 className="font-display font-bold text-lg text-[#F4F3F8]">
+          <h2 className="font-display font-bold text-lg text-zinc-950 dark:text-[#F4F3F8]">
             2. Contact Inquiries
           </h2>
           <p>
@@ -39,7 +39,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-2">
-          <h2 className="font-display font-bold text-lg text-[#F4F3F8]">
+          <h2 className="font-display font-bold text-lg text-zinc-950 dark:text-[#F4F3F8]">
             3. Analytics & Telemetry
           </h2>
           <p>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-2">
-          <h2 className="font-display font-bold text-lg text-[#F4F3F8]">
+          <h2 className="font-display font-bold text-lg text-zinc-950 dark:text-[#F4F3F8]">
             4. External Links
           </h2>
           <p>
@@ -56,10 +56,10 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section className="space-y-2 pt-4 border-t border-[#30333B]">
-          <p className="text-xs text-[#717684]">
+        <section className="space-y-2 pt-4 border-t border-black/[0.08] dark:border-[#30333B]">
+          <p className="text-xs text-zinc-500 dark:text-[#717684]">
             For questions regarding this policy, please reach out via our{' '}
-            <Link href="/contact" className="text-[#B99AFF] hover:underline">
+            <Link href="/contact" className="text-emerald-600 dark:text-[#B99AFF] hover:underline font-medium">
               contact form
             </Link>.
           </p>

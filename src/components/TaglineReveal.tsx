@@ -62,8 +62,8 @@ export function TaglineReveal({
       aria-label="Studio Manifesto"
     >
       <div className="max-w-3xl">
-        <div className="text-xs uppercase tracking-wider font-semibold text-[#666666] font-mono mb-4 flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <div className="text-xs uppercase tracking-wider font-semibold text-zinc-500 dark:text-[#666666] font-mono mb-4 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           <span>Core Engineering Thesis</span>
         </div>
 
@@ -75,8 +75,8 @@ export function TaglineReveal({
                 key={`${word}-${idx}`}
                 className={`inline-block mr-[0.28em] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                   isRevealed
-                    ? 'text-white'
-                    : 'text-white/[0.25]'
+                    ? 'text-black dark:text-white'
+                    : 'text-black/[0.22] dark:text-white/[0.25]'
                 }`}
               >
                 {word}

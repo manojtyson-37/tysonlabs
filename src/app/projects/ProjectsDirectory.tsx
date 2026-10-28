@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Project, ProjectCategory, ProjectStatus, CATEGORIES, STATUS_OPTIONS, getApprovedProjects } from '@/data/projects';
+import { ProjectCategory, ProjectStatus, CATEGORIES, STATUS_OPTIONS, getApprovedProjects } from '@/data/projects';
 import { ProjectCard } from '@/components/ProjectCard';
 import { Search, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 
@@ -86,23 +86,23 @@ export function ProjectsDirectory() {
   return (
     <div className="space-y-8">
       {/* Control Bar: Search & Filters */}
-      <div className="p-6 rounded-2xl bg-[#0F1116] border border-white/[0.08] space-y-5 shadow-xl shadow-black/40">
+      <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-5 shadow-xs dark:shadow-xl dark:shadow-black/40">
         {/* Top Row: Search Input & Sort Selector */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-zinc-400 dark:text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search projects by name, technology, or keywords (e.g. Next.js, POS, WASM)..."
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[#090A0D] border border-white/[0.08] text-sm text-white placeholder-[#64748B] focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white dark:bg-[#090A0D] border border-black/[0.08] dark:border-white/[0.08] text-sm text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-[#64748B] focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-white p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-900 dark:text-[#64748B] dark:hover:text-white p-1"
                 aria-label="Clear search input"
               >
                 <X className="w-4 h-4" />
@@ -112,14 +112,14 @@ export function ProjectsDirectory() {
 
           {/* Sort Selector */}
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-xs text-[#64748B] font-mono flex items-center gap-1">
+            <span className="text-xs text-zinc-500 dark:text-[#64748B] font-mono flex items-center gap-1">
               <ArrowUpDown className="w-3.5 h-3.5" />
               <span>Sort:</span>
             </span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-[#090A0D] border border-white/[0.08] text-xs text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-white/30"
+              className="bg-white dark:bg-[#090A0D] border border-black/[0.08] dark:border-white/[0.08] text-xs text-zinc-900 dark:text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-black/30 dark:focus:border-white/30"
             >
               <option value="featured">Featured First</option>
               <option value="alphabetical">Alphabetical (A–Z)</option>
@@ -129,7 +129,7 @@ export function ProjectsDirectory() {
 
         {/* Second Row: Category Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-xs text-[#64748B] font-mono shrink-0 mr-1 flex items-center gap-1">
+          <span className="text-xs text-zinc-500 dark:text-[#64748B] font-mono shrink-0 mr-1 flex items-center gap-1">
             <SlidersHorizontal className="w-3.5 h-3.5" />
             <span>Category:</span>
           </span>
@@ -142,8 +142,8 @@ export function ProjectsDirectory() {
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`btn-tactile text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-all duration-150 border ${
                   isSelected
-                    ? 'bg-white text-black border-white font-semibold shadow-sm'
-                    : 'bg-[#090A0D] text-[#94A3B8] border-white/[0.08] hover:border-white/20 hover:text-white'
+                    ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white font-semibold shadow-xs'
+                    : 'bg-white dark:bg-[#090A0D] text-zinc-600 dark:text-[#94A3B8] border-black/[0.08] dark:border-white/[0.08] hover:border-black/20 dark:hover:border-white/20 hover:text-black dark:hover:text-white'
                 }`}
               >
                 {cat.label}
@@ -153,9 +153,9 @@ export function ProjectsDirectory() {
         </div>
 
         {/* Third Row: Lifecycle Status Pills */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-white/[0.06] text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-black/[0.06] dark:border-white/[0.06] text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-[#64748B] font-mono mr-1">Lifecycle:</span>
+            <span className="text-zinc-500 dark:text-[#64748B] font-mono mr-1">Lifecycle:</span>
             {STATUS_OPTIONS.map((status) => {
               const isSelected = selectedStatus === status.id;
               return (
@@ -165,8 +165,8 @@ export function ProjectsDirectory() {
                   onClick={() => setSelectedStatus(status.id)}
                   className={`btn-tactile px-2.5 py-1 rounded text-xs font-mono transition-colors border ${
                     isSelected
-                      ? 'bg-white/[0.12] text-white border-white/20 font-bold'
-                      : 'bg-[#090A0D] text-[#64748B] border-white/[0.06] hover:text-[#94A3B8]'
+                      ? 'bg-black/[0.08] dark:bg-white/[0.12] text-zinc-900 dark:text-white border-black/20 dark:border-white/20 font-bold'
+                      : 'bg-white dark:bg-[#090A0D] text-zinc-500 dark:text-[#64748B] border-black/[0.06] dark:border-white/[0.06] hover:text-zinc-900 dark:hover:text-[#94A3B8]'
                   }`}
                 >
                   {status.label}
@@ -180,7 +180,7 @@ export function ProjectsDirectory() {
             <button
               type="button"
               onClick={handleReset}
-              className="text-white hover:underline font-mono text-xs flex items-center gap-1"
+              className="text-zinc-900 dark:text-white hover:underline font-mono text-xs flex items-center gap-1"
             >
               <X className="w-3.5 h-3.5" />
               <span>Reset filters</span>
@@ -190,12 +190,12 @@ export function ProjectsDirectory() {
       </div>
 
       {/* Results Count Bar */}
-      <div className="flex items-center justify-between text-xs font-mono text-[#64748B] px-1">
+      <div className="flex items-center justify-between text-xs font-mono text-zinc-500 dark:text-[#64748B] px-1">
         <div>
-          Showing <span className="text-white font-bold">{filteredProjects.length}</span> of {allProjects.length} sovereign builds
+          Showing <span className="text-zinc-950 dark:text-white font-bold">{filteredProjects.length}</span> of {allProjects.length} sovereign builds
         </div>
         {hasActiveFilters && (
-          <div className="text-amber-400">
+          <div className="text-amber-600 dark:text-amber-400">
             Active filters applied
           </div>
         )}
@@ -209,21 +209,21 @@ export function ProjectsDirectory() {
           ))}
         </div>
       ) : (
-        <div className="p-12 sm:p-16 rounded-2xl bg-[#0F1116] border border-white/[0.08] text-center space-y-4 max-w-lg mx-auto">
-          <div className="w-12 h-12 rounded-full bg-[#090A0D] border border-white/[0.08] mx-auto flex items-center justify-center text-[#64748B]">
+        <div className="p-12 sm:p-16 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] text-center space-y-4 max-w-lg mx-auto">
+          <div className="w-12 h-12 rounded-full bg-white dark:bg-[#090A0D] border border-black/[0.08] dark:border-white/[0.08] mx-auto flex items-center justify-center text-zinc-500 dark:text-[#64748B]">
             <Search className="w-6 h-6" />
           </div>
-          <h3 className="font-display font-bold text-xl text-white">
+          <h3 className="font-display font-bold text-xl text-zinc-950 dark:text-white">
             No matching projects found
           </h3>
-          <p className="text-xs text-[#94A3B8] leading-relaxed">
+          <p className="text-xs text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
             We couldn&apos;t find any builds matching your criteria. Try loosening your search terms or clearing selected category filters.
           </p>
           <div className="pt-2">
             <button
               type="button"
               onClick={handleReset}
-              className="btn-tactile px-4 py-2 rounded-lg bg-white text-black text-xs font-semibold hover:bg-zinc-200 transition-colors"
+              className="btn-tactile px-4 py-2 rounded-lg bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black text-xs font-semibold dark:hover:bg-zinc-200 transition-colors"
             >
               Reset all filters
             </button>

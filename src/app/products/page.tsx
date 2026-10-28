@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getApprovedProjects } from '@/data/projects';
-import { ExternalLink, ArrowUpRight, CheckCircle, Sparkles, Terminal } from 'lucide-react';
+import { ExternalLink, ArrowUpRight, CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Live Products & Systems · Ready to Use',
@@ -20,25 +20,25 @@ export default function ProductsPage() {
     <div className="max-w-6xl mx-auto px-6 sm:px-8 py-10 space-y-16">
       {/* Header */}
       <div className="space-y-4 max-w-2xl">
-        <div className="text-xs uppercase tracking-wider font-semibold text-emerald-400 font-mono flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <div className="text-xs uppercase tracking-wider font-semibold text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
           <span>Deployable & Interactive Software</span>
         </div>
-        <h1 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
+        <h1 className="font-display font-bold text-3xl sm:text-5xl text-zinc-950 dark:text-white tracking-tight">
           Products you can use today.
         </h1>
-        <p className="text-base text-[#94A3B8] leading-relaxed">
+        <p className="text-base text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
           Unlike concept portfolios full of static mockups, TysonLabs builds real, functional software. The systems below are deployed, interactive, and available for evaluation.
         </p>
       </div>
 
       {/* Production Products Section */}
       <section className="space-y-6">
-        <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
-          <h2 className="font-display font-bold text-xl text-white">
+        <div className="flex items-center justify-between pb-3 border-b border-black/[0.08] dark:border-white/[0.08]">
+          <h2 className="font-display font-bold text-xl text-zinc-950 dark:text-white">
             Production & Open-Source Systems
           </h2>
-          <span className="text-xs font-mono text-[#64748B]">
+          <span className="text-xs font-mono text-zinc-500 dark:text-[#64748B]">
             {liveProducts.length} Live Deployments
           </span>
         </div>
@@ -47,11 +47,11 @@ export default function ProductsPage() {
           {liveProducts.map((product) => (
             <div
               key={product.slug}
-              className="p-6 rounded-2xl bg-[#0F1116] border border-white/[0.08] hover:border-white/[0.2] transition-all flex flex-col justify-between space-y-5 shadow-sm"
+              className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.2] dark:hover:border-white/[0.2] transition-all flex flex-col justify-between space-y-5 shadow-xs"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase tracking-wider text-[#94A3B8]">
+                  <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 dark:text-[#94A3B8]">
                     {product.categoryLabel}
                   </span>
                   <span className="text-[11px] font-mono px-2 py-0.5 rounded-full badge-live">
@@ -59,20 +59,20 @@ export default function ProductsPage() {
                   </span>
                 </div>
 
-                <h3 className="font-display font-bold text-xl text-white">
-                  <Link href={`/projects/${product.slug}`} className="hover:text-zinc-300 transition-colors">
+                <h3 className="font-display font-bold text-xl text-zinc-950 dark:text-white">
+                  <Link href={`/projects/${product.slug}`} className="hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
                     {product.name}
                   </Link>
                 </h3>
 
-                <p className="text-sm text-[#94A3B8] leading-relaxed">
+                <p className="text-sm text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
                   {product.shortDescription}
                 </p>
 
                 <div className="space-y-1.5 pt-2">
                   {product.highlights.slice(0, 2).map((h, i) => (
-                    <div key={i} className="flex items-start gap-2 text-xs text-zinc-300 font-mono">
-                      <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div key={i} className="flex items-start gap-2 text-xs text-zinc-800 dark:text-zinc-300 font-mono">
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                       <span>{h}</span>
                     </div>
                   ))}
@@ -80,10 +80,10 @@ export default function ProductsPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold">
+              <div className="pt-4 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between text-xs font-semibold">
                 <Link
                   href={`/projects/${product.slug}`}
-                  className="text-[#94A3B8] hover:text-white transition-colors"
+                  className="text-zinc-600 dark:text-[#94A3B8] hover:text-zinc-950 dark:hover:text-white transition-colors"
                 >
                   Architecture & Case Study →
                 </Link>
@@ -93,7 +93,7 @@ export default function ProductsPage() {
                     href={product.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white text-black font-bold hover:bg-zinc-200 transition-colors active:scale-[0.98]"
+                    className="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black font-bold dark:hover:bg-zinc-200 transition-colors active:scale-[0.98]"
                   >
                     <span>Launch Product</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -105,7 +105,7 @@ export default function ProductsPage() {
                     href={product.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#141820] text-white border border-white/[0.1] hover:border-white/30 transition-colors active:scale-[0.98]"
+                    className="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-zinc-100 dark:bg-[#141820] text-zinc-900 dark:text-white border border-black/[0.1] dark:border-white/[0.1] hover:border-black/30 dark:hover:border-white/30 transition-colors active:scale-[0.98]"
                   >
                     <span>Inspect GitHub</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -119,16 +119,16 @@ export default function ProductsPage() {
 
       {/* In-Development & Prototypes Section */}
       <section className="space-y-6 pt-6">
-        <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+        <div className="flex items-center justify-between pb-3 border-b border-black/[0.08] dark:border-white/[0.08]">
           <div>
-            <h2 className="font-display font-bold text-xl text-white">
+            <h2 className="font-display font-bold text-xl text-zinc-950 dark:text-white">
               Active Builds & Prototypes
             </h2>
-            <p className="text-xs text-[#64748B] mt-0.5 font-mono">
+            <p className="text-xs text-zinc-500 dark:text-[#64748B] mt-0.5 font-mono">
               Working codebases in testing and release preparation
             </p>
           </div>
-          <span className="text-xs font-mono text-[#64748B]">
+          <span className="text-xs font-mono text-zinc-500 dark:text-[#64748B]">
             {prototypes.length} Builds
           </span>
         </div>
@@ -137,23 +137,23 @@ export default function ProductsPage() {
           {prototypes.map((proto) => (
             <div
               key={proto.slug}
-              className="p-5 rounded-xl bg-[#0F1116] border border-white/[0.08] hover:border-white/[0.16] transition-all flex items-center justify-between gap-4"
+              className="p-5 rounded-xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.16] dark:hover:border-white/[0.16] transition-all flex items-center justify-between gap-4"
             >
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold text-white">{proto.name}</span>
+                  <span className="text-xs font-bold text-zinc-950 dark:text-white">{proto.name}</span>
                   <span className="text-[10px] font-mono px-2 py-0.2 rounded badge-prototype">
                     {proto.statusLabel}
                   </span>
                 </div>
-                <p className="text-xs text-[#94A3B8] line-clamp-1">
+                <p className="text-xs text-zinc-600 dark:text-[#94A3B8] line-clamp-1">
                   {proto.shortDescription}
                 </p>
               </div>
 
               <Link
                 href={`/projects/${proto.slug}`}
-                className="shrink-0 text-xs font-mono text-white hover:underline"
+                className="shrink-0 text-xs font-mono text-zinc-900 dark:text-white hover:underline"
               >
                 Inspect →
               </Link>

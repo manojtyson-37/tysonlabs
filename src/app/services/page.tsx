@@ -125,21 +125,21 @@ export default function ServicesPage() {
     <div className="max-w-6xl mx-auto px-6 sm:px-8 py-10 space-y-20">
       {/* Header */}
       <div className="space-y-4 max-w-2xl">
-        <div className="text-xs uppercase tracking-wider font-semibold text-[#64748B] font-mono">
+        <div className="text-xs uppercase tracking-wider font-semibold text-zinc-500 dark:text-[#64748B] font-mono">
           STUDIO DISCIPLINES & ENGAGEMENTS
         </div>
-        <h1 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
+        <h1 className="font-display font-bold text-3xl sm:text-5xl text-zinc-950 dark:text-white tracking-tight">
           How TysonLabs works with you.
         </h1>
-        <p className="text-base text-[#94A3B8] leading-relaxed">
+        <p className="text-base text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
           We partner with founders, operational businesses, and technical teams to design and build durable software systems. No boilerplate templates, no outsourced layers — direct senior craftsmanship.
         </p>
       </div>
 
       {/* Capabilities Grid */}
       <section className="space-y-8">
-        <div className="pb-3 border-b border-white/[0.08]">
-          <h2 className="font-display font-bold text-2xl text-white">
+        <div className="pb-3 border-b border-black/[0.08] dark:border-white/[0.08]">
+          <h2 className="font-display font-bold text-2xl text-zinc-950 dark:text-white">
             Core Disciplines
           </h2>
         </div>
@@ -150,41 +150,41 @@ export default function ServicesPage() {
             return (
               <div
                 key={cap.id}
-                className="p-7 rounded-2xl bg-[#0F1116] border border-white/[0.08] hover:border-white/[0.2] transition-all space-y-6 flex flex-col justify-between shadow-sm"
+                className="p-7 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] hover:border-black/[0.2] dark:hover:border-white/[0.2] transition-all space-y-6 flex flex-col justify-between shadow-xs"
               >
                 <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#090A0D] border border-white/[0.08] flex items-center justify-center text-white">
+                  <div className="w-10 h-10 rounded-xl bg-white dark:bg-[#090A0D] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center text-zinc-950 dark:text-white">
                     <Icon className="w-5 h-5" />
                   </div>
 
                   <div>
-                    <h3 className="font-display font-bold text-xl text-white">
+                    <h3 className="font-display font-bold text-xl text-zinc-950 dark:text-white">
                       {cap.title}
                     </h3>
-                    <p className="text-xs font-mono text-[#94A3B8] mt-1">
+                    <p className="text-xs font-mono text-zinc-600 dark:text-[#94A3B8] mt-1">
                       {cap.tagline}
                     </p>
                   </div>
 
-                  <p className="text-sm text-[#94A3B8] leading-relaxed">
+                  <p className="text-sm text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
                     {cap.description}
                   </p>
 
-                  <div className="space-y-2 pt-2 border-t border-white/[0.06]">
-                    <div className="text-xs font-mono text-[#64748B] uppercase tracking-wider">
+                  <div className="space-y-2 pt-2 border-t border-black/[0.06] dark:border-white/[0.06]">
+                    <div className="text-xs font-mono text-zinc-500 dark:text-[#64748B] uppercase tracking-wider">
                       Concrete Deliverables:
                     </div>
                     {cap.deliverables.map((deliv, i) => (
-                      <div key={i} className="flex items-start gap-2 text-xs text-zinc-300">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-2 text-xs text-zinc-800 dark:text-zinc-300">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                         <span>{deliv}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono text-[#64748B]">
-                  <span>Proven In: <span className="text-[#94A3B8] font-medium">{cap.sampleBuilds}</span></span>
+                <div className="pt-4 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between text-xs font-mono text-zinc-500 dark:text-[#64748B]">
+                  <span>Proven In: <span className="text-zinc-800 dark:text-[#94A3B8] font-medium">{cap.sampleBuilds}</span></span>
                 </div>
               </div>
             );
@@ -194,11 +194,11 @@ export default function ServicesPage() {
 
       {/* The 4-Step Studio Process */}
       <section className="space-y-8">
-        <div className="pb-3 border-b border-white/[0.08]">
-          <h2 className="font-display font-bold text-2xl text-white">
+        <div className="pb-3 border-b border-black/[0.08] dark:border-white/[0.08]">
+          <h2 className="font-display font-bold text-2xl text-zinc-950 dark:text-white">
             The Engineering Process
           </h2>
-          <p className="text-sm text-[#94A3B8] mt-1">
+          <p className="text-sm text-zinc-600 dark:text-[#94A3B8] mt-1">
             Predictable sprints, clear milestone gates, and transparent communication.
           </p>
         </div>
@@ -207,15 +207,15 @@ export default function ServicesPage() {
           {processSteps.map((step) => {
             const Icon = step.icon;
             return (
-              <div key={step.step} className="p-6 rounded-2xl bg-[#0F1116] border border-white/[0.08] space-y-4">
+              <div key={step.step} className="p-6 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-2xl font-bold text-white">{step.step}</span>
-                  <Icon className="w-5 h-5 text-[#64748B]" />
+                  <span className="font-mono text-2xl font-bold text-zinc-950 dark:text-white">{step.step}</span>
+                  <Icon className="w-5 h-5 text-zinc-400 dark:text-[#64748B]" />
                 </div>
-                <h3 className="font-display font-bold text-base text-white">
+                <h3 className="font-display font-bold text-base text-zinc-950 dark:text-white">
                   {step.title}
                 </h3>
-                <p className="text-xs text-[#94A3B8] leading-relaxed">
+                <p className="text-xs text-zinc-600 dark:text-[#94A3B8] leading-relaxed">
                   {step.description}
                 </p>
               </div>
@@ -225,17 +225,17 @@ export default function ServicesPage() {
       </section>
 
       {/* Contact Callout */}
-      <section className="p-8 sm:p-12 rounded-2xl bg-[#0F1116] border border-white/[0.08] text-center space-y-6 max-w-3xl mx-auto shadow-2xl">
-        <h2 className="font-display font-bold text-2xl sm:text-3xl text-white">
+      <section className="p-8 sm:p-12 rounded-2xl bg-zinc-50 dark:bg-[#0F1116] border border-black/[0.08] dark:border-white/[0.08] text-center space-y-6 max-w-3xl mx-auto shadow-xs dark:shadow-2xl">
+        <h2 className="font-display font-bold text-2xl sm:text-3xl text-zinc-950 dark:text-white">
           Ready to engineer your product?
         </h2>
-        <p className="text-sm text-[#94A3B8] leading-relaxed max-w-xl mx-auto">
+        <p className="text-sm text-zinc-600 dark:text-[#94A3B8] leading-relaxed max-w-xl mx-auto">
           We take on a limited number of high-conviction client and partner builds to ensure undivided attention and uncompromising quality.
         </p>
         <div>
           <Link
             href="/contact"
-            className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-colors active:scale-[0.98]"
+            className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black font-bold text-sm dark:hover:bg-zinc-200 transition-colors active:scale-[0.98]"
           >
             <span>Start an inquiry</span>
             <ArrowUpRight className="w-4 h-4" />
