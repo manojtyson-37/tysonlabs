@@ -39,8 +39,11 @@ beforeAll(async () => {
   B = await ctx.mkClient('routes-B');
 });
 afterAll(async () => {
-  await ctx.o.query('DELETE FROM rate_limits'); // do not leave exhausted buckets for other files
-  await ctx.o.end();
+  try {
+    await ctx.o.query('DELETE FROM rate_limits'); // do not leave exhausted buckets for other files
+  } finally {
+    await ctx.o.end();
+  }
 });
 
 describe('http layer', () => {

@@ -9,7 +9,15 @@ import type { GoogleGateway, GoogleLocation } from '@/reviews-service/google';
 process.env.API_KEY_PEPPER = 'test-pepper';
 process.env.REVIEWS_BASE_URL = 'https://reviews.test';
 
-export const owner = () => new Pool({ connectionString: process.env.TEST_OWNER_URL });
+// Tests write and delete freely as the owner role, so refuse to run unless the URL is the throwaway local
+// cluster started by tests/global-setup.ts. Without this a missing URL would fall back to PG* env vars.
+export const owner = () => {
+  const url = process.env.TEST_OWNER_URL;
+  if (!url || new URL(url).hostname !== '127.0.0.1') {
+    throw new Error('TEST_OWNER_URL must be set to the throwaway 127.0.0.1 test database');
+  }
+  return new Pool({ connectionString: url });
+};
 
 export class FakeGoogle implements GoogleGateway {
   revoked: string[] = [];
@@ -43,7 +51,8 @@ export class FakeGoogle implements GoogleGateway {
 
 export async function bootstrap() {
   const o = owner();
-  await o.query('DELETE FROM rate_limits'); // each file starts with clean rate-limit buckets
+  // Each file starts with clean rate-limit buckets. Relies on files running serially (fileParallelism: false).
+  await o.query('DELETE FROM rate_limits');
   setPool(new Pool({ connectionString: process.env.TEST_APP_URL }));
   const fake = new FakeGoogle();
   setDependencies({ wrapper: new EnvKeyWrapper(randomBytes(32).toString('base64')), google: fake });
