@@ -69,7 +69,7 @@ export default function PrivacyPage() {
           <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">What we access</h3>
           <ul className="list-disc pl-5 space-y-1">
             <li>Your Google account name and email address (OAuth scopes <code>openid</code> and <code>email</code>), to identify the signed-in user.</li>
-            <li>The names and identifiers of the Business Profile locations you choose to connect, and their reviews, via the scope <code>https://www.googleapis.com/auth/business.manage</code>. This scope is required both to read reviews and to post replies.</li>
+            <li>The names and identifiers of the Business Profile locations you choose to connect, and their reviews, via the scope <code className="break-all">https://www.googleapis.com/auth/business.manage</code>. This scope is required both to read reviews and to post replies.</li>
             <li>Review details: reviewer display name, star rating, review text, timestamps, and any existing reply.</li>
             <li>An OAuth access and refresh token, so we can sync on your behalf until you disconnect.</li>
           </ul>
