@@ -1,19 +1,78 @@
 import React from 'react';
 import Link from 'next/link';
 import { getFeaturedProjects } from '@/data/projects';
-import { HeroOperationalPreview } from '@/components/HeroOperationalPreview';
-import { ProjectsSneakPeekShowcase } from '@/components/ProjectsSneakPeekShowcase';
 import { HomeProjectsExplorer } from '@/components/HomeProjectsExplorer';
-import { TaglineReveal } from '@/components/TaglineReveal';
 import { FaqSection } from '@/components/FaqSection';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ExternalLink } from 'lucide-react';
+import { GithubIcon } from '@/components/Icons';
 
 export default function HomePage() {
   const featuredProjects = getFeaturedProjects();
 
+  const selectedShowcases = [
+    {
+      index: '01',
+      vertical: 'Hospitality & Retail',
+      name: 'DinePulse',
+      subtitle: 'High-Throughput Restaurant Billing & Kitchen OS',
+      story: 'Built for high-volume Indian restaurants. Replaces slow legacy POS machines with an ultra-fast 3-click touch till, instant KOT kitchen dispatch, FSSAI veg/non-veg compliance tags, dynamic UPI QR payments, and automated WhatsApp guest bills.',
+      impact: ['3 Clicks to Bill', 'Real-Time KOT Dispatch', 'WhatsApp Receipts'],
+      stack: ['Next.js 15', 'TypeScript', 'Tailwind CSS', 'ESC/POS', 'Razorpay UPI'],
+      liveUrl: 'https://dineplus.vercel.app/pos',
+      caseStudySlug: 'dinepulse',
+      githubUrl: 'https://github.com/manoj-tyson/dinepulse',
+    },
+    {
+      index: '02',
+      vertical: 'Manufacturing & ERP',
+      name: 'Silaa Atelier',
+      subtitle: 'Apparel Factory Roll Inventory & Marker Yield Engine',
+      story: 'Garment factories lose up to 12% of expensive fabric rolls to manual marker calculation errors and untracked remnants spread across WhatsApp chats. Built a production ERP that tracks fabric roll batches by dye lot, calculates cutting yields down to the millimeter, and monitors 500-garment stitching runs.',
+      impact: ['99.2% Fabric Yield', 'Zero Lost Rolls', 'CNC DXF Export'],
+      stack: ['FastAPI', 'Next.js 15', 'PostgreSQL', 'SQLAlchemy'],
+      liveUrl: 'https://erp.silacollective.in/',
+      caseStudySlug: 'silaa-atelier',
+      githubUrl: 'https://github.com/manoj-tyson/silaa-erp',
+    },
+    {
+      index: '03',
+      vertical: 'Interactive AI & Systems',
+      name: 'Tyson Chess',
+      subtitle: 'In-Browser Stockfish 18 WASM Engine & Tactical Coach',
+      story: 'I built this because I used to play on the chess.com app and solving more than 3 puzzles a day required paying ₹99 per week. So I thought: why not build it myself? Tyson Chess runs 100% free in the browser with unlimited puzzles, in-browser Stockfish 18 WASM, 6 calibrated bots, and a coach that explains moves in plain English.',
+      impact: ['100% Free & Unlimited', 'Saves ₹99 / Week', 'Zero Server Latency'],
+      stack: ['React', 'TypeScript', 'Stockfish 18 WASM', 'Web Workers', 'Tailwind CSS'],
+      liveUrl: 'https://tysonchess-two.vercel.app',
+      caseStudySlug: 'tysonchess',
+      githubUrl: 'https://github.com/manoj-tyson/tyson-chess',
+    },
+    {
+      index: '04',
+      vertical: 'Fintech & Commerce',
+      name: 'Tysonpe',
+      subtitle: 'Creator Commerce Storefront & 1-Click Checkout Engine',
+      story: 'Indian educators and creators lose 10–30% of their revenue to platform fees, while global checkout tools fail to support Indian UPI apps or automated Indian GST tax compliance. Built an independent creator platform with 1-click UPI payments (GPay, PhonePe, Paytm), automated GST tax invoice PDFs, and dynamic watermarked video protection.',
+      impact: ['0% Middleman Take', '1-Click UPI Intent', 'Automated GST Tax PDFs'],
+      stack: ['Next.js 15', 'TypeScript', 'Prisma', 'PostgreSQL', 'Razorpay UPI'],
+      caseStudySlug: 'tysonpe',
+      githubUrl: 'https://github.com/manoj-tyson/tysonpe',
+    },
+    {
+      index: '05',
+      vertical: 'Healthcare Operations',
+      name: 'PhysioCare',
+      subtitle: 'Multi-Tenant Clinic Management & Rehab Recovery Portal',
+      story: 'Physical therapy practices juggle paper cards, Google Calendars, and separate billing tools, resulting in double bookings and unbilled rehab packages. Built an all-in-one clinic platform: clash-free room scheduling, patient mobility angle tracking (e.g. 115° knee recovery), automated GST invoices, and WhatsApp appointment reminders.',
+      impact: ['Zero Double-Bookings', '+35% Re-Attendance', 'WhatsApp Reminders'],
+      stack: ['Next.js 15', 'TypeScript', 'Supabase', 'Tailwind CSS', 'PostgreSQL'],
+      liveUrl: 'https://saas-physio.vercel.app',
+      caseStudySlug: 'physiocare',
+      githubUrl: 'https://github.com/manoj-tyson/physiocare',
+    },
+  ];
+
   const studioCapabilities = [
     {
-      id: 'ai-agents',
       number: '01',
       title: 'Autonomous Multi-Agent AI Workflows',
       description: 'Custom AI agent teams that automate complex business tasks like market research, code writing, and automated quality testing without hallucination.',
@@ -21,7 +80,6 @@ export default function HomePage() {
       href: '/projects?category=ai-agents',
     },
     {
-      id: 'web-experiences',
       number: '02',
       title: 'High-Performance Web Apps & Interactive Systems',
       description: 'Zero-layout-shift web applications, responsive editorial storefronts, tactile consumer portals, and interactive browser tools.',
@@ -29,7 +87,6 @@ export default function HomePage() {
       href: '/projects?category=web-experiences',
     },
     {
-      id: 'business-tools',
       number: '03',
       title: 'Vertical SaaS & Operations Operating Systems',
       description: 'High-throughput restaurant POS tills, apparel manufacturing ERPs, clinic management, and compliant Indian GST accounting engines.',
@@ -37,7 +94,6 @@ export default function HomePage() {
       href: '/projects?category=business-tools',
     },
     {
-      id: 'experiments',
       number: '04',
       title: 'Specialized Business Tools & Proving Ground Labs',
       description: 'Interactive AI coaching algorithms, automated YouTube video synthesis pipelines, and developer telemetry toolkits.',
@@ -47,127 +103,189 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="space-y-16 sm:space-y-24">
-      {/* Editorial Studio Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-6 sm:px-8 pt-6 sm:pt-12 pb-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-          
-          {/* Left Column: Manifesto & Tactile CTAs (7 cols) */}
-          <div className="lg:col-span-7 space-y-7">
-            {/* Engineer Identity Marker */}
-            <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">
-              Manoj Tyson · Systems & Software Engineer · Bangalore, IN
-            </div>
+    <div className="space-y-20 sm:space-y-32">
+      {/* Clean Editorial Hero Section */}
+      <section className="max-w-4xl mx-auto px-6 sm:px-8 pt-10 sm:pt-20 pb-4 space-y-6">
+        <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+          Manoj Tyson · Software & Systems Engineer · Bangalore, IN
+        </div>
 
-            {/* Main Statement */}
-            <div className="space-y-4 max-w-[680px]">
-              <h1 className="font-display font-semibold text-4xl sm:text-6xl md:text-7xl text-zinc-950 dark:text-white tracking-tight leading-[1.04] [text-wrap:balance]">
-                I build software that runs real businesses.
-              </h1>
-              <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-[640px] font-normal [text-wrap:pretty]">
-                From touch billing tills for high-volume restaurants and multi-stage garment manufacturing ERPs to interactive AI chess engines and creator commerce platforms. High-craft web applications and custom operating systems — designed, engineered, and delivered with 100% sovereign client code ownership.
-              </p>
-            </div>
+        <h1 className="font-display font-semibold text-5xl sm:text-7xl md:text-8xl text-zinc-950 dark:text-white tracking-tight leading-[1.02] [text-wrap:balance]">
+          Software built to run real businesses.
+        </h1>
 
-            {/* Conversion CTA Hierarchy */}
-            <div className="flex flex-wrap items-center gap-4 pt-1">
-              <Link
-                href="/projects"
-                className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-semibold text-sm transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-sm active:scale-[0.98]"
-              >
-                <span>Explore 16 Live Systems</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </Link>
+        <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal max-w-2xl [text-wrap:pretty]">
+          I design, engineer, and ship full-stack web applications, compiled WebAssembly engines, and custom operating systems for operators and businesses that need to scale. Everything built end-to-end with 100% sovereign code ownership.
+        </p>
 
-              <Link
-                href="/use-cases"
-                className="btn-tactile inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-700 hover:text-black dark:text-zinc-300 dark:hover:text-white transition-colors duration-200 py-3 px-5 rounded-xl border border-zinc-300 dark:border-zinc-700 hover:border-black/30 dark:hover:border-white/30 active:scale-[0.98]"
-              >
-                <span>Case Studies & Problems Solved</span>
-                <ArrowUpRight className="w-3.5 h-3.5 opacity-70" />
-              </Link>
-            </div>
+        {/* Action Row */}
+        <div className="flex flex-wrap items-center gap-4 pt-3">
+          <a
+            href="#selected-work"
+            className="btn-tactile px-6 py-3.5 rounded-full bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-sm font-semibold transition-all shadow-sm active:scale-[0.98]"
+          >
+            <span>Selected Projects ↓</span>
+          </a>
 
-            {/* Mitchell Sparrow-Style Direct Social & Contact Links */}
-            <div className="flex items-center gap-4 text-xs font-mono text-zinc-500 pt-1">
-              <a 
-                href="https://github.com/manoj-tyson" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-black dark:hover:text-white transition-colors"
-              >
-                GitHub ↗
-              </a>
-              <span>·</span>
-              <a 
-                href="https://linkedin.com/in/manoj-tyson" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-black dark:hover:text-white transition-colors"
-              >
-                LinkedIn ↗
-              </a>
-              <span>·</span>
-              <a 
-                href="mailto:manojsoundar7@gmail.com" 
-                className="hover:text-black dark:hover:text-white transition-colors"
-              >
-                manojsoundar7@gmail.com
-              </a>
-            </div>
+          <Link
+            href="/use-cases"
+            className="btn-tactile px-6 py-3.5 rounded-full border border-zinc-300 dark:border-zinc-700 hover:border-black dark:hover:border-white text-zinc-800 dark:text-zinc-200 text-sm font-semibold transition-all active:scale-[0.98]"
+          >
+            <span>Case Studies & Problems Solved ↗</span>
+          </Link>
+        </div>
 
-            {/* Concrete Value Pillars for Clients & Buyers (Clean Monochrome) */}
-            <div className="pt-6 border-t border-zinc-200/80 dark:border-zinc-800">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs font-mono">
-                <div>
-                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">PROVEN RECORD</div>
-                  <div className="font-semibold text-zinc-950 dark:text-white text-base">16 Shipped Builds</div>
-                  <div className="text-zinc-500 text-[11px] mt-0.5">Tested with real operators</div>
-                </div>
-                <div>
-                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">FAST VELOCITY</div>
-                  <div className="font-semibold text-zinc-950 dark:text-white text-base">2 to 4 Weeks</div>
-                  <div className="text-zinc-500 text-[11px] mt-0.5">Zero agency bloat</div>
-                </div>
-                <div>
-                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">BUILT FOR SCALE</div>
-                  <div className="font-semibold text-zinc-950 dark:text-white text-base">Sub-10ms Latency</div>
-                  <div className="text-zinc-500 text-[11px] mt-0.5">WASM & edge routes</div>
-                </div>
-                <div>
-                  <div className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-wider mb-1">CLIENT OWNERSHIP</div>
-                  <div className="font-semibold text-zinc-950 dark:text-white text-base">100% Sovereign IP</div>
-                  <div className="text-zinc-500 text-[11px] mt-0.5">You own code & DB</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Engineer Profile & Systems Spotlight (5 cols) */}
-          <div className="lg:col-span-5 w-full">
-            <HeroOperationalPreview />
-          </div>
-
+        {/* Minimalist Social & Direct Contact Links */}
+        <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-zinc-500 pt-2">
+          <a
+            href="https://github.com/manoj-tyson"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-black dark:hover:text-white transition-colors"
+          >
+            GitHub ↗
+          </a>
+          <span>·</span>
+          <a
+            href="https://linkedin.com/in/manoj-tyson"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-black dark:hover:text-white transition-colors"
+          >
+            LinkedIn ↗
+          </a>
+          <span>·</span>
+          <a
+            href="mailto:manojsoundar7@gmail.com"
+            className="hover:text-black dark:hover:text-white transition-colors"
+          >
+            manojsoundar7@gmail.com
+          </a>
         </div>
       </section>
 
-      {/* SNEAK PEEK SHOWCASE ACROSS INDUSTRIES */}
-      <ProjectsSneakPeekShowcase />
+      {/* Selected Work (Editorial Case Studies) */}
+      <section id="selected-work" className="max-w-5xl mx-auto px-6 sm:px-8 space-y-12">
+        <div className="space-y-2 pb-4 border-b border-zinc-200/80 dark:border-zinc-800">
+          <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+            01 / SELECTED WORK & CASE STUDIES
+          </div>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight">
+            Production systems engineered for operators.
+          </h2>
+        </div>
 
-      {/* Tagline Reveal Section */}
-      <TaglineReveal 
-        phrase="I engineer custom production software for businesses that need to scale." 
-        subphrase="High-speed restaurant tills. Garment factory inventory. Automated UPI checkouts. Designed, built, and launched in weeks." 
-      />
+        <div className="space-y-12">
+          {selectedShowcases.map((project) => (
+            <article
+              key={project.name}
+              className="p-8 sm:p-10 rounded-2xl bg-zinc-50/70 dark:bg-[#111216] border border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-6"
+            >
+              {/* Header: Index & Vertical */}
+              <div className="flex items-center justify-between text-xs font-mono pb-4 border-b border-zinc-200/70 dark:border-zinc-800/70">
+                <div className="flex items-center gap-2.5">
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">
+                    {project.index}
+                  </span>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                    {project.vertical}
+                  </span>
+                </div>
+                <span className="text-zinc-500 text-[11px] uppercase tracking-wider">
+                  Live System
+                </span>
+              </div>
 
-      {/* Selected Work Section with Explorer */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              {/* Title & Subtitle */}
+              <div className="space-y-1.5">
+                <h3 className="font-display font-semibold text-2xl sm:text-3xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
+                  <Link href={`/projects/${project.caseStudySlug}`} className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+                    {project.name}
+                  </Link>
+                </h3>
+                <p className="text-sm font-mono text-zinc-500 dark:text-zinc-400">
+                  {project.subtitle}
+                </p>
+              </div>
+
+              {/* The Narrative & Problem Solved */}
+              <p className="text-base text-zinc-700 dark:text-zinc-300 leading-relaxed max-w-3xl [text-wrap:pretty]">
+                {project.story}
+              </p>
+
+              {/* Measurable Outcomes */}
+              <div className="flex flex-wrap gap-2.5 pt-1">
+                {project.impact.map((item, idx) => (
+                  <span
+                    key={idx}
+                    className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#16171E] border border-zinc-200/80 dark:border-zinc-800 text-xs font-mono text-zinc-800 dark:text-zinc-200"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+
+              {/* Tech Stack Chips */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {project.stack.map((tech) => (
+                  <span
+                    key={tech}
+                    className="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200/60 dark:border-zinc-800"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+
+              {/* Action Links */}
+              <div className="pt-6 border-t border-zinc-200/70 dark:border-zinc-800/70 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+                <Link
+                  href={`/projects/${project.caseStudySlug}`}
+                  className="btn-tactile inline-flex items-center gap-1.5 text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white font-semibold transition-colors"
+                >
+                  <span>Read full architecture monograph</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+
+                <div className="flex items-center gap-3">
+                  {project.liveUrl && (
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-tactile inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-semibold transition-colors active:scale-[0.98]"
+                    >
+                      <span>Launch live build</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded text-zinc-400 hover:text-black dark:text-zinc-500 dark:hover:text-white transition-colors"
+                      title="Inspect Source Code on GitHub"
+                    >
+                      <GithubIcon className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Complete Index of All 16 Projects */}
+      <section className="max-w-5xl mx-auto px-6 sm:px-8 space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-zinc-200/80 dark:border-zinc-800">
           <div>
             <div className="text-xs uppercase tracking-wider font-mono text-zinc-500 mb-1">
               02 / COMPLETE PORTFOLIO
             </div>
-            <h2 className="font-display font-semibold text-2xl sm:text-3xl text-zinc-950 dark:text-white [text-wrap:balance]">
+            <h2 className="font-display font-semibold text-3xl text-zinc-950 dark:text-white tracking-tight">
               All 16 shipped codebases.
             </h2>
           </div>
@@ -175,7 +293,7 @@ export default function HomePage() {
             href="/projects"
             className="text-xs font-mono text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors inline-flex items-center gap-1"
           >
-            <span>Explore all 16 projects</span>
+            <span>Explore directory</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -183,135 +301,71 @@ export default function HomePage() {
         <HomeProjectsExplorer initialProjects={featuredProjects} />
       </section>
 
-      {/* Studio Capabilities / Focus Areas */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Left Column Header */}
-          <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-28">
-            <div className="text-xs uppercase tracking-wider font-mono text-zinc-500">
-              03 / DISCIPLINES & EXPERTISE
-            </div>
-            <h2 className="font-display font-semibold text-2xl sm:text-4xl text-zinc-950 dark:text-white [text-wrap:balance]">
-              Engineering capabilities engineered for production.
-            </h2>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
-              I don&apos;t build static brochure sites or assemble bloated templates. Every system is engineered to handle edge speed, concurrency, payment compliance, and local-first reliability.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/services"
-                className="btn-tactile inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-zinc-900 dark:text-white hover:underline"
-              >
-                <span>View all disciplines</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+      {/* Studio Capabilities / Disciplines */}
+      <section className="max-w-5xl mx-auto px-6 sm:px-8 space-y-8">
+        <div className="space-y-2 pb-4 border-b border-zinc-200/80 dark:border-zinc-800">
+          <div className="text-xs uppercase tracking-wider font-mono text-zinc-500">
+            03 / DISCIPLINES & EXPERTISE
           </div>
+          <h2 className="font-display font-semibold text-3xl text-zinc-950 dark:text-white tracking-tight">
+            Engineering capabilities.
+          </h2>
+        </div>
 
-          {/* Right Column: Architectural Discipline Rows */}
-          <div className="lg:col-span-7 divide-y divide-zinc-200/80 dark:divide-zinc-800 border-y border-zinc-200/80 dark:border-zinc-800">
-            {studioCapabilities.map((cap) => (
-              <Link
-                key={cap.id}
-                href={cap.href}
-                className="group py-6 block transition-colors duration-200"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono text-xs text-zinc-400 dark:text-zinc-500 font-semibold">{cap.number}</span>
-                      <h3 className="font-display font-semibold text-lg text-zinc-950 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
-                        {cap.title}
-                      </h3>
-                    </div>
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-xl [text-wrap:pretty]">
-                      {cap.description}
-                    </p>
-                    <div className="text-[11px] font-mono text-zinc-500 pt-1">
-                      Proven in: <span className="text-zinc-800 dark:text-zinc-300 font-medium">{cap.highlight}</span>
-                    </div>
+        <div className="divide-y divide-zinc-200/80 dark:divide-zinc-800 border-y border-zinc-200/80 dark:border-zinc-800">
+          {studioCapabilities.map((cap) => (
+            <Link
+              key={cap.number}
+              href={cap.href}
+              className="group py-6 block transition-colors duration-200"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-xs text-zinc-400 dark:text-zinc-500 font-semibold">{cap.number}</span>
+                    <h3 className="font-display font-semibold text-lg text-zinc-950 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
+                      {cap.title}
+                    </h3>
                   </div>
-
-                  <ArrowUpRight className="w-4 h-4 text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors shrink-0 mt-1" />
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl [text-wrap:pretty]">
+                    {cap.description}
+                  </p>
+                  <div className="text-xs font-mono text-zinc-500 pt-1">
+                    Proven in: <span className="text-zinc-800 dark:text-zinc-300 font-medium">{cap.highlight}</span>
+                  </div>
                 </div>
-              </Link>
-            ))}
-          </div>
+
+                <ArrowUpRight className="w-4 h-4 text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors shrink-0 mt-1" />
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
-      {/* Engineering Philosophy: Editorial Manifesto */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="p-8 sm:p-12 rounded-2xl bg-zinc-50 dark:bg-[#111216] border border-zinc-200/80 dark:border-zinc-800">
-          <div className="max-w-3xl space-y-4 mb-8">
-            <div className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-              04 / ENGINEERING PRINCIPLES
-            </div>
-            <h2 className="font-display font-semibold text-2xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
-              Hardened systems. Built for operators.
-            </h2>
-            <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
-              Every codebase in TysonLabs was engineered to eliminate high-stakes operational friction, from sub-second restaurant billing under peak dining rushes to zero-waste garment marker calculation. No placeholder mockups, no generic templates, and no fabricated metrics.
-            </p>
-          </div>
+      {/* FAQ */}
+      <div className="max-w-5xl mx-auto px-6 sm:px-8">
+        <FaqSection />
+      </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 border-t border-zinc-200/80 dark:border-zinc-800">
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold font-mono text-zinc-950 dark:text-white">Daylight Contrast</h4>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
-                Interfaces built for operators under real lighting, optimized for keyboard shortcuts and sub-second execution.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold font-mono text-zinc-950 dark:text-white">Authentic Domain Logic</h4>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
-                GST tax split rules, FSSAI compliance badges, and fabric yield equations built right into the schema.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold font-mono text-zinc-950 dark:text-white">100% Client Ownership</h4>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
-                Self-hosted databases, clean codebases, and sovereign cloud deployments that run without recurring vendor rent.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold font-mono text-zinc-950 dark:text-white">End-to-End Delivery</h4>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed [text-wrap:pretty]">
-                From initial database model and UI design tokens to production Vercel deployment and webhook hardening.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Objection Handling: Comprehensive FAQ */}
-      <FaqSection />
-
-      {/* Risk Reversal & Final Conversion Banner */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8 pb-12">
-        <div className="p-8 sm:p-12 rounded-2xl bg-zinc-950 text-white dark:bg-[#111216] border border-zinc-800 dark:border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-          <div className="space-y-3 max-w-xl">
+      {/* Direct Inquiries & Contact Banner */}
+      <section className="max-w-5xl mx-auto px-6 sm:px-8 pb-16">
+        <div className="p-8 sm:p-12 rounded-2xl bg-zinc-950 text-white dark:bg-[#111216] border border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div className="space-y-2 max-w-xl">
             <div className="text-xs font-mono text-zinc-400 uppercase tracking-wider">
-              Zero Upfront Scoping Risk
+              WORK DIRECTLY WITH MANOJ
             </div>
             <h2 className="font-display font-semibold text-2xl sm:text-3xl text-white [text-wrap:balance]">
-              Have an operational system worth building?
+              Have a system worth building?
             </h2>
             <p className="text-sm text-zinc-400 leading-relaxed [text-wrap:pretty]">
-              Whether you need an offline-resilient point of sale till, an apparel manufacturing ERP, or an autonomous workflow engine, I build it with sovereign code ownership.
+              Whether you need an offline-resilient point of sale till, an apparel manufacturing ERP, or an autonomous workflow engine, I build it with 100% sovereign code ownership.
             </p>
-            <div className="pt-1 text-xs font-mono text-zinc-500">
-              Direct line to founding engineer · Complete IP transfer upon release
-            </div>
           </div>
           <Link
             href="/contact"
-            className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white text-black hover:bg-zinc-200 dark:bg-white dark:text-black font-semibold text-sm transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] whitespace-nowrap active:scale-[0.98]"
+            className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-black hover:bg-zinc-200 font-semibold text-sm transition-all whitespace-nowrap active:scale-[0.98]"
           >
-            <span>Commission a System</span>
+            <span>Get in touch</span>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>
