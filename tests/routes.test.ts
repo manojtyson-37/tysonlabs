@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { Pool } from 'pg';
+import { randomBytes } from 'node:crypto';
+import { EnvKeyWrapper } from '@/reviews-service/crypto';
+import { setDependencies } from '@/reviews-service/container';
 import { bootstrap } from './helpers';
 import { authenticate } from '@/reviews-service/apikeys';
 import { rateLimit } from '@/reviews-service/db';
@@ -8,6 +11,7 @@ import { handleError } from '@/reviews-service/http';
 import { AuthError } from '@/reviews-service/apikeys';
 import { POST as postSessions } from '@/app/api/v1/connect-sessions/route';
 import { GET as getHealth } from '@/app/api/v1/healthz/route';
+import { GET as getReady } from '@/app/api/v1/readyz/route';
 import { GET as getConnect } from '@/app/api/v1/connect/[token]/route';
 import { GET as getCallback } from '@/app/api/v1/oauth/callback/route';
 import { GET as getConn, DELETE as delConn } from '@/app/api/v1/tenants/[ref]/connection/route';
@@ -189,5 +193,55 @@ describe('unlinkLocation', () => {
     await unlinkLocation(w, 'unlink-a', 'LOC-UNLINK');
     expect((await ctx.o.query("SELECT 1 FROM location_links WHERE google_location_id='LOC-UNLINK'")).rowCount).toBe(0);
     ctx.fake.locations = [{ googleAccountId: '1', googleLocationId: 'LOC1', name: 'Clinic A' }];
+  });
+});
+
+describe('readyz', () => {
+  it('reports not ready, without naming the cause, when config is missing', async () => {
+    const saved = process.env.GOOGLE_CLIENT_SECRET;
+    delete process.env.GOOGLE_CLIENT_SECRET;
+    try {
+      const res = await getReady(req('GET', '/api/v1/readyz', undefined, undefined, '198.51.100.31'));
+      expect(res.status).toBe(503);
+      expect(await res.json()).toEqual({ ok: false });
+    } finally {
+      if (saved !== undefined) process.env.GOOGLE_CLIENT_SECRET = saved;
+    }
+  });
+
+  it('reports ready when config, database role and key wrapper all work', async () => {
+    // Tests inject the pool and key wrapper directly, so only the presence of these variables matters here.
+    const keys = ['REVIEWS_DATABASE_URL', 'REVIEWS_KEK', 'API_KEY_PEPPER', 'REVIEWS_BASE_URL', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REDIRECT_URI'];
+    const added = keys.filter((k) => process.env[k] === undefined);
+    for (const k of added) process.env[k] = 'test';
+    try {
+      const res = await getReady(req('GET', '/api/v1/readyz', undefined, undefined, '198.51.100.32'));
+      expect(res.status).toBe(200);
+      expect(res.headers.get('cache-control')).toBe('no-store');
+      expect(await res.json()).toEqual({ ok: true });
+    } finally {
+      for (const k of added) delete process.env[k];
+    }
+  });
+  it('reports not ready, with no detail, when the key wrapper fails', async () => {
+    const keys = ['REVIEWS_DATABASE_URL', 'REVIEWS_KEK', 'REVIEWS_BASE_URL', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REDIRECT_URI'];
+    const added = keys.filter((k) => process.env[k] === undefined);
+    for (const k of added) process.env[k] = 'test';
+    setDependencies({ wrapper: { version: 'broken', wrap: async () => { throw new Error('kms down'); }, unwrap: async () => Buffer.alloc(0) } });
+    try {
+      const res = await getReady(req('GET', '/api/v1/readyz', undefined, undefined, '198.51.100.33'));
+      const text = await res.text();
+      expect(res.status).toBe(503);
+      expect(text).toBe('{"ok":false}');
+    } finally {
+      for (const k of added) delete process.env[k];
+      setDependencies({ wrapper: new EnvKeyWrapper(randomBytes(32).toString('base64')) });
+    }
+  });
+
+  it('is rate limited per IP', async () => {
+    let last = 0;
+    for (let i = 0; i < 25; i++) last = (await getReady(req('GET', '/api/v1/readyz', undefined, undefined, '198.51.100.34'))).status;
+    expect(last).toBe(429);
   });
 });

@@ -19,6 +19,8 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@neon/config": "^1.9.5",
+    "@neon/env": "^1.6.6",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^22.20.5",
     "@types/pg": "^8.23.1",

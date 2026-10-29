@@ -9,6 +9,9 @@
 set -euo pipefail
 
 [ "${1:-}" = "--yes" ] || { echo "Refusing to run without --yes. Read the header of this script first."; exit 2; }
+CRED_DIR="${REVIEWS_CRED_DIR:-$HOME/.tysonlabs-reviews}"
+# Check before touching the database, so credentials are never generated with nowhere safe to put them.
+[ ! -e "$CRED_DIR/credentials.env" ] || { echo "ABORT: $CRED_DIR/credentials.env already exists; move it away first. Nothing was changed."; exit 1; }
 : "${ADMIN_DATABASE_URL:?Set ADMIN_DATABASE_URL to the admin/owner connection string of a NEW, EMPTY database}"
 command -v psql >/dev/null || { echo "psql not found"; exit 2; }
 command -v openssl >/dev/null || { echo "openssl not found"; exit 2; }
@@ -61,15 +64,20 @@ ok=$(psql "$APP_URL" -X -At -c "SELECT NOT rolsuper AND NOT rolbypassrls AND NOT
 rows=$(psql "$APP_URL" -X -At -c "SELECT count(*) FROM tenants")
 [ "$rows" = "0" ] || { echo "ABORT: app role sees rows with no scope"; exit 1; }
 
+# Credentials go to a private file, never to the terminal or any log.
+umask 077
+mkdir -p "$CRED_DIR" && chmod 700 "$CRED_DIR"
+# Passwords are generated hex, so single quotes are safe. Write to a temp file and move it into place.
+tmp="$(mktemp "$CRED_DIR/.cred.XXXXXX")"
+printf "REVIEWS_DATABASE_URL='%s'\nREVIEWS_OWNER_URL='%s'\n" "$APP_URL" "$OWNER_URL" > "$tmp"
+chmod 600 "$tmp" && mv "$tmp" "$CRED_DIR/credentials.env"
+
 cat <<MSG
 
-DONE. Save these in your password manager NOW; they are not stored anywhere else.
-
-  REVIEWS_DATABASE_URL (the service connects with this, Vercel env var):
-  $APP_URL
-
-  Owner URL (migrations and break-glass admin only; never put it in Vercel):
-  $OWNER_URL
+DONE. Credentials were written to $CRED_DIR/credentials.env (mode 600) and were not printed.
+  REVIEWS_DATABASE_URL: the service connects with this (Vercel env var).
+  REVIEWS_OWNER_URL: migrations and break-glass admin only; never put it in Vercel.
+Copy them into your password manager, then keep or delete the file.
 
 REMINDER: Neon's Free plan keeps only 6 hours of history. Do NOT store real client data until the project is
 on a paid plan with a longer restore window AND a scheduled external backup exists.
