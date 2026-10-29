@@ -111,7 +111,7 @@ Outbound webhooks (`review.created`, `review.updated`) to a client-registered HT
 - Drafts only; a human at the client approves each post. No auto-reply.
 - **Hard rule: a reply must never confirm or imply that the reviewer was a patient or disclose any health detail.** A reply that says "we're glad your knee treatment went well" discloses health information in public. Drafts use generic thanks and a prompt to contact the clinic offline. The prompt enforces this and the draft is checked against it before it can be approved.
 - No review gating. All reviews are treated alike.
-- LLM calls go through a gateway with zero data retention enabled; the provider is a listed sub-processor. Review text is sent, nothing else.
+- LLM: Gemini (Flash-Lite class) on Google's paid tier, ideally through Vertex AI in an India region if the chosen model is available there (verify before promising residency). Paid-tier content is not used to improve Google products or train models; the free tier is, so billing must be enabled before any real review text is sent. Review text is sent, nothing else. Google is already a sub-processor (Business Profile data, KMS), so this adds no new company.
 
 ## 9. Compliance controls
 
@@ -125,7 +125,7 @@ Outbound webhooks (`review.created`, `review.updated`) to a client-registered HT
 - **Breach readiness:** written runbook, contact list, and the client notification timeline in the DPA (confirm the exact statutory timeline under DPDP with counsel).
 - **Logging:** structured logs carry IDs and error classes only. Never tokens, review text or reviewer names.
 - **Access:** 2FA on every account that can reach production (GitHub, Vercel, Neon, Google Cloud). Dependency audit in CI.
-- **Region:** choose the database region deliberately; check which regions the provider offers, since enterprise clients often ask for India. Not a statutory requirement in general, so confirm with counsel.
+- **Region:** choose the database region deliberately; check which regions the provider offers, since enterprise clients often ask for India. Not a statutory requirement in general, so confirm with counsel. **Neon has no India region (checked 2026-10-29; nearest are Singapore and Sydney).** For India-resident data use a Mumbai Postgres host (e.g. Supabase, AWS RDS or Cloud SQL, all to be verified) with RLS, PITR and separate roles; the schema is plain Postgres. Vercel functions can be pinned to Mumbai (bom1) regardless of the database host.
 
 ## 10. Backups and recovery
 
@@ -176,5 +176,5 @@ Outbound webhooks (`review.created`, `review.updated`) to a client-registered HT
 2. Database region and whether India matters for your first clients.
 3. Cloud KMS from day one (recommended) versus a key in env vars for an interim phase.
 4. Outbound webhooks in v1, or polling only.
-5. LLM provider for drafts, and confirm zero-retention terms.
+5. ~~LLM provider~~ Decided: Gemini on the paid tier (confirm zero-retention/data-residency terms for the chosen model).
 6. Retention numbers (30-day purge, 12-month audit) to confirm with counsel.

@@ -81,7 +81,7 @@ export default function PrivacyPage() {
           <ul className="list-disc pl-5 space-y-1">
             <li>We do not sell Google user data or share it with advertisers or data brokers.</li>
             <li>We do not use it for advertising, profiling, or to build any dataset unrelated to your account.</li>
-            <li>We do not use it to train generative AI or machine learning models. Review text is sent to OpenAI (API) solely to draft a reply for you; under OpenAI&apos;s API terms, data submitted through the API is not used to train its models.</li>
+            <li>We do not use it to train generative AI or machine learning models. Review text is sent to Google&apos;s Gemini API (paid tier) solely to draft a reply for you; under Google&apos;s paid-tier terms, that content is not used to improve Google&apos;s products or to train its models.</li>
             <li>We do not allow humans to read your Google data except where you ask for support, where needed for security or abuse investigation, or where the law requires it.</li>
           </ul>
           <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">Google API Services User Data Policy</h3>
