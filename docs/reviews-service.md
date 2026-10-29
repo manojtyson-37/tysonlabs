@@ -20,7 +20,9 @@ purge job for `purge_reviews_after`, Cloud KMS wrapper (interim `EnvKeyWrapper` 
 
 ## Setup (new database only)
 1. Create a NEW Neon project (PITR on, paid retention). Never point this at another app's database.
-2. As admin run `db/roles.sql` (set real passwords), then `db/migrations/0001_init.sql` as `reviews_owner`.
+2. Run the guarded setup script. It aborts unless the target is empty, creates both roles with generated passwords, applies the migration and checks the app role cannot bypass RLS. Passwords are printed once to your terminal, never saved:
+   `ADMIN_DATABASE_URL='<neon owner connection string>' scripts/setup-reviews-db.sh --yes`
+   (`db/roles.sql` is the manual equivalent.) Neon Free keeps only 6 hours of history: use it for setup and testing only, and move to a paid plan plus a scheduled external backup before any real client data.
 3. Set env vars from `.env.example` in Vercel; `REVIEWS_DATABASE_URL` uses `reviews_app`.
 4. Provision a client with an API key (owner role): insert into `clients` (with `allowed_return_urls`) and `api_keys`
    using `generateApiKey()` from `src/reviews-service/apikeys.ts`; the key is shown once.
