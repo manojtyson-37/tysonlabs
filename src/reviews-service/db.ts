@@ -9,6 +9,7 @@ export function getPool(): Pool {
     if (!url) throw new Error('REVIEWS_DATABASE_URL is not set');
     pool = new Pool({ connectionString: url, max: 5 });
     verified = assertRestrictedRole(pool);
+    verified.catch(() => undefined); // awaited later by every caller; this only stops an early unhandled-rejection crash
   }
   return pool;
 }
@@ -37,6 +38,7 @@ export async function rateLimit(bucket: string, limit: number, windowSeconds = 6
 export function setPool(p: Pool | undefined) {
   pool = p;
   verified = p ? assertRestrictedRole(p) : undefined;
+  verified?.catch(() => undefined);
 }
 
 export interface Scope {

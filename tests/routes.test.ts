@@ -1,11 +1,11 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { Pool } from 'pg';
 import { randomBytes } from 'node:crypto';
 import { EnvKeyWrapper } from '@/reviews-service/crypto';
 import { setDependencies } from '@/reviews-service/container';
 import { bootstrap } from './helpers';
 import { authenticate } from '@/reviews-service/apikeys';
-import { rateLimit } from '@/reviews-service/db';
+import { rateLimit, setPool } from '@/reviews-service/db';
 import { createConnectSession, completeConsent, linkLocation, startConsent } from '@/reviews-service/service';
 import { handleError } from '@/reviews-service/http';
 import { AuthError } from '@/reviews-service/apikeys';
@@ -223,20 +223,46 @@ describe('readyz', () => {
       for (const k of added) delete process.env[k];
     }
   });
-  it('reports not ready, with no detail, when the key wrapper fails', async () => {
-    const keys = ['REVIEWS_DATABASE_URL', 'REVIEWS_KEK', 'REVIEWS_BASE_URL', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REDIRECT_URI'];
-    const added = keys.filter((k) => process.env[k] === undefined);
+  const ENV = ['REVIEWS_DATABASE_URL', 'REVIEWS_KEK', 'API_KEY_PEPPER', 'REVIEWS_BASE_URL', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REDIRECT_URI'];
+  // Runs readyz with every variable present and returns the status, the body text and the failing check names it logged.
+  async function readyWith(ip: string, setup: () => void, restore: () => void) {
+    const added = ENV.filter((k) => process.env[k] === undefined);
     for (const k of added) process.env[k] = 'test';
-    setDependencies({ wrapper: { version: 'broken', wrap: async () => { throw new Error('kms down'); }, unwrap: async () => Buffer.alloc(0) } });
+    const logged: string[] = [];
+    const spy = vi.spyOn(console, 'error').mockImplementation((...a: unknown[]) => void logged.push(a.join(' ')));
+    setup();
     try {
-      const res = await getReady(req('GET', '/api/v1/readyz', undefined, undefined, '198.51.100.33'));
-      const text = await res.text();
-      expect(res.status).toBe(503);
-      expect(text).toBe('{"ok":false}');
+      const res = await getReady(req('GET', '/api/v1/readyz', undefined, undefined, ip));
+      return { status: res.status, text: await res.text(), logged: logged.join(' ') };
     } finally {
+      spy.mockRestore();
+      restore();
       for (const k of added) delete process.env[k];
-      setDependencies({ wrapper: new EnvKeyWrapper(randomBytes(32).toString('base64')) });
     }
+  }
+  const freshWrapper = () => setDependencies({ wrapper: new EnvKeyWrapper(randomBytes(32).toString('base64')) });
+
+  it('reports not ready, with no detail, when the key wrapper fails', async () => {
+    const r = await readyWith('198.51.100.33', () => setDependencies({ wrapper: { version: 'broken', wrap: async () => { throw new Error('kms down'); }, unwrap: async () => Buffer.alloc(0) } }), freshWrapper);
+    expect(r.status).toBe(503);
+    expect(r.text).toBe('{"ok":false}');
+    expect(r.logged).toContain('kek');
+    expect(r.logged).not.toContain('env:');
+  });
+
+  it('reports not ready when unwrap does not return the wrapped key', async () => {
+    const r = await readyWith('198.51.100.35', () => setDependencies({ wrapper: { version: 'wrong', wrap: async () => 'x', unwrap: async () => Buffer.alloc(32, 1) } }), freshWrapper);
+    expect(r.status).toBe(503);
+    expect(r.text).toBe('{"ok":false}');
+    expect(r.logged).toContain('kek-roundtrip');
+  });
+
+  it('reports not ready when the service connects as a role that is not restricted', async () => {
+    const r = await readyWith('198.51.100.36', () => setPool(new Pool({ connectionString: process.env.TEST_OWNER_URL })), () => setPool(new Pool({ connectionString: process.env.TEST_APP_URL })));
+    expect(r.status).toBe(503);
+    expect(r.text).toBe('{"ok":false}');
+    expect(r.logged).toContain('database');
+    expect(r.logged).not.toContain('env:');
   });
 
   it('is rate limited per IP', async () => {
