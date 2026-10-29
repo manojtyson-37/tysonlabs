@@ -43,6 +43,7 @@ export class FakeGoogle implements GoogleGateway {
 
 export async function bootstrap() {
   const o = owner();
+  await o.query('DELETE FROM rate_limits'); // each file starts with clean rate-limit buckets
   setPool(new Pool({ connectionString: process.env.TEST_APP_URL }));
   const fake = new FakeGoogle();
   setDependencies({ wrapper: new EnvKeyWrapper(randomBytes(32).toString('base64')), google: fake });

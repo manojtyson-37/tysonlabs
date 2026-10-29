@@ -38,7 +38,10 @@ beforeAll(async () => {
   A = await ctx.mkClient('routes-A');
   B = await ctx.mkClient('routes-B');
 });
-afterAll(async () => ctx.o.end());
+afterAll(async () => {
+  await ctx.o.query('DELETE FROM rate_limits'); // do not leave exhausted buckets for other files
+  await ctx.o.end();
+});
 
 describe('http layer', () => {
   it('maps errors to JSON without echoing unknown error messages', async () => {
