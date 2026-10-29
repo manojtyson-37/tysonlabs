@@ -5,6 +5,7 @@ import { HomeProjectsExplorer } from '@/components/HomeProjectsExplorer';
 import { FaqSection } from '@/components/FaqSection';
 import { ArrowUpRight, ExternalLink } from 'lucide-react';
 import { GithubIcon } from '@/components/Icons';
+import { CONTACT_EMAIL } from '@/lib/site';
 
 export default function HomePage() {
   const featuredProjects = getFeaturedProjects();
@@ -20,7 +21,7 @@ export default function HomePage() {
       stack: ['Next.js 15', 'TypeScript', 'Tailwind CSS', 'ESC/POS', 'Razorpay UPI'],
       liveUrl: 'https://dineplus.vercel.app/pos',
       caseStudySlug: 'dinepulse',
-      githubUrl: 'https://github.com/manoj-tyson/dinepulse',
+      githubUrl: 'https://github.com/manojtyson-37/dinepulse',
     },
     {
       index: '02',
@@ -32,7 +33,7 @@ export default function HomePage() {
       stack: ['FastAPI', 'Next.js 15', 'PostgreSQL', 'SQLAlchemy'],
       liveUrl: 'https://erp.silacollective.in/',
       caseStudySlug: 'silaa-atelier',
-      githubUrl: 'https://github.com/manoj-tyson/silaa-erp',
+      githubUrl: 'https://github.com/manojtyson-37/Silaa',
     },
     {
       index: '03',
@@ -44,7 +45,7 @@ export default function HomePage() {
       stack: ['React', 'TypeScript', 'Stockfish 18 WASM', 'Web Workers', 'Tailwind CSS'],
       liveUrl: 'https://tysonchess-two.vercel.app',
       caseStudySlug: 'tysonchess',
-      githubUrl: 'https://github.com/manoj-tyson/tyson-chess',
+      githubUrl: 'https://github.com/manojtyson-37/Tysonchess',
     },
     {
       index: '04',
@@ -55,7 +56,7 @@ export default function HomePage() {
       impact: ['0% Middleman Take', '1-Click UPI Intent', 'Automated GST Tax PDFs'],
       stack: ['Next.js 15', 'TypeScript', 'Prisma', 'PostgreSQL', 'Razorpay UPI'],
       caseStudySlug: 'tysonpe',
-      githubUrl: 'https://github.com/manoj-tyson/tysonpe',
+      githubUrl: 'https://github.com/manojtyson-37/Tysonpe',
     },
     {
       index: '05',
@@ -67,7 +68,7 @@ export default function HomePage() {
       stack: ['Next.js 15', 'TypeScript', 'Supabase', 'Tailwind CSS', 'PostgreSQL'],
       liveUrl: 'https://saas-physio.vercel.app',
       caseStudySlug: 'physiocare',
-      githubUrl: 'https://github.com/manoj-tyson/physiocare',
+      githubUrl: 'https://github.com/manojtyson-37/SAAS-Physio',
     },
   ];
 
@@ -138,7 +139,7 @@ export default function HomePage() {
         {/* Minimalist Social & Direct Contact Links */}
         <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-zinc-500 pt-2">
           <a
-            href="https://github.com/manoj-tyson"
+            href="https://github.com/manojtyson-37"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-black dark:hover:text-white transition-colors"
@@ -147,7 +148,7 @@ export default function HomePage() {
           </a>
           <span>·</span>
           <a
-            href="https://linkedin.com/in/manoj-tyson"
+            href="https://linkedin.com/in/manojramu"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-black dark:hover:text-white transition-colors"
@@ -156,10 +157,10 @@ export default function HomePage() {
           </a>
           <span>·</span>
           <a
-            href="mailto:manojsoundar7@gmail.com"
+            href={`mailto:${CONTACT_EMAIL}`}
             className="hover:text-black dark:hover:text-white transition-colors"
           >
-            manojsoundar7@gmail.com
+            {CONTACT_EMAIL}
           </a>
         </div>
       </section>
@@ -339,6 +340,26 @@ export default function HomePage() {
               </div>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* Review Manager (Google Business Profile app) */}
+      <section id="review-manager" className="max-w-5xl mx-auto px-6 sm:px-8">
+        <div className="p-8 sm:p-10 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-4">
+          <div className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
+            TysonLabs Review Manager
+          </div>
+          <h2 className="font-display font-semibold text-2xl sm:text-3xl text-zinc-950 dark:text-white [text-wrap:balance]">
+            Reply to every Google review, with your approval.
+          </h2>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl [text-wrap:pretty]">
+            Review Manager is a web app for clinics and local businesses. With the owner&apos;s permission it reads reviews from their Google Business Profile, drafts a reply with AI, and posts the reply to Google only after the owner approves it. Google data is used solely for this purpose.
+          </p>
+          <div className="flex flex-wrap gap-4 text-sm font-semibold">
+            <Link href="/reviews" className="underline">How Review Manager works</Link>
+            <Link href="/privacy#google-user-data" className="underline">Privacy Policy</Link>
+            <Link href="/terms" className="underline">Terms of Service</Link>
+          </div>
         </div>
       </section>
 

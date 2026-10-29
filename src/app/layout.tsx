@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/site';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
@@ -18,7 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://tysonlabs.dev'),
+  alternates: { canonical: '/' },
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'TysonLabs · Independent Technology Studio',
     template: '%s | TysonLabs',
@@ -37,12 +39,12 @@ export const metadata: Metadata = {
     'Manoj Tyson',
     'Software Architecture'
   ],
-  authors: [{ name: 'Manoj Tyson', url: 'https://tysonlabs.dev' }],
+  authors: [{ name: 'Manoj Tyson', url: 'https://tysonlabs.in' }],
   creator: 'Manoj Tyson',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://tysonlabs.dev',
+    url: 'https://tysonlabs.in',
     title: 'TysonLabs · Software built to run real businesses',
     description: 'From offline-first restaurant POS tills and garment factory ERPs to in-browser chess engines and creator checkout systems. Shipped end-to-end.',
     siteName: 'TysonLabs',

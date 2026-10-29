@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${project.name} · TysonLabs`,
       description: project.shortDescription,
-      url: `https://tysonlabs.dev/projects/${project.slug}`,
+      url: `https://tysonlabs.in/projects/${project.slug}`,
     },
   };
 }

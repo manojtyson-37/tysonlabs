@@ -1,8 +1,9 @@
+import { SITE_URL } from '@/lib/site';
 import { MetadataRoute } from 'next';
 import { getApprovedProjects } from '@/data/projects';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://tysonlabs.dev';
+  const baseUrl = SITE_URL;
   const projects = getApprovedProjects();
 
   const staticRoutes = [
@@ -13,7 +14,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/about',
     '/labs',
     '/contact',
+    '/reviews',
     '/privacy',
+    '/terms',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date('2026-10-27T00:00:00.000Z'),

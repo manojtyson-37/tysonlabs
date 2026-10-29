@@ -99,7 +99,7 @@ export function Footer() {
               <li>
                 <div className="inline-flex items-center gap-2 text-zinc-500 dark:text-[#666666]">
                   <Globe className="w-3.5 h-3.5" />
-                  <span>tysonlabs.vercel.app · tysonlabs.in</span>
+                  <span>tysonlabs.in</span>
                 </div>
               </li>
             </ul>
@@ -111,8 +111,14 @@ export function Footer() {
           <p>© {currentYear} TysonLabs · Sovereign software and independent craft.</p>
           <div className="flex items-center gap-6">
             <ThemeToggle />
+            <Link href="/reviews" className="hover:text-black dark:hover:text-[#9B9B9B] transition-colors">
+              Review Manager
+            </Link>
             <Link href="/privacy" className="hover:text-black dark:hover:text-[#9B9B9B] transition-colors">
               Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-black dark:hover:text-[#9B9B9B] transition-colors">
+              Terms
             </Link>
             <Link href="/projects" className="hover:text-black dark:hover:text-[#9B9B9B] transition-colors">
               Directory
