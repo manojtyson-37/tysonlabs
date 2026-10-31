@@ -4,7 +4,8 @@ import { setDependencies } from '@/reviews-service/container';
 import { EnvKeyWrapper } from '@/reviews-service/crypto';
 import { setPool } from '@/reviews-service/db';
 import { generateApiKey } from '@/reviews-service/apikeys';
-import type { GoogleGateway, GoogleLocation } from '@/reviews-service/google';
+import type { GoogleGateway, GoogleLocation, GoogleReview, GoogleReviewPage } from '@/reviews-service/google';
+import { GoogleError } from '@/reviews-service/google';
 
 process.env.API_KEY_PEPPER = 'test-pepper';
 process.env.REVIEWS_BASE_URL = 'https://reviews.test';
@@ -38,8 +39,10 @@ export class FakeGoogle implements GoogleGateway {
     if (this.refreshError) throw this.refreshError;
     return { access_token: 'AT2', expires_in: 3600, scope: this.scope };
   }
+  revokeResult = true;
   async revoke(t: string) {
     this.revoked.push(t);
+    return this.revokeResult;
   }
   async userEmail() {
     return this.email;
@@ -47,12 +50,36 @@ export class FakeGoogle implements GoogleGateway {
   async listLocations() {
     return this.locations;
   }
+  // Reviews per locationId, newest update first. pageSize 2 so tests exercise pagination.
+  reviews: Record<string, GoogleReview[]> = {};
+  posted: { locationId: string; reviewId: string; comment: string }[] = [];
+  postError: Error | null = null;
+  reviewCalls = 0;
+  async listReviews(_t: string, _a: string, locationId: string, pageToken?: string): Promise<GoogleReviewPage> {
+    this.reviewCalls++;
+    const all = [...(this.reviews[locationId] ?? [])].sort((a, b) => b.updateTime.localeCompare(a.updateTime));
+    const start = pageToken ? Number(pageToken) : 0;
+    const reviews = all.slice(start, start + 2);
+    return { reviews, nextPageToken: start + 2 < all.length ? String(start + 2) : undefined };
+  }
+  async postReply(_t: string, _a: string, locationId: string, reviewId: string, comment: string) {
+    if (this.postError) throw this.postError;
+    this.posted.push({ locationId, reviewId, comment });
+  }
 }
+
+export const mkReview = (id: string, rating: number, updateTime: string, comment = 'ok', extra: Partial<GoogleReview> = {}): GoogleReview => ({
+  reviewId: id, reviewerName: 'Reviewer ' + id, rating, comment, createTime: updateTime, updateTime, ...extra,
+});
+export { GoogleError };
 
 export async function bootstrap() {
   const o = owner();
   // Each file starts with clean rate-limit buckets. Relies on files running serially (fileParallelism: false).
   await o.query('DELETE FROM rate_limits');
+  // Every file starts from empty tenant data (clients cascade to everything below them), so files cannot affect each other.
+  await o.query('DELETE FROM audit_log');
+  await o.query('DELETE FROM clients');
   setPool(new Pool({ connectionString: process.env.TEST_APP_URL }));
   const fake = new FakeGoogle();
   setDependencies({ wrapper: new EnvKeyWrapper(randomBytes(32).toString('base64')), google: fake });

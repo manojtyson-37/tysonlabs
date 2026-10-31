@@ -15,7 +15,7 @@ const tokenAad = (clientId: string, tenantId: string) => `conn|${clientId}|${ten
 const pkceAad = (sessionId: string) => `pkce|${sessionId}`;
 const PURGE_DAYS = 30;
 
-async function audit(db: import('pg').PoolClient, a: AuthedClient | null, clientId: string, tenantId: string | null, action: string, entity?: string) {
+export async function audit(db: import('pg').PoolClient, a: AuthedClient | null, clientId: string, tenantId: string | null, action: string, entity?: string) {
   await db.query(
     'INSERT INTO audit_log (client_id, tenant_id, actor_type, actor_ref, action, entity) VALUES ($1,$2,$3,$4,$5,$6)',
     [clientId, tenantId, a ? 'client' : 'system', a?.apiKeyId ?? null, action, entity ?? null],
@@ -171,16 +171,18 @@ export async function getConnection(a: AuthedClient, tenantRef: string) {
   });
 }
 
-export async function disconnect(a: AuthedClient, tenantRef: string) {
+/** Returns true when Google confirmed the revocation (or there was no token to revoke). */
+export async function disconnect(a: AuthedClient, tenantRef: string): Promise<boolean> {
   const tenantId = await resolveTenant(a, tenantRef);
   const scope = { clientId: a.clientId, tenantId };
   const row = await withScope(scope, async (db) => {
     const r = await db.query('SELECT token_ciphertext, wrapped_data_key FROM connections WHERE tenant_id = $1', [tenantId]);
     return r.rows[0] as { token_ciphertext: string | null; wrapped_data_key: string | null } | undefined;
   });
+  let revoked = true;
   if (row?.token_ciphertext && row.wrapped_data_key) {
     const token = await open(getWrapper(), { ciphertext: row.token_ciphertext, wrappedDataKey: row.wrapped_data_key }, tokenAad(a.clientId, tenantId)).catch(() => null);
-    if (token) await getGoogle().revoke(token);
+    revoked = token ? await getGoogle().revoke(token) : false;
   }
   await withScope(scope, async (db) => {
     await db.query(
@@ -191,10 +193,11 @@ export async function disconnect(a: AuthedClient, tenantRef: string) {
     await db.query('DELETE FROM location_links WHERE tenant_id = $1', [tenantId]);
     await audit(db, a, a.clientId, tenantId, 'connection.disconnected');
   });
+  return revoked;
 }
 
 /** Gets a short-lived access token in memory. Marks the connection NEEDS_REAUTH if Google says the grant is gone. */
-async function accessTokenFor(a: AuthedClient, tenantId: string): Promise<string> {
+export async function accessTokenFor(a: { clientId: string }, tenantId: string): Promise<string> {
   const scope = { clientId: a.clientId, tenantId };
   const row = await withScope(scope, async (db) => {
     const r = await db.query("SELECT token_ciphertext, wrapped_data_key FROM connections WHERE tenant_id = $1 AND status = 'ACTIVE'", [tenantId]);

@@ -1,0 +1,6 @@
+{
+  "crons": [
+    { "path": "/api/v1/internal/cron/sync", "schedule": "*/15 * * * *" },
+    { "path": "/api/v1/internal/cron/purge", "schedule": "0 3 * * *" }
+  ]
+}

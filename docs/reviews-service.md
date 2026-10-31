@@ -1,4 +1,4 @@
-# Reviews service: what is built (Phase 0/1)
+# Reviews service: what is built (Phases 0-3, tested against a fake Google)
 
 Implements phases 0-1 of [reviews-service-design.md](./reviews-service-design.md) inside this repo
 (`src/reviews-service`, `src/app/api/v1`, `db/`). Decisions applied: lives in the TysonLabs central repo;
@@ -12,11 +12,20 @@ plain `pg` with SQL migrations instead of Prisma so row-level security is explic
 - Refresh tokens envelope-encrypted (per-connection data key wrapped by a key-wrapper).
 - Endpoints: `POST /api/v1/connect-sessions`, `GET /api/v1/connect/{token}`, `GET /api/v1/oauth/callback`,
   `GET|DELETE /api/v1/tenants/{ref}/connection`, `GET /api/v1/tenants/{ref}/available-locations`,
-  `PUT|DELETE /api/v1/tenants/{ref}/locations/{googleLocationId}`, `GET /api/v1/healthz`.
+  `PUT|DELETE /api/v1/tenants/{ref}/locations/{googleLocationId}`, `GET /api/v1/healthz`, `GET /api/v1/readyz` (deep check).
+- Phase 2 (migration `0002_reviews.sql`): review sync with a per-connection lease and early stop, `GET .../reviews` (cursor), `GET .../summary`,
+  `POST .../sync`, cron `GET /api/v1/internal/cron/sync` (every 15 min) and `/purge` (daily), both requiring `CRON_SECRET`.
+- Phase 3: `POST .../reviews/{id}/reply-drafts` (Gemini, then a deterministic safety check; generic template if the model fails or is unsafe),
+  `POST .../reviews/{id}/reply` (needs `approvedBy` and an `Idempotency-Key`; one live reply per review; `replace: true` to overwrite an existing reply).
+- Rights requests: `GET .../export` (no secrets) and `DELETE /api/v1/tenants/{ref}?confirm={ref}` (revokes at Google, deletes everything including audit rows naming the tenant, reports `googleRevoked`).
+- Retention: reviews purged 30 days after disconnect; audit rows older than 12 months removed.
 
-## Not built yet
-Review sync and cron, reviews/summary API, reply drafts and posting, push notifications, tenant export/erasure endpoints,
-purge job for `purge_reviews_after`, Cloud KMS wrapper (interim `EnvKeyWrapper` in use), rate limiting, backups and restore drill.
+## Not built yet / known gaps
+- **Nothing here has run against real Google.** The reviews and reply calls (v4 API) wait on Business Profile API approval.
+- Detection of reviews deleted on Google (`deleted_at` exists but is never set). Deletions are not propagated yet.
+- Push notifications and outbound webhooks, Cloud KMS wrapper (interim `EnvKeyWrapper`), backups and restore drill.
+- `GEMINI_API_KEY` is not set in production, so drafts use the generic template until it is. Enable billing on that key's project before any real review text is sent; confirm `GEMINI_MODEL` (default `gemini-2.5-flash-lite`) exists on your account.
+- The safety check is a deterministic filter (Latin-script only, blocks patient/health wording, links, contact details, reviewer names). It reduces risk; a human still approves every reply.
 
 ## Setup (new database only)
 1. Create a NEW Neon project (PITR on, paid retention). Never point this at another app's database.

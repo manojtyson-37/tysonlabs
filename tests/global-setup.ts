@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -26,10 +26,12 @@ export async function setup() {
   psql('postgres', 'CREATE DATABASE reviews');
   const roles = readFileSync('db/roles.sql', 'utf8').replace('CHANGE_ME_OWNER', 'owner').replace('CHANGE_ME_APP', 'app');
   psql('reviews', roles);
-  const migration = spawnSync(`${BIN}/psql`, ['-h', '127.0.0.1', '-p', String(PORT), '-U', 'reviews_owner', '-d', 'reviews', '-v', 'ON_ERROR_STOP=1', '-f', 'db/migrations/0001_init.sql'], {
-    env: { ...process.env, PGPASSWORD: 'owner' },
-  });
-  if (migration.status !== 0) throw new Error(`migration failed: ${migration.stderr}`);
+  for (const file of readdirSync('db/migrations').filter((f) => f.endsWith('.sql')).sort()) {
+    const migration = spawnSync(`${BIN}/psql`, ['-h', '127.0.0.1', '-p', String(PORT), '-U', 'reviews_owner', '-d', 'reviews', '-v', 'ON_ERROR_STOP=1', '-f', `db/migrations/${file}`], {
+      env: { ...process.env, PGPASSWORD: 'owner' },
+    });
+    if (migration.status !== 0) throw new Error(`migration ${file} failed: ${migration.stderr}`);
+  }
   process.env.TEST_OWNER_URL = `postgres://reviews_owner:owner@127.0.0.1:${PORT}/reviews`;
   process.env.TEST_APP_URL = `postgres://reviews_app:app@127.0.0.1:${PORT}/reviews`;
 }

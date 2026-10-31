@@ -22,10 +22,31 @@ export interface GoogleGateway {
   authUrl(params: { state: string; codeChallenge: string }): string;
   exchangeCode(code: string, codeVerifier: string): Promise<GoogleTokens>;
   refresh(refreshToken: string): Promise<GoogleTokens>;
-  revoke(token: string): Promise<void>;
+  /** True when Google confirmed the revocation. */
+  revoke(token: string): Promise<boolean>;
   userEmail(accessToken: string): Promise<string | undefined>;
   listLocations(accessToken: string): Promise<GoogleLocation[]>;
+  /** One page of a location's reviews, newest first. */
+  listReviews(accessToken: string, accountId: string, locationId: string, pageToken?: string): Promise<GoogleReviewPage>;
+  /** Creates or replaces the owner's reply to a review. */
+  postReply(accessToken: string, accountId: string, locationId: string, reviewId: string, comment: string): Promise<void>;
 }
+
+export interface GoogleReview {
+  reviewId: string;
+  reviewerName?: string;
+  rating: number; // 1-5
+  comment?: string;
+  createTime: string;
+  updateTime: string;
+  reply?: { comment: string; updateTime: string };
+}
+export interface GoogleReviewPage {
+  reviews: GoogleReview[];
+  nextPageToken?: string;
+}
+
+const STARS: Record<string, number> = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
 
 export function pkcePair() {
   const verifier = randomBytes(32).toString('base64url');
@@ -66,11 +87,12 @@ export class RealGoogleGateway implements GoogleGateway {
   }
 
   async revoke(token: string) {
-    await fetch('https://oauth2.googleapis.com/revoke', {
+    const res = await fetch('https://oauth2.googleapis.com/revoke', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ token }),
-    }).catch(() => undefined);
+    }).catch(() => null);
+    return !!res && res.ok;
   }
 
   async userEmail(accessToken: string) {
@@ -106,6 +128,32 @@ export class RealGoogleGateway implements GoogleGateway {
       } while (pageToken);
     }
     return out;
+  }
+
+  async listReviews(accessToken: string, accountId: string, locationId: string, pageToken?: string): Promise<GoogleReviewPage> {
+    const qs = new URLSearchParams({ pageSize: '50', orderBy: 'updateTime desc' });
+    if (pageToken) qs.set('pageToken', pageToken);
+    const page = await this.get<{
+      reviews?: { reviewId: string; reviewer?: { displayName?: string }; starRating?: string; comment?: string; createTime: string; updateTime: string; reviewReply?: { comment: string; updateTime: string } }[];
+      nextPageToken?: string;
+    }>(`https://mybusiness.googleapis.com/v4/accounts/${encodeURIComponent(accountId)}/locations/${encodeURIComponent(locationId)}/reviews?${qs}`, accessToken);
+    return {
+      reviews: (page.reviews ?? []).flatMap((r) => {
+        const rating = STARS[r.starRating ?? ''];
+        if (!rating) return []; // unrated or unknown enum: skip rather than guess
+        return [{ reviewId: r.reviewId, reviewerName: r.reviewer?.displayName, rating, comment: r.comment, createTime: r.createTime, updateTime: r.updateTime, reply: r.reviewReply }];
+      }),
+      nextPageToken: page.nextPageToken,
+    };
+  }
+
+  async postReply(accessToken: string, accountId: string, locationId: string, reviewId: string, comment: string) {
+    const res = await fetch(
+      `https://mybusiness.googleapis.com/v4/accounts/${encodeURIComponent(accountId)}/locations/${encodeURIComponent(locationId)}/reviews/${encodeURIComponent(reviewId)}/reply`,
+      { method: 'PUT', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ comment }) },
+    );
+    if (res.status === 401) throw new GoogleError('unauthorized');
+    if (!res.ok) throw new GoogleError(`http_${res.status}`);
   }
 
   private async token(body: Record<string, string>): Promise<GoogleTokens> {

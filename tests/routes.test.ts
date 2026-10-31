@@ -129,6 +129,9 @@ describe('rate limiting end to end', () => {
 
   it('requests with no trusted IP share one bucket (fail closed)', async () => {
     const noIp = new Request(`${URL_}/x`, { headers: { authorization: `Bearer ${A.key}` } });
+    // The limiter uses fixed 60 s windows: do not start in the last seconds of one, or the hits split across two windows.
+    const msLeft = 60_000 - (Date.now() % 60_000);
+    if (msLeft < 3000) await new Promise((r) => setTimeout(r, msLeft + 100));
     for (let i = 0; i < 300; i++) await rateLimit('auth:ip:unknown', 300);
     await expect(authenticate(noIp, 'read')).rejects.toMatchObject({ status: 429 });
   });
