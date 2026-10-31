@@ -353,7 +353,7 @@ export default function HomePage() {
             Reply to every Google review, with your approval.
           </h2>
           <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl [text-wrap:pretty]">
-            Review Manager is a web app for clinics and local businesses. With the owner&apos;s permission it reads reviews from their Google Business Profile, suggests a reply, and posts the reply to Google only after the owner approves it. Google data is used solely for this purpose.
+            Review Manager is a web app for clinics and local businesses. With the owner&apos;s permission it reads reviews from their Google Business Profile, drafts a reply with AI, and posts the reply to Google only after the owner approves it. Google data is used solely for this purpose.
           </p>
           <div className="flex flex-wrap gap-4 text-sm font-semibold">
             <Link href="/reviews" className="underline">How Review Manager works</Link>
