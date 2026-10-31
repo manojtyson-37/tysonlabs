@@ -2,11 +2,12 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { Pool } from 'pg';
 import { bearer, bootstrap, GoogleError, mkReview } from './helpers';
 import { authenticate, AuthedClient } from '@/reviews-service/apikeys';
-import { setDependencies } from '@/reviews-service/container';
+import { getWrapper, setDependencies } from '@/reviews-service/container';
 import { cronAuthorized } from '@/reviews-service/cron';
 import { createConnectSession, completeConsent, getConnection, linkLocation, resolveTenant, startConsent, unlinkLocation } from '@/reviews-service/service';
 import { createDraft, eraseTenant, exportTenant, listReviews, postReply, runPurge, runSyncBatch, summary, syncTenant } from '@/reviews-service/reviews';
 import { replySafety, templateReply } from '@/reviews-service/drafts';
+import { LibraryDraftGenerator } from '@/reviews-service/library';
 import { EnvKeyWrapper } from '@/reviews-service/crypto';
 import { randomBytes } from 'node:crypto';
 import { DELETE as delTenant } from '@/app/api/v1/tenants/[ref]/route';
@@ -88,6 +89,7 @@ describe('sync', () => {
     ctx.fake.refreshError = new GoogleError('invalid_grant');
     expect((await syncTenant(B.id, bobId)).outcome).toBe('needs_reauth');
     expect((await getConnection(b, 'bob')).status).toBe('NEEDS_REAUTH');
+    expect((await ctx.o.query('SELECT token_ciphertext, wrapped_data_key FROM connections WHERE tenant_id = $1', [bobId])).rows[0]).toEqual({ token_ciphertext: null, wrapped_data_key: null }); // the dead token is not kept
     ctx.fake.refreshError = null;
     await connect(b, 'bob', 'LOC2'); // reconnect restores ACTIVE
     expect((await getConnection(b, 'bob')).status).toBe('ACTIVE');
@@ -206,6 +208,24 @@ describe('reply drafts', () => {
   it('rejects a reply that names the reviewer', () => {
     expect(replySafety('Thank you, Priya, for the review.', { reviewerName: 'Priya Rao' }).ok).toBe(false);
     expect(replySafety('Thank you for the review.', { reviewerName: 'Priya Rao' }).ok).toBe(true);
+  });
+
+  it('records library drafts as template (never as AI), and does not repeat a recent reply word for word', async () => {
+    const w = getWrapper(); // keep the same key wrapper, or stored tokens could not be decrypted afterwards
+    setDependencies({ wrapper: w, google: ctx.fake, drafter: new LibraryDraftGenerator() });
+    try {
+      const id = await firstReview();
+      const texts = new Set<string>();
+      for (let i = 0; i < 6; i++) {
+        const d = await createDraft(a, 'alice', id);
+        expect(d.source).toBe('template');
+        expect(replySafety(d.text).ok).toBe(true);
+        texts.add(d.text);
+      }
+      expect(texts.size).toBe(6); // each new draft differs from the recent ones
+    } finally {
+      setDependencies({ wrapper: w, google: ctx.fake, drafter });
+    }
   });
 
   it('refuses a review that belongs to another client', async () => {
@@ -361,6 +381,8 @@ describe('rights requests and retention', () => {
     await ctx.o.query("UPDATE connections SET purge_reviews_after = now() - interval '1 day' WHERE tenant_id = $1", [bobId]);
     expect((await runPurge()).reviewsPurged).toBe(5);
     expect(await count('SELECT count(*) AS n FROM reviews WHERE tenant_id = $1', [bobId])).toBe(0);
+    expect((await ctx.o.query('SELECT google_email FROM connections WHERE tenant_id = $1', [bobId])).rows[0].google_email).toBeNull(); // the Google account email goes too
+    expect(await count('SELECT count(*) AS n FROM sync_runs WHERE tenant_id = $1', [bobId])).toBe(0);
     expect(await count('SELECT count(*) AS n FROM reviews WHERE tenant_id = $1', [aliceId])).toBe(5); // a connected tenant is untouched
   });
 

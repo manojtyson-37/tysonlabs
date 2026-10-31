@@ -6,7 +6,7 @@ import { CONTACT_EMAIL } from '@/lib/site';
 export const metadata: Metadata = {
   title: 'Review Manager · TysonLabs',
   description:
-    'TysonLabs Review Manager helps clinics and local businesses read their Google Business Profile reviews and publish AI-drafted, owner-approved replies.',
+    'TysonLabs Review Manager helps clinics and local businesses read their Google Business Profile reviews and publish owner-approved replies, with suggested wording to start from.',
 };
 
 const h2 = 'font-display font-bold text-lg text-zinc-950 dark:text-[#F4F3F8]';
@@ -23,8 +23,8 @@ export default function ReviewsPage() {
         </h1>
         <p className="text-base text-zinc-600 dark:text-[#A6A8B3] leading-relaxed">
           Review Manager is a web application for clinics and local businesses. It connects to a
-          business&apos;s own Google Business Profile, shows its reviews in one inbox, drafts a
-          reply with AI, and posts the reply to Google once the owner or staff approves it.
+          business&apos;s own Google Business Profile, shows its reviews in one inbox, suggests a
+          reply, and posts the reply to Google once the owner or staff approves it.
         </p>
       </div>
 
@@ -33,7 +33,7 @@ export default function ReviewsPage() {
           <h2 className={h2}>What it does</h2>
           <ul className="list-disc pl-5 space-y-1">
             <li>Syncs the reviews of the locations the client chooses into a single dashboard.</li>
-            <li>Drafts a polite, specific reply to each review with AI, in the client&apos;s tone.</li>
+            <li>Suggests a polite reply to each review from a library of pre-written replies, matched to the star rating and the topics the review mentions. Review text is not sent to an AI provider.</li>
             <li>Lets the client edit and approve each reply. Nothing is posted without approval.</li>
             <li>Publishes the approved reply to the review on Google.</li>
           </ul>

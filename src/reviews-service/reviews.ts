@@ -172,13 +172,23 @@ export async function createDraft(a: AuthedClient, tenantRef: string, reviewId: 
   if (!review) throw new ServiceError(404, 'NOT_FOUND');
   if (!(await rateLimit(`draft:${tenantId}`, 30))) throw new ServiceError(429, 'RATE_LIMITED');
 
+  // Texts used recently for this tenant, so a library draft is not word-for-word the same as a recent reply.
+  const recent = new Set(
+    (await withScope(scope, (db) => db.query('SELECT text FROM reply_drafts WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT 100', [tenantId]))).rows.map((r) => r.text as string),
+  );
+  const drafter = getDrafter();
+  const isAi = drafter.kind !== 'library';
   let text = '';
-  let source: 'ai' | 'template' = 'ai';
-  try {
-    text = (await getDrafter().generate({ rating: review.rating, comment: review.comment })).trim();
-  } catch {
-    text = ''; // model down or misconfigured: fall back to the generic wording below
+  for (let attempt = 0; attempt < (isAi ? 1 : 8); attempt++) {
+    try {
+      text = (await drafter.generate({ rating: review.rating, comment: review.comment, seed: `${reviewId}:${randomBytes(6).toString('hex')}` })).trim();
+    } catch {
+      text = ''; // model down or misconfigured: fall back to the generic wording below
+    }
+    if (text && !recent.has(text)) break;
   }
+  // 'ai' only when a real AI model wrote it; library and generic wording are both recorded as 'template'.
+  let source: 'ai' | 'template' = isAi ? 'ai' : 'template';
   if (!replySafety(text, { reviewerName: review.reviewer_name }).ok) {
     text = templateReply(review.rating);
     source = 'template';

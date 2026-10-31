@@ -211,7 +211,7 @@ export async function accessTokenFor(a: { clientId: string }, tenantId: string):
     if (err instanceof GoogleError && err.kind === 'invalid_grant') {
       // Optimistic lock on the exact token we tried, so a concurrent reconnect is not clobbered.
       await withScope(scope, (db) =>
-        db.query("UPDATE connections SET status='NEEDS_REAUTH', updated_at=now() WHERE tenant_id=$1 AND token_ciphertext=$2", [tenantId, row.token_ciphertext]),
+        db.query("UPDATE connections SET status='NEEDS_REAUTH', token_ciphertext=NULL, wrapped_data_key=NULL, key_version=NULL, updated_at=now() WHERE tenant_id=$1 AND token_ciphertext=$2", [tenantId, row.token_ciphertext]), // the token is dead, so it is not kept
       );
       throw new ServiceError(409, 'NEEDS_REAUTH');
     }

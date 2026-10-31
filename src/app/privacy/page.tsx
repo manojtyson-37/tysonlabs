@@ -81,7 +81,7 @@ export default function PrivacyPage() {
           <ul className="list-disc pl-5 space-y-1">
             <li>We do not sell Google user data or share it with advertisers or data brokers.</li>
             <li>We do not use it for advertising, profiling, or to build any dataset unrelated to your account.</li>
-            <li>We do not use it to train generative AI or machine learning models. Review text is sent to Google&apos;s Gemini API (paid tier) solely to draft a reply for you; under Google&apos;s paid-tier terms, that content is not used to improve Google&apos;s products or to train its models.</li>
+            <li>We do not use it to train generative AI or machine learning models. Suggested replies are assembled on our own systems from a library of pre-written replies, chosen by the review&apos;s star rating and the topics it mentions. Review text is not sent to an AI provider or to any other third party to produce a suggestion. If we ever add AI-written suggestions, we will update this policy first.</li>
             <li>We do not allow humans to read your Google data except where you ask for support, where needed for security or abuse investigation, or where the law requires it.</li>
           </ul>
           <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">Google API Services User Data Policy</h3>
@@ -99,7 +99,7 @@ export default function PrivacyPage() {
           </p>
           <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">Storage, security and retention</h3>
           <p>
-            Data is stored on managed cloud infrastructure, encrypted in transit, and OAuth tokens are stored encrypted. We keep synced reviews and tokens only while your account is connected. When you disconnect, we revoke our access at Google and immediately delete the stored tokens, synced reviews and reply drafts. If access is revoked on Google&apos;s side, we delete the stored tokens, and the synced reviews are deleted when you disconnect in Review Manager or ask us to.
+            Data is stored on managed cloud infrastructure, encrypted in transit, and OAuth tokens are stored encrypted. We keep synced reviews and reply drafts only while your account is connected. When you disconnect, we ask Google to revoke our access and immediately delete the stored token. Synced reviews, reply drafts, sync history and the connecting Google account&apos;s email address are deleted 30 days after you disconnect (reviews and drafts are kept if you reconnect within that time), or at once if you ask us to erase them. If access is revoked on Google&apos;s side, we delete the stored token, syncing stops, and the connection shows as needing to be reconnected; the rest of the stored data is deleted when you disconnect in Review Manager or ask us to. We also keep a security log of actions such as connecting, linking a location and posting a reply. It contains no review text and is deleted after 12 months. Deleted data can remain in database backups until those backups expire.
           </p>
           <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">Disconnecting and deleting your data</h3>
           <ul className="list-disc pl-5 space-y-1">

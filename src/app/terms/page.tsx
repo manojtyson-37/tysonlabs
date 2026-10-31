@@ -31,14 +31,14 @@ export default function TermsPage() {
         <section className="space-y-2">
           <h2 className={h2}>2. Review Manager</h2>
           <p>
-            Review Manager reads reviews from a Google Business Profile you are authorised to manage, drafts replies with AI, and publishes replies that you approve. You are responsible for confirming that you have authority over the connected business and for every reply published under your account.
+            Review Manager reads reviews from a Google Business Profile you are authorised to manage, suggests replies, and publishes replies that you approve. You are responsible for confirming that you have authority over the connected business and for every reply published under your account.
           </p>
         </section>
 
         <section className="space-y-2">
           <h2 className={h2}>3. Your responsibilities</h2>
           <ul className="list-disc pl-5 space-y-1">
-            <li>Review AI-drafted replies before approving them. They may contain mistakes.</li>
+            <li>Review suggested replies before approving them. They are generic and may not fit every review.</li>
             <li>Do not include confidential patient or customer health information in replies. Do not confirm in a reply that a reviewer is a patient.</li>
             <li>Follow Google&apos;s Business Profile policies, and do not use the service to post fake, incentivised, or misleading content.</li>
             <li>Do not misuse, attempt to disrupt, or reverse-engineer the service.</li>

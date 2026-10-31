@@ -15,7 +15,7 @@ plain `pg` with SQL migrations instead of Prisma so row-level security is explic
   `PUT|DELETE /api/v1/tenants/{ref}/locations/{googleLocationId}`, `GET /api/v1/healthz`, `GET /api/v1/readyz` (deep check).
 - Phase 2 (migration `0002_reviews.sql`): review sync with a per-connection lease and early stop, `GET .../reviews` (cursor), `GET .../summary`,
   `POST .../sync`, cron `GET /api/v1/internal/cron/sync` (every 15 min) and `/purge` (daily), both requiring `CRON_SECRET`.
-- Phase 3: `POST .../reviews/{id}/reply-drafts` (Gemini, then a deterministic safety check; generic template if the model fails or is unsafe),
+- Phase 3: `POST .../reviews/{id}/reply-drafts` (default: built-in reply library of about 2,300 pre-written combinations; positive reviews get a topic line only when they praise it and carry no negative wording, all others get neutral wording that concedes nothing, no review text leaves our systems; opt-in Gemini needs `DRAFTS_MODE=ai`, `GEMINI_API_KEY` and `AI_DRAFTS_POLICY_ACK=policy-updated`; every draft passes a deterministic safety check, with a generic template as fallback),
   `POST .../reviews/{id}/reply` (needs `approvedBy` and an `Idempotency-Key`; one live reply per review; `replace: true` to overwrite an existing reply).
 - Rights requests: `GET .../export` (no secrets) and `DELETE /api/v1/tenants/{ref}?confirm={ref}` (revokes at Google, deletes everything including audit rows naming the tenant, reports `googleRevoked`).
 - Retention: reviews purged 30 days after disconnect; audit rows older than 12 months removed.
@@ -24,7 +24,8 @@ plain `pg` with SQL migrations instead of Prisma so row-level security is explic
 - **Nothing here has run against real Google.** The reviews and reply calls (v4 API) wait on Business Profile API approval.
 - Detection of reviews deleted on Google (`deleted_at` exists but is never set). Deletions are not propagated yet.
 - Push notifications and outbound webhooks, Cloud KMS wrapper (interim `EnvKeyWrapper`), backups and restore drill.
-- `GEMINI_API_KEY` is not set in production, so drafts use the generic template until it is. Enable billing on that key's project before any real review text is sent; confirm `GEMINI_MODEL` (default `gemini-2.5-flash-lite`) exists on your account.
+- AI drafting is off by default. To enable it, set `DRAFTS_MODE=ai`, `AI_DRAFTS_POLICY_ACK=policy-updated` and `GEMINI_API_KEY` (billing on, paid tier) and update the privacy and terms pages first: they currently say review text is not sent to an AI provider. Confirm `GEMINI_MODEL` (default `gemini-2.5-flash-lite`) exists on your account.
+- Library matching is by topic keywords only (staff, cleanliness, waiting time, value, place, expertise). Per-clinic custom reply lines and keyword rules are not built yet.
 - The safety check is a deterministic filter (Latin-script only, blocks patient/health wording, links, contact details, reviewer names). It reduces risk; a human still approves every reply.
 
 ## Setup (new database only)

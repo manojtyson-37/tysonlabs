@@ -9,9 +9,13 @@
 export interface DraftInput {
   rating: number;
   comment?: string | null;
+  /** Varies the wording between drafts for the same review; ignored by the AI generator. */
+  seed?: string;
 }
 
 export interface DraftGenerator {
+  /** 'library' = built-in pre-written replies. Anything else is treated as AI-written. */
+  readonly kind?: 'ai' | 'library';
   generate(input: DraftInput): Promise<string>;
 }
 
@@ -28,6 +32,7 @@ const FORBIDDEN = [
   /\b(?:doctor|doctors|dr|clinician|consultation|appointment|appointments|session|sessions|attended)\b/,
   /\b(?:visit|visits|visited|visiting|came to us|came in|chose us|choosing us|choosing our|stopped by|your stay|your experience|helped you)\b/,
   /\b(?:cured|healed|better now|feeling better|relief|improv\w*)\b/,
+  /\b(?:see you again|welcoming you|welcome you back|come back|visit again|community)\b/,
 ];
 // Long words are also checked with every non-letter removed, so "p a t i e n t" or "pa-tient" does not slip through.
 const SQUASHED = ['patient', 'treatment', 'therapy', 'physio', 'diagnos', 'surgery', 'injury', 'health', 'doctor', 'medical'];
@@ -86,6 +91,7 @@ const SYSTEM_PROMPT = [
 ].join('\n');
 
 export class GeminiDraftGenerator implements DraftGenerator {
+  readonly kind = 'ai' as const;
   async generate({ rating, comment }: DraftInput): Promise<string> {
     const key = process.env.GEMINI_API_KEY;
     if (!key) throw new Error('GEMINI_API_KEY is not set');
