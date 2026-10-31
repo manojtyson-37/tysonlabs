@@ -296,6 +296,45 @@ describe('posting a reply', () => {
     expect(await postReply(a, 'alice', id4, { draftId: d.draftId, approvedBy: 'x', idempotencyKey: key(), replace: true })).toMatchObject({ status: 'POSTED' });
   });
 
+  // Reviews inserted by the stuck-post and key-reuse tests are removed afterwards so later tests still see exactly five.
+  afterAll(async () => {
+    await ctx.o.query("DELETE FROM reviews WHERE google_review_id IN ('stuck-1','reuse-1','reuse-2')");
+  });
+
+  async function freshReview(id: string) {
+    await ctx.o.query(
+      `INSERT INTO reviews (client_id, tenant_id, google_location_id, google_review_id, reviewer_name, rating, comment, google_create_time, google_update_time)
+       VALUES ($1,$2,'LOC1',$3,'Someone',5,'ok','2026-05-01T00:00:00Z','2026-05-01T00:00:00Z')`,
+      [A.id, aliceId, id],
+    );
+    return String((await ctx.o.query('SELECT id FROM reviews WHERE tenant_id = $1 AND google_review_id = $2', [aliceId, id])).rows[0].id);
+  }
+
+  it('releases a stale in-flight post (row becomes FAILED, key freed) and blocks a fresh one with IN_PROGRESS', async () => {
+    const id = await freshReview('stuck-1');
+    const d = await createDraft(a, 'alice', id);
+    // Fresh claim in flight: the same key gets IN_PROGRESS, and a different draft cannot jump the queue.
+    await ctx.o.query("UPDATE reply_drafts SET status='POSTING', idempotency_key='inflight-key-1', posting_since = now() WHERE id = $1", [d.draftId]);
+    await expect(postReply(a, 'alice', id, { draftId: d.draftId, approvedBy: 'x', idempotencyKey: 'inflight-key-1' })).rejects.toMatchObject({ code: 'IN_PROGRESS' });
+    const other = await createDraft(a, 'alice', id);
+    await expect(postReply(a, 'alice', id, { draftId: other.draftId, approvedBy: 'x', idempotencyKey: key() })).rejects.toMatchObject({ code: 'ALREADY_REPLIED_OR_KEY_USED' });
+    // Once stale, the next call releases it, and the original key can be retried.
+    await ctx.o.query("UPDATE reply_drafts SET posting_since = now() - interval '10 minutes' WHERE id = $1", [d.draftId]);
+    expect(await postReply(a, 'alice', id, { draftId: d.draftId, approvedBy: 'x', idempotencyKey: 'inflight-key-1' })).toMatchObject({ status: 'POSTED' });
+    expect(ctx.fake.posted.filter((p) => p.reviewId === 'stuck-1')).toHaveLength(1);
+  });
+
+  it('refuses a key reused on a different review, and a posted draft under a new key', async () => {
+    const r1 = await freshReview('reuse-1');
+    const r2 = await freshReview('reuse-2');
+    const d1 = await createDraft(a, 'alice', r1);
+    const k = key();
+    await postReply(a, 'alice', r1, { draftId: d1.draftId, approvedBy: 'x', idempotencyKey: k });
+    await expect(postReply(a, 'alice', r2, { text: 'Thank you for the review.', approvedBy: 'x', idempotencyKey: k })).rejects.toMatchObject({ code: 'IDEMPOTENCY_KEY_REUSED' });
+    await expect(postReply(a, 'alice', r1, { draftId: d1.draftId, approvedBy: 'x', idempotencyKey: key() })).rejects.toBeDefined(); // already posted
+    expect(ctx.fake.posted.filter((p) => p.reviewId === 'reuse-2')).toHaveLength(0);
+  });
+
   it("refuses to reply to another client's review", async () => {
     await expect(postReply(b, 'bob', await review(3), { text: 'Thank you.', approvedBy: 'x', idempotencyKey: key() })).rejects.toMatchObject({ status: 404 });
   });
