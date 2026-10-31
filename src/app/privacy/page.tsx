@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { CONTACT_EMAIL, SITE_URL } from '@/lib/site';
+import { PRIVACY_EMAIL, SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy · TysonLabs',
@@ -104,7 +104,7 @@ export default function PrivacyPage() {
           <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">Disconnecting and deleting your data</h3>
           <ul className="list-disc pl-5 space-y-1">
             <li>Disconnect from within Review Manager, or revoke access at any time at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" className="text-zinc-900 dark:text-white underline font-medium">myaccount.google.com/permissions</a>.</li>
-            <li>To request deletion of all data we hold, email <a href={`mailto:${CONTACT_EMAIL}`} className="text-zinc-900 dark:text-white underline font-medium">{CONTACT_EMAIL}</a> from the connected account&apos;s address. We confirm and complete deletion within 30 days.</li>
+            <li>To request deletion of all data we hold, email <a href={`mailto:${PRIVACY_EMAIL}`} className="text-zinc-900 dark:text-white underline font-medium">{PRIVACY_EMAIL}</a> from the connected account&apos;s address. We confirm and complete deletion within 30 days.</li>
             <li>Replies already posted on Google remain on Google; you can edit or delete them in your Business Profile.</li>
           </ul>
         </section>
@@ -112,8 +112,8 @@ export default function PrivacyPage() {
         <section className="space-y-2 pt-4 border-t border-black/[0.08] dark:border-[#30333B]">
           <p className="text-xs text-zinc-500 dark:text-[#717684]">
             For questions regarding this policy, please email{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-zinc-900 dark:text-white underline font-medium">
-              {CONTACT_EMAIL}
+            <a href={`mailto:${PRIVACY_EMAIL}`} className="text-zinc-900 dark:text-white underline font-medium">
+              {PRIVACY_EMAIL}
             </a>{' '}
             or use our{' '}
             <Link href="/contact" className="text-zinc-900 dark:text-white underline font-medium">

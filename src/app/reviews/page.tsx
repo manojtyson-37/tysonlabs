@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { CONTACT_EMAIL } from '@/lib/site';
+import { SUPPORT_EMAIL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Review Manager · TysonLabs',
@@ -68,8 +68,8 @@ export default function ReviewsPage() {
           <p>
             Review Manager is currently onboarded by invitation. To set it up for your clinic, write
             to{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-zinc-900 dark:text-white underline font-medium">
-              {CONTACT_EMAIL}
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-zinc-900 dark:text-white underline font-medium">
+              {SUPPORT_EMAIL}
             </a>{' '}
             or use the{' '}
             <Link href="/contact" className="text-zinc-900 dark:text-white underline font-medium">
