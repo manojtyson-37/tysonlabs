@@ -48,6 +48,15 @@ plain `pg` with SQL migrations instead of Prisma so row-level security is explic
 `npm test` starts a throwaway local Postgres 17 (needs `/opt/homebrew/opt/postgresql@17`, or set `PG_BIN`), applies the migration,
 and runs isolation tests. It never touches a real database.
 
+## Dashboard (reviews.tysonlabs.in)
+Per-business logins. "Sign in with Google" (openid + email only, PKCE, signed state cookie, verified email required) proves who the person is; access to a business comes only from
+the `tenant_members` table (migration 0005), read from the database on every request. Roles: **owner** may connect Google; **staff** may read, sync and post approved replies. TysonLabs
+admins (`DASHBOARD_ADMIN_EMAILS`) may open every business of `DASHBOARD_CLIENT_ID` and use the Businesses page to add a business and its first members. The approver recorded on a
+posted reply is the signed-in email. Pages: Overview, Reviews, Google connection, Businesses (admin). No delete controls: deletion stays on the two-confirmation API.
+Served by the same app: next.config.ts rewrites the dashboard host to `/dashboard/*`; the layout refuses any other host. `DASHBOARD_HOST` must be set the same at build and run time.
+Env: `DASHBOARD_SESSION_SECRET`, `DASHBOARD_CLIENT_ID`, `DASHBOARD_ADMIN_EMAILS`, `DASHBOARD_BASE_URL`, `DASHBOARD_HOST`, `GOOGLE_SIGNIN_REDIRECT_URI`
+(the callback URL must also be an authorised redirect URI on the Google OAuth client). Revoking a member is done in SQL and the two-confirmation rule applies to it.
+
 ## Console (demo UI)
 `/console` is a small web console for one client (`CONSOLE_CLIENT_ID`), behind one shared password (`CONSOLE_PASSWORD`, at least 12 characters) and a signed
 httpOnly cookie (`CONSOLE_SESSION_SECRET`, 8 hours, stateless: changing the secret signs everyone out). It lists connected businesses, shows reviews, runs a sync,
