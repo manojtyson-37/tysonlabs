@@ -77,9 +77,9 @@ our homepage `https://tysonlabs.in/reviews`, and our privacy policy `https://tys
 |---|---|
 | Data used only to show reviews to the owner and post approved replies | no other consumer of the data exists; routes in `src/app/api/v1/tenants/[ref]/` |
 | Not sold, not used for ads, not used to train models | no such code; replies come from a built-in library (`src/reviews-service/library.ts`), no review text goes to an AI provider |
-| Tokens encrypted at rest | envelope encryption, `src/reviews-service/crypto.ts`; dead tokens wiped on revoke (`service.ts`) |
-| Token deleted at disconnect; reviews and drafts deleted 30 days later or on request | `disconnect()`, `cron_purge_expired()` (migrations 0002 and 0003), erase endpoint |
-| Humans do not read Google data except on request, security, law | operational policy; nobody has standing database access beyond the owner role |
+| Tokens encrypted at rest | envelope encryption, `src/reviews-service/crypto.ts`; the token is wiped on disconnect and also when Google rejects the grant (`service.ts`) |
+| Token deleted at disconnect; reviews and drafts deleted 30 days later or on request (backups excepted) | `disconnect()`, `cron_purge_expired()` (migrations 0002 and 0003), erase endpoint |
+| Humans do not read Google data except on request, security, law | **operational policy, confirm before submitting**: the database owner credential is held by one person; no code enforces it |
 | Security log holds no review text, kept 12 months | `audit_log`, purged in `cron_purge_expired()` |
 
 **If AI drafting is ever switched on** (`DRAFTS_MODE=ai`), the privacy page, the terms and the verification submission must be updated first,

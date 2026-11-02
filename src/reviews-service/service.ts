@@ -155,7 +155,11 @@ export async function completeConsent(params: { state: string | null; code: stri
     }
     // Signing in only proves who they are. If that Google account manages no Business Profile there is nothing to link, so say
     // so, and the calling app can ask them to sign in with the account that does. Connection stays in place either way.
-    const locations = await google.listLocations(tokens.access_token).catch(() => null);
+    // Bounded, so a slow Google answer cannot hold up the browser redirect; on timeout or error we simply say connected.
+    const locations = await Promise.race([
+      google.listLocations(tokens.access_token).catch(() => null),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000).unref?.()),
+    ]);
     return withStatus(session.return_url, locations && locations.length === 0 ? 'no_business_profile' : 'connected');
   } catch {
     await withScope(scope, (db) => audit(db, null, session.client_id, session.tenant_id, 'connect.failed')).catch(() => undefined);

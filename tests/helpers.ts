@@ -47,7 +47,9 @@ export class FakeGoogle implements GoogleGateway {
   async userEmail() {
     return this.email;
   }
+  listError: Error | null = null;
   async listLocations() {
+    if (this.listError) throw this.listError;
     return this.locations;
   }
   // Reviews per locationId, newest update first. pageSize 2 so tests exercise pagination.

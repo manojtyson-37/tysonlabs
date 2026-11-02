@@ -434,10 +434,23 @@ describe('connect flow result', () => {
     ctx.fake.locations = [];
     try {
       expect(await finish(a, 'erin')).toBe('no_business_profile');
+      // The connection is still in place and the completion is audited.
+      const erin = await resolveTenant(a, 'erin');
+      expect((await ctx.o.query('SELECT status FROM connections WHERE tenant_id = $1', [erin])).rows[0].status).toBe('ACTIVE');
+      expect(await count("SELECT count(*) AS n FROM audit_log WHERE action = 'connect.completed' AND tenant_id = $1", [erin])).toBeGreaterThan(0);
     } finally {
       ctx.fake.locations = saved;
     }
     expect(await finish(a, 'erin')).toBe('connected');
+  });
+
+  it('still says connected when Google cannot list locations (error), so a Google hiccup never fails the connect', async () => {
+    ctx.fake.listError = new GoogleError('http_503');
+    try {
+      expect(await finish(a, 'erin')).toBe('connected');
+    } finally {
+      ctx.fake.listError = null;
+    }
   });
 });
 
