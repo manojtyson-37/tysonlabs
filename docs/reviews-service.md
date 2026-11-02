@@ -64,6 +64,7 @@ It is a demo gate, not a user system: real per-clinic logins are a later build.
 - `scripts/restore-drill.sh` restores the newest backup into a throwaway local PostgreSQL and compares every table's row count plus a row-level-security check. Run it monthly and after any schema change. A backup that has never been restored does not count.
 - Schedule: `scripts/in.tysonlabs.reviews-backup.plist` runs the backup daily at 02:30 (install steps below). The Mac must be on; a missed run happens when it wakes.
 - Backups hold review text, so keep FileVault on and copy the folder to a second place (external disk or a private cloud folder). The file is encrypted, which protects copies, but the passphrase and the database owner URL live in the same credentials file.
+- Monthly restore drill: `scripts/monthly-restore-drill.sh` runs the drill and appends PASSED or FAILED to `~/.tysonlabs-reviews/backups/restore-drill.log`; schedule file `scripts/in.tysonlabs.reviews-restore-drill.plist` (1st of each month, 03:30). Install it like the backup schedule.
 - Install the schedule: `cp scripts/in.tysonlabs.reviews-backup.plist ~/Library/LaunchAgents/ && launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/in.tysonlabs.reviews-backup.plist`.
 
 ## Notes from the security review (differences from the design doc)
