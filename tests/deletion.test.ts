@@ -29,7 +29,7 @@ const first = async (client: AuthedClient, ref: string, input: Record<string, un
 
 beforeAll(async () => {
   ctx = await bootstrap();
-  ctx.fake.locations = ['L1', 'L2', 'L3', 'L4', 'L5'].map((id) => ({ googleAccountId: '1', googleLocationId: id, name: `Clinic ${id}` }));
+  ctx.fake.locations = ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'].map((id) => ({ googleAccountId: '1', googleLocationId: id, name: `Clinic ${id}` }));
   A = await ctx.mkClient('del-A');
   B = await ctx.mkClient('del-B');
   a = await authenticate(bearer(A.key), 'write');
@@ -152,6 +152,61 @@ describe('two-confirmation deletion rule', () => {
     await ctx.o.query('UPDATE deletion_requests SET attempts = 4 WHERE id = $1', [id]);
     await expect(confirmDeletion(a, 'doneone', id, { step: 1, token: 'x', phrase: c1.phrase })).rejects.toMatchObject({ code: 'REQUEST_CLOSED' });
     expect((await ctx.o.query('SELECT status FROM deletion_requests WHERE id = $1', [id])).rows[0].status).toBe('DONE');
+  });
+
+  it('a request that expires between confirmation 1 and 2 cannot execute', async () => {
+    await connect(a, 'expire2', 'L6');
+    const { id, c1 } = await first(a, 'expire2', { action: 'disconnect' });
+    const once = (await confirmDeletion(a, 'expire2', id, { step: 1, token: c1.token, phrase: c1.phrase })) as { confirmation: Conf };
+    await ctx.o.query("UPDATE deletion_requests SET expires_at = now() - interval '1 second' WHERE id = $1", [id]);
+    await expect(confirmDeletion(a, 'expire2', id, { step: 2, token: once.confirmation.token, phrase: once.confirmation.phrase })).rejects.toMatchObject({ status: 410 });
+    expect((await getConnection(a, 'expire2')).status).toBe('ACTIVE');
+  });
+
+  it('a wrong phrase at step 2 is refused and counts toward the cap, and the right secret still works until then', async () => {
+    await connect(a, 'phrase2', 'L7');
+    const { id, c1 } = await first(a, 'phrase2', { action: 'disconnect' });
+    const once = (await confirmDeletion(a, 'phrase2', id, { step: 1, token: c1.token, phrase: c1.phrase })) as { confirmation: Conf };
+    const c2 = once.confirmation;
+    await expect(confirmDeletion(a, 'phrase2', id, { step: 2, token: c2.token, phrase: 'DISCONNECT someone-else' })).rejects.toMatchObject({ code: 'INVALID_CONFIRMATION' });
+    expect((await ctx.o.query('SELECT attempts, status FROM deletion_requests WHERE id = $1', [id])).rows[0]).toMatchObject({ attempts: 1, status: 'CONFIRMED_ONCE' });
+    expect((await getConnection(a, 'phrase2')).status).toBe('ACTIVE');
+    for (let i = 0; i < 3; i++) await expect(confirmDeletion(a, 'phrase2', id, { step: 2, token: 'nope', phrase: c2.phrase })).rejects.toMatchObject({ code: 'INVALID_CONFIRMATION' });
+    await expect(confirmDeletion(a, 'phrase2', id, { step: 2, token: 'nope', phrase: c2.phrase })).rejects.toMatchObject({ code: 'REQUEST_CANCELLED_TOO_MANY_ATTEMPTS' });
+    await expect(confirmDeletion(a, 'phrase2', id, { step: 2, token: c2.token, phrase: c2.phrase })).rejects.toMatchObject({ code: 'REQUEST_CLOSED' });
+    expect((await getConnection(a, 'phrase2')).status).toBe('ACTIVE');
+  });
+
+  it('two simultaneous step-1 confirmations issue only one second secret', async () => {
+    await connect(a, 'step1race', 'L8');
+    const { id, c1 } = await first(a, 'step1race', { action: 'disconnect' });
+    const results = await Promise.allSettled([
+      confirmDeletion(a, 'step1race', id, { step: 1, token: c1.token, phrase: c1.phrase }),
+      confirmDeletion(a, 'step1race', id, { step: 1, token: c1.token, phrase: c1.phrase }),
+    ]);
+    expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
+  });
+
+  it('a failure while executing ends the request as CANCELLED, tells the caller, and does not leave it stuck', async () => {
+    await connect(a, 'failexec', 'L9');
+    const { id, c1 } = await first(a, 'failexec', { action: 'disconnect' });
+    const once = (await confirmDeletion(a, 'failexec', id, { step: 1, token: c1.token, phrase: c1.phrase })) as { confirmation: Conf };
+    const original = ctx.fake.revoke.bind(ctx.fake);
+    ctx.fake.revoke = async () => { throw new Error('google down'); };
+    try {
+      await expect(confirmDeletion(a, 'failexec', id, { step: 2, token: once.confirmation.token, phrase: once.confirmation.phrase })).rejects.toThrow();
+    } finally {
+      ctx.fake.revoke = original;
+    }
+    expect((await ctx.o.query('SELECT status FROM deletion_requests WHERE id = $1', [id])).rows[0].status).toBe('CANCELLED');
+  });
+
+  it('rejects a missing or non-string token and phrase, and a bad step or request id', async () => {
+    const { id, c1 } = await first(a, 'phrase2', { action: 'disconnect' });
+    await expect(confirmDeletion(a, 'phrase2', id, { step: 1, token: undefined, phrase: c1.phrase })).rejects.toMatchObject({ code: 'INVALID_CONFIRMATION' });
+    await expect(confirmDeletion(a, 'phrase2', id, { step: 1, token: c1.token, phrase: 5 })).rejects.toMatchObject({ code: 'INVALID_CONFIRMATION' });
+    await expect(confirmDeletion(a, 'phrase2', id, { step: 3, token: c1.token, phrase: c1.phrase })).rejects.toMatchObject({ code: 'STEP_MUST_BE_1_OR_2' });
+    await expect(confirmDeletion(a, 'phrase2', 'not-a-uuid', { step: 1, token: c1.token, phrase: c1.phrase })).rejects.toMatchObject({ status: 404 });
   });
 
   it('works over HTTP: request, confirm 1, confirm 2', async () => {

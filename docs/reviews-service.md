@@ -48,6 +48,12 @@ plain `pg` with SQL migrations instead of Prisma so row-level security is explic
 `npm test` starts a throwaway local Postgres 17 (needs `/opt/homebrew/opt/postgresql@17`, or set `PG_BIN`), applies the migration,
 and runs isolation tests. It never touches a real database.
 
+## Console (demo UI)
+`/console` is a small web console for one client (`CONSOLE_CLIENT_ID`), behind one shared password (`CONSOLE_PASSWORD`, at least 12 characters) and a signed
+httpOnly cookie (`CONSOLE_SESSION_SECRET`, 8 hours, stateless: changing the secret signs everyone out). It lists connected businesses, shows reviews, runs a sync,
+suggests a reply, and posts it after an explicit "I approve" tick plus the approver's name. It has no delete controls, and reply text never appears in a URL.
+It is a demo gate, not a user system: real per-clinic logins are a later build.
+
 ## Backups (local, encrypted, verified)
 - `scripts/backup-reviews-db.sh` takes a read-only consistent snapshot of every table, encrypts it (AES-256, passphrase `BACKUP_PASSPHRASE` kept in `~/.tysonlabs-reviews/credentials.env`; copy it to your password manager), verifies the archive row counts, warns if a table drops by more than half since the last backup, and keeps the newest 30. Output: `~/.tysonlabs-reviews/backups/`.
 - `scripts/restore-drill.sh` restores the newest backup into a throwaway local PostgreSQL and compares every table's row count plus a row-level-security check. Run it monthly and after any schema change. A backup that has never been restored does not count.

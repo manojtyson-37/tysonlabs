@@ -419,6 +419,18 @@ describe('direct erase endpoint', () => {
   });
 });
 
+describe('console draft lookup', () => {
+  it("getDraft returns a draft only for its own review and tenant, never another tenant's or another review's", async () => {
+    const { getDraft } = await import('@/reviews-service/reviews');
+    const list = (await listReviews(a, 'alice', { limit: 2 })).reviews;
+    const d = await createDraft(a, 'alice', String(list[0].id));
+    expect((await getDraft(a, 'alice', String(list[0].id), d.draftId))?.text).toBe(d.text);
+    expect(await getDraft(a, 'alice', String(list[1].id), d.draftId)).toBeNull(); // wrong review
+    expect(await getDraft(b, 'bob', String(list[0].id), d.draftId)).toBeNull(); // another client's tenant
+    expect(await getDraft(a, 'alice', 'not-a-uuid', d.draftId)).toBeNull();
+  });
+});
+
 describe('connect flow result', () => {
   const finish = async (client: AuthedClient, ref: string) => {
     const { url } = await createConnectSession(client, { tenantRef: ref, returnUrl: 'https://app.test/integrations' });

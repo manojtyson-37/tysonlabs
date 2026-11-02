@@ -334,3 +334,32 @@ export async function eraseTenant(a: AuthedClient, tenantRef: string): Promise<{
 }
 
 export const newIdempotencyKey = () => randomBytes(16).toString('hex');
+
+// ---------- console helpers ----------
+
+/** Tenants of the calling client with their connection state, for the console. */
+export async function listTenants(a: AuthedClient) {
+  return withScope({ clientId: a.clientId }, async (db) => {
+    const r = await db.query(
+      `SELECT t.external_ref, c.status AS conn_status, c.google_email, c.last_synced_at,
+              (SELECT count(*)::int FROM reviews r WHERE r.tenant_id = t.id AND r.deleted_at IS NULL) AS reviews,
+              (SELECT count(*)::int FROM reviews r WHERE r.tenant_id = t.id AND r.deleted_at IS NULL AND r.reply_text IS NULL) AS unreplied
+       FROM tenants t LEFT JOIN connections c ON c.tenant_id = t.id WHERE t.client_id = $1 ORDER BY t.external_ref`,
+      [a.clientId],
+    );
+    return r.rows.map((x) => ({
+      ref: x.external_ref as string, status: (x.conn_status as string | null) ?? 'NONE', googleEmail: (x.google_email as string | null) ?? null,
+      lastSyncedAt: (x.last_synced_at as Date | null) ?? null, reviews: x.reviews as number, unreplied: x.unreplied as number,
+    }));
+  });
+}
+
+/** One draft, only if it belongs to the review and tenant. */
+export async function getDraft(a: AuthedClient, tenantRef: string, reviewId: string, draftId: string) {
+  if (!UUID_RE.test(reviewId) || !UUID_RE.test(draftId)) return null;
+  const tenantId = await resolveTenant(a, tenantRef);
+  return withScope({ clientId: a.clientId, tenantId }, async (db) => {
+    const r = await db.query("SELECT id, text, status FROM reply_drafts WHERE id = $1 AND review_id = $2 AND tenant_id = $3", [draftId, reviewId, tenantId]);
+    return (r.rows[0] as { id: string; text: string; status: string } | undefined) ?? null;
+  });
+}
