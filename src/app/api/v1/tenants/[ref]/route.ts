@@ -1,18 +1,14 @@
-import { NextResponse } from 'next/server';
 import { authenticate } from '@/reviews-service/apikeys';
-import { handleError, noStore } from '@/reviews-service/http';
-import { eraseTenant } from '@/reviews-service/reviews';
+import { handleError } from '@/reviews-service/http';
 import { ServiceError } from '@/reviews-service/service';
 
-// Erases everything held for the tenant. Irreversible, so the caller must repeat the tenant ref as ?confirm=<ref>.
-export async function DELETE(request: Request, { params }: { params: Promise<{ ref: string }> }) {
+// Erasing a tenant is never a single call. Use POST .../deletion-requests with {"action":"erase_tenant"}, then confirm twice.
+export async function DELETE(request: Request) {
   try {
-    const client = await authenticate(request, 'write');
-    const { ref } = await params;
-    if (new URL(request.url).searchParams.get('confirm') !== ref) throw new ServiceError(400, 'CONFIRM_REQUIRED');
-    const { googleRevoked } = await eraseTenant(client, ref);
-    return NextResponse.json({ success: true, googleRevoked }, noStore);
+    await authenticate(request, 'write');
+    throw new ServiceError(400, 'DELETION_REQUIRES_TWO_CONFIRMATIONS'); // see POST .../deletion-requests
   } catch (err) {
     return handleError(err);
   }
 }
+

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { authenticate } from '@/reviews-service/apikeys';
-import { disconnect, getConnection } from '@/reviews-service/service';
+import { ServiceError, getConnection } from '@/reviews-service/service';
 import { handleError, noStore } from '@/reviews-service/http';
 
 type Ctx = { params: Promise<{ ref: string }> };
@@ -14,11 +14,11 @@ export async function GET(request: Request, { params }: Ctx) {
   }
 }
 
-export async function DELETE(request: Request, { params }: Ctx) {
+// Disconnecting is never a single call. Use POST .../deletion-requests with {"action":"disconnect"}, then confirm twice.
+export async function DELETE(request: Request) {
   try {
-    const client = await authenticate(request, 'write');
-    await disconnect(client, (await params).ref);
-    return NextResponse.json({ success: true }, noStore);
+    await authenticate(request, 'write');
+    throw new ServiceError(400, 'DELETION_REQUIRES_TWO_CONFIRMATIONS'); // see POST .../deletion-requests
   } catch (err) {
     return handleError(err);
   }

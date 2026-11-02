@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { authenticate } from '@/reviews-service/apikeys';
-import { linkLocation, unlinkLocation } from '@/reviews-service/service';
+import { linkLocation } from '@/reviews-service/service';
 import { ServiceError } from '@/reviews-service/service';
 import { handleError, noStore } from '@/reviews-service/http';
 
@@ -19,12 +19,11 @@ export async function PUT(request: Request, { params }: Ctx) {
   }
 }
 
-export async function DELETE(request: Request, { params }: Ctx) {
+// Unlinking is never a single call. Use POST .../deletion-requests with {"action":"unlink_location","locationId":...}, then confirm twice.
+export async function DELETE(request: Request) {
   try {
-    const client = await authenticate(request, 'write');
-    const { ref, locationId } = await params;
-    await unlinkLocation(client, ref, locationId);
-    return NextResponse.json({ success: true }, noStore);
+    await authenticate(request, 'write');
+    throw new ServiceError(400, 'DELETION_REQUIRES_TWO_CONFIRMATIONS'); // see POST .../deletion-requests
   } catch (err) {
     return handleError(err);
   }

@@ -408,18 +408,14 @@ describe('rights requests and retention', () => {
   });
 });
 
-describe('erase endpoint', () => {
-  const call = (qs: string) => delTenant(new Request(`https://reviews.test/api/v1/tenants/dave${qs}`, { method: 'DELETE', headers: { authorization: `Bearer ${A.key}`, 'x-vercel-forwarded-for': '198.51.100.50' } }), { params: Promise.resolve({ ref: 'dave' }) });
-  it('needs the tenant ref repeated as ?confirm=, and erases only then', async () => {
+describe('direct erase endpoint', () => {
+  it('is refused even with ?confirm=, so the two-confirmation flow is the only way to erase', async () => {
     ctx.fake.locations = [...ctx.fake.locations, { googleAccountId: '1', googleLocationId: 'LOC7', name: 'D' }];
     await connect(a, 'dave', 'LOC7');
+    const call = (qs: string) => delTenant(new Request(`https://reviews.test/api/v1/tenants/dave${qs}`, { method: 'DELETE', headers: { authorization: `Bearer ${A.key}`, 'x-vercel-forwarded-for': '198.51.100.50' } }));
     expect((await call('')).status).toBe(400);
-    expect((await call('?confirm=someone-else')).status).toBe(400);
+    expect((await call('?confirm=dave')).status).toBe(400);
     expect(await count("SELECT count(*) AS n FROM tenants WHERE client_id = $1 AND external_ref = 'dave'", [A.id])).toBe(1);
-    const ok = await call('?confirm=dave');
-    expect(ok.status).toBe(200);
-    expect(await ok.json()).toEqual({ success: true, googleRevoked: true });
-    expect(await count("SELECT count(*) AS n FROM tenants WHERE client_id = $1 AND external_ref = 'dave'", [A.id])).toBe(0);
   });
 });
 

@@ -83,7 +83,7 @@ describe('http layer', () => {
     expect((await getCallback(new NextRequest(`${URL_}/api/v1/oauth/callback`, { headers: { 'x-vercel-forwarded-for': '198.51.100.21' } }))).status).toBe(400);
   });
 
-  it('connection routes: GET needs read, DELETE needs write, unknown tenant is 404', async () => {
+  it('connection routes: GET needs read, direct DELETE is refused, unknown tenant is 404', async () => {
     await connect(A, 'conn-r');
     const ctxFor = (ref: string) => ({ params: Promise.resolve({ ref }) });
     const ok = await getConn(req('GET', '/x', A.key), ctxFor('conn-r'));
@@ -92,8 +92,9 @@ describe('http layer', () => {
     expect((await getConn(req('GET', '/x', A.key), ctxFor('missing'))).status).toBe(404);
     expect((await getConn(req('GET', '/x', B.key), ctxFor('conn-r'))).status).toBe(404); // other client's tenant
     await ctx.o.query("UPDATE api_keys SET scopes = '{connect}' WHERE client_id = $1", [B.id]);
-    expect((await delConn(req('DELETE', '/x', B.key), ctxFor('conn-r'))).status).toBe(403); // connect-only key cannot write
-    expect((await delConn(req('DELETE', '/x', A.key), ctxFor('conn-r'))).status).toBe(200);
+    expect((await delConn(req('DELETE', '/x', B.key))).status).toBe(403); // connect-only key cannot write
+    expect((await delConn(req('DELETE', '/x', A.key))).status).toBe(400); // direct disconnect is refused: it needs the two-confirmation flow
+    expect((await getConn(req('GET', '/x', A.key), ctxFor('conn-r')))).toBeTruthy();
     await ctx.o.query("UPDATE api_keys SET scopes = '{connect,read,write}' WHERE client_id = $1", [B.id]);
   });
 
@@ -106,7 +107,7 @@ describe('http layer', () => {
     const ok = await putLoc(req('PUT', '/x', A.key, { branchRef: 'x'.repeat(201) }), c('loc-route', 'LOC-ROUTE'));
     expect(ok.status).toBe(200);
     expect((await ok.json()).branchRef).toBeNull();
-    expect((await delLoc(req('DELETE', '/x', A.key), c('loc-route', 'LOC-ROUTE'))).status).toBe(200);
+    expect((await delLoc(req('DELETE', '/x', A.key))).status).toBe(400); // direct unlink is refused too
     ctx.fake.locations = [{ googleAccountId: '1', googleLocationId: 'LOC1', name: 'Clinic A' }];
     expect((await getHealth()).status).toBe(200);
   });

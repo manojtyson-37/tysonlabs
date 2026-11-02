@@ -20,6 +20,11 @@ plain `pg` with SQL migrations instead of Prisma so row-level security is explic
 - Rights requests: `GET .../export` (no secrets) and `DELETE /api/v1/tenants/{ref}?confirm={ref}` (revokes at Google, deletes everything including audit rows naming the tenant, reports `googleRevoked`).
 - Connect result status values returned on the return URL: `connected`, `no_business_profile` (the Google account manages no profile), `denied`, `insufficient_permission`, `error`.
 - Going live with other clinics: see [oauth-verification-pack.md](./oauth-verification-pack.md) and the clinic guide [clinic-onboarding.md](./clinic-onboarding.md).
+- **Deletion hard rule (two confirmations).** Nothing destructive happens on one call. `DELETE` on a tenant, a connection or a location link is refused (400
+  `DELETION_REQUIRES_TWO_CONFIRMATIONS`). Instead: `POST /api/v1/tenants/{ref}/deletion-requests` with `{"action":"erase_tenant"|"disconnect"|"unlink_location","locationId":...}`
+  returns what will be deleted, the exact phrase (for example `ERASE clinic-1`) and one-time secret #1; `POST .../deletion-requests/{id}/confirm` with `{"step":1,"token","phrase"}`
+  returns secret #2; the same call with `{"step":2,...}` executes. 10-minute expiry, each secret works once, a wrong phrase or secret counts as an attempt and five cancel the request.
+  Any future way to delete (for example removing a posted reply) must use this same mechanism. Automatic retention purges are policy, not user deletions.
 - Retention: reviews purged 30 days after disconnect; audit rows older than 12 months removed.
 
 ## Not built yet / known gaps
@@ -42,6 +47,13 @@ plain `pg` with SQL migrations instead of Prisma so row-level security is explic
 ## Tests
 `npm test` starts a throwaway local Postgres 17 (needs `/opt/homebrew/opt/postgresql@17`, or set `PG_BIN`), applies the migration,
 and runs isolation tests. It never touches a real database.
+
+## Backups (local, encrypted, verified)
+- `scripts/backup-reviews-db.sh` takes a read-only consistent snapshot of every table, encrypts it (AES-256, passphrase `BACKUP_PASSPHRASE` kept in `~/.tysonlabs-reviews/credentials.env`; copy it to your password manager), verifies the archive row counts, warns if a table drops by more than half since the last backup, and keeps the newest 30. Output: `~/.tysonlabs-reviews/backups/`.
+- `scripts/restore-drill.sh` restores the newest backup into a throwaway local PostgreSQL and compares every table's row count plus a row-level-security check. Run it monthly and after any schema change. A backup that has never been restored does not count.
+- Schedule: `scripts/in.tysonlabs.reviews-backup.plist` runs the backup daily at 02:30 (install steps below). The Mac must be on; a missed run happens when it wakes.
+- Backups hold review text, so keep FileVault on and copy the folder to a second place (external disk or a private cloud folder). The file is encrypted, which protects copies, but the passphrase and the database owner URL live in the same credentials file.
+- Install the schedule: `cp scripts/in.tysonlabs.reviews-backup.plist ~/Library/LaunchAgents/ && launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/in.tysonlabs.reviews-backup.plist`.
 
 ## Notes from the security review (differences from the design doc)
 - API keys are stored as HMAC-SHA256 with `API_KEY_PEPPER`, not plain SHA-256. Never change the pepper: it invalidates every key.
