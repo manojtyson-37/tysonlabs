@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
       beforeFiles: [
         { source: '/', has: host, destination: '/dashboard' },
         { source: '/:path((?!api/|_next/|dashboard|favicon\\.ico|robots\\.txt|sitemap\\.xml).+)', has: host, destination: '/dashboard/:path' },
+        // On every other host the dashboard routes do not exist: a real 404, not a page that happens to render "not found".
+        { source: '/dashboard/:path*', missing: host, destination: '/this-page-does-not-exist' },
+        { source: '/dashboard', missing: host, destination: '/this-page-does-not-exist' },
       ],
       afterFiles: [],
       fallback: [],
