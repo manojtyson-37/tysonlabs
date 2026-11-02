@@ -153,7 +153,10 @@ export async function completeConsent(params: { state: string | null; code: stri
       const old = await open(wrapper, { ciphertext: previous.token_ciphertext, wrappedDataKey: previous.wrapped_data_key }, tokenAad(session.client_id, session.tenant_id)).catch(() => null);
       if (old && old !== tokens.refresh_token) await google.revoke(old);
     }
-    return withStatus(session.return_url, 'connected');
+    // Signing in only proves who they are. If that Google account manages no Business Profile there is nothing to link, so say
+    // so, and the calling app can ask them to sign in with the account that does. Connection stays in place either way.
+    const locations = await google.listLocations(tokens.access_token).catch(() => null);
+    return withStatus(session.return_url, locations && locations.length === 0 ? 'no_business_profile' : 'connected');
   } catch {
     await withScope(scope, (db) => audit(db, null, session.client_id, session.tenant_id, 'connect.failed')).catch(() => undefined);
     return withStatus(session.return_url, 'error');

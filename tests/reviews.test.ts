@@ -423,6 +423,24 @@ describe('erase endpoint', () => {
   });
 });
 
+describe('connect flow result', () => {
+  const finish = async (client: AuthedClient, ref: string) => {
+    const { url } = await createConnectSession(client, { tenantRef: ref, returnUrl: 'https://app.test/integrations' });
+    const state = new URL(await startConsent(url.split('/connect/')[1])).searchParams.get('state')!;
+    return new URL(await completeConsent({ state, code: 'c', error: null })).searchParams.get('status');
+  };
+  it('says no_business_profile when the signed-in Google account manages no location, and connected otherwise', async () => {
+    const saved = ctx.fake.locations;
+    ctx.fake.locations = [];
+    try {
+      expect(await finish(a, 'erin')).toBe('no_business_profile');
+    } finally {
+      ctx.fake.locations = saved;
+    }
+    expect(await finish(a, 'erin')).toBe('connected');
+  });
+});
+
 describe('cron authorisation', () => {
   const req = (h?: string) => new Request('https://reviews.test/api/v1/internal/cron/sync', { headers: h ? { authorization: h } : {} });
   it('refuses everything when no secret is configured, and wrong or missing secrets otherwise', () => {

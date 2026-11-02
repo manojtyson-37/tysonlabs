@@ -18,6 +18,8 @@ plain `pg` with SQL migrations instead of Prisma so row-level security is explic
 - Phase 3: `POST .../reviews/{id}/reply-drafts` (default: built-in reply library of about 2,300 pre-written combinations; positive reviews get a topic line only when they praise it and carry no negative wording, all others get neutral wording that concedes nothing, no review text leaves our systems; opt-in Gemini needs `DRAFTS_MODE=ai`, `GEMINI_API_KEY` and `AI_DRAFTS_POLICY_ACK=policy-updated`; every draft passes a deterministic safety check, with a generic template as fallback),
   `POST .../reviews/{id}/reply` (needs `approvedBy` and an `Idempotency-Key`; one live reply per review; `replace: true` to overwrite an existing reply).
 - Rights requests: `GET .../export` (no secrets) and `DELETE /api/v1/tenants/{ref}?confirm={ref}` (revokes at Google, deletes everything including audit rows naming the tenant, reports `googleRevoked`).
+- Connect result status values returned on the return URL: `connected`, `no_business_profile` (the Google account manages no profile), `denied`, `insufficient_permission`, `error`.
+- Going live with other clinics: see [oauth-verification-pack.md](./oauth-verification-pack.md) and the clinic guide [clinic-onboarding.md](./clinic-onboarding.md).
 - Retention: reviews purged 30 days after disconnect; audit rows older than 12 months removed.
 
 ## Not built yet / known gaps
