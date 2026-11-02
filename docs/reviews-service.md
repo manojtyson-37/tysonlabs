@@ -54,6 +54,11 @@ httpOnly cookie (`CONSOLE_SESSION_SECRET`, 8 hours, stateless: changing the secr
 suggests a reply, and posts it after an explicit "I approve" tick plus the approver's name. It has no delete controls, and reply text never appears in a URL.
 It is a demo gate, not a user system: real per-clinic logins are a later build.
 
+## Deploying
+`vercel --prod --yes --scope kbdcreditsolutions-projects` from this folder. Vercel blocks a deployment whose commit author is not a member of the Vercel team
+("the commit author doesn't have permission to create deployments"), so this repo's git identity is `KBD Credit Solutions <kbdcreditsolutions@gmail.com>`
+(`git config user.email`). Use the current Vercel CLI (`npx vercel@latest`): old versions show a blocked deployment as UNKNOWN.
+
 ## Backups (local, encrypted, verified)
 - `scripts/backup-reviews-db.sh` takes a read-only consistent snapshot of every table, encrypts it (AES-256, passphrase `BACKUP_PASSPHRASE` kept in `~/.tysonlabs-reviews/credentials.env`; copy it to your password manager), verifies the archive row counts, warns if a table drops by more than half since the last backup, and keeps the newest 30. Output: `~/.tysonlabs-reviews/backups/`.
 - `scripts/restore-drill.sh` restores the newest backup into a throwaway local PostgreSQL and compares every table's row count plus a row-level-security check. Run it monthly and after any schema change. A backup that has never been restored does not count.
