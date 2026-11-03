@@ -88,7 +88,8 @@ export async function POST(request: Request, { params }: Ctx) {
     const { path } = await params;
     if (path.length === 1 && path[0] === 'handoff') {
       requireAppKey(request);
-      const email = await redeemHandoff(str((await body(request)).token, 1000));
+      const hb = await body(request);
+      const email = await redeemHandoff(str(hb.token, 1000), str(hb.nonce, 100));
       return email ? ok({ email }) : NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
     }
     const s = await appSession(request);

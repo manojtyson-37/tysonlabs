@@ -17,12 +17,12 @@ const sharedSecret = () => {
 export const appBaseUrl = () => (process.env.APP_BASE_URL ?? 'https://app.tysonlabs.in').replace(/\/$/, '');
 export const HANDOFF_PURPOSE = 'app-handoff';
 // Signed with the service's own dashboard secret, so the app never holds a key that could mint one. Redeemable once, by the app only.
-export const makeHandoffToken = (email: string) => signToken({ email, jti: randomBytes(12).toString('base64url') }, HANDOFF_PURPOSE, 120);
+export const makeHandoffToken = (email: string, nonce: string) => signToken({ email, n: nonce, jti: randomBytes(12).toString('base64url') }, HANDOFF_PURPOSE, 120);
 
-/** One-time redemption: the token must be valid and its id unused. Returns the email, or null. */
-export async function redeemHandoff(token: string): Promise<string | null> {
-  const t = verifyToken<{ email: string; jti: string }>(token, HANDOFF_PURPOSE);
-  if (!t || typeof t.email !== 'string' || typeof t.jti !== 'string') return null;
+/** One-time redemption: the token must be valid, carry the nonce of the browser that started sign-in, and its id must be unused. */
+export async function redeemHandoff(token: string, nonce: string): Promise<string | null> {
+  const t = verifyToken<{ email: string; jti: string; n: string }>(token, HANDOFF_PURPOSE);
+  if (!t || typeof t.email !== 'string' || typeof t.jti !== 'string' || typeof t.n !== 'string' || !nonce || t.n !== nonce) return null;
   return (await rateLimit(`handoff:${t.jti}`, 1, 300)) ? t.email : null; // the shared limiter doubles as a use-once marker
 }
 

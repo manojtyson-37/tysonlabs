@@ -11,6 +11,7 @@ import { GET as dashboardCallback } from '@/app/api/auth/google/callback/route';
 import { OAUTH_COOKIE, setSignIn, startSignIn, type SignInGateway } from '@/reviews-service/signin';
 import { GET, POST } from '@/app/api/dash/[...path]/route';
 
+const NONCE = 'nonce-abcdefghijklmnopqrstuv';
 const SECRET = 'test-app-shared-secret-0123456789abcdef';
 let ctx: Awaited<ReturnType<typeof bootstrap>>;
 let A: { id: string; key: string };
@@ -53,21 +54,24 @@ describe('app authentication', () => {
   });
 
   it('handoff token is signed by the service, expires, and can be redeemed exactly once', async () => {
-    const t = makeHandoffToken('Owner@Shop.in');
+    const t = makeHandoffToken('Owner@Shop.in', NONCE);
     expect(verifyToken(t, HANDOFF_PURPOSE, Date.now(), SECRET)).toBeNull(); // the app's shared secret cannot mint or verify it
     expect(verifyToken(t, 'dash-session')).toBeNull();
     expect(verifyToken(t, HANDOFF_PURPOSE, Date.now() + 130_000)).toBeNull();
-    expect(await redeemHandoff(`${t}x`)).toBeNull();
-    expect(await redeemHandoff(t)).toBe('Owner@Shop.in');
-    expect(await redeemHandoff(t)).toBeNull(); // replay
+    expect(await redeemHandoff(`${t}x`, NONCE)).toBeNull();
+    expect(await redeemHandoff(t, 'another-browsers-nonce-000000')).toBeNull(); // token opened in a different browser
+    expect(await redeemHandoff(t, '')).toBeNull();
+    expect(await redeemHandoff(t, NONCE)).toBe('Owner@Shop.in');
+    expect(await redeemHandoff(t, NONCE)).toBeNull(); // replay
   });
 
   it('the redeem endpoint needs the app key and works once', async () => {
-    const t = makeHandoffToken('owner@shop.in');
-    expect((await call('POST', 'handoff', null, { token: t }, null)).status).toBe(401);
-    const first = await call('POST', 'handoff', null, { token: t });
+    const t = makeHandoffToken('owner@shop.in', NONCE);
+    expect((await call('POST', 'handoff', null, { token: t, nonce: NONCE }, null)).status).toBe(401);
+    expect((await call('POST', 'handoff', null, { token: t, nonce: 'wrong-nonce-wrong-nonce-00' })).status).toBe(401);
+    const first = await call('POST', 'handoff', null, { token: t, nonce: NONCE });
     expect(await first.json()).toEqual({ email: 'owner@shop.in' });
-    expect((await call('POST', 'handoff', null, { token: t })).status).toBe(401);
+    expect((await call('POST', 'handoff', null, { token: t, nonce: NONCE })).status).toBe(401);
   });
 });
 
@@ -164,7 +168,7 @@ describe('app sign-in handoff through the registered callback', () => {
     process.env.GOOGLE_APP_SIGNIN_REDIRECT_URI = 'https://reviews.test/api/auth/google/callback';
     process.env.DASHBOARD_HOST = 'reviews.test';
     setSignIn(fake(email));
-    const { url, cookie } = startSignIn(process.env.GOOGLE_APP_SIGNIN_REDIRECT_URI, flow);
+    const { url, cookie } = startSignIn(process.env.GOOGLE_APP_SIGNIN_REDIRECT_URI, flow, flow ? NONCE : undefined);
     const state = new URL(url).searchParams.get('state')!;
     return dashboardCallback(new NextRequest(`https://reviews.test/api/auth/google/callback?code=c&state=${state}`, { headers: { host: 'reviews.test', cookie: `${OAUTH_COOKIE}=${cookie}` } }));
   };

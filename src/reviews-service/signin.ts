@@ -54,10 +54,10 @@ export const setSignIn = (g: SignInGateway | undefined) => { gateway = g; }; // 
 export const OAUTH_COOKIE = 'tl_dash_oauth';
 
 /** Step 1: where to send the browser, and the short-lived cookie that remembers state and the PKCE verifier. */
-export function startSignIn(redirectUri?: string, flow?: 'app'): { url: string; cookie: string } {
+export function startSignIn(redirectUri?: string, flow?: 'app', nonce?: string): { url: string; cookie: string } {
   const state = randomBytes(24).toString('base64url');
   const { verifier, challenge } = pkcePair();
-  return { url: getSignIn().authUrl({ state, codeChallenge: challenge, redirectUri }), cookie: signToken({ state, verifier, ...(flow ? { flow } : {}) }, 'oauth-start', 600) };
+  return { url: getSignIn().authUrl({ state, codeChallenge: challenge, redirectUri }), cookie: signToken({ state, verifier, ...(flow ? { flow } : {}), ...(nonce ? { n: nonce } : {}) }, 'oauth-start', 600) };
 }
 
 /** Step 2: returns the verified email, or null for anything wrong (bad state, expired, unverified email, Google error). */
