@@ -3,6 +3,8 @@ import { limitByIp } from '@/reviews-service/apikeys';
 import { OAUTH_COOKIE, finishSignIn } from '@/reviews-service/signin';
 import { membershipsFor, recordLogin } from '@/reviews-service/members';
 import { onDashboardHost } from '@/reviews-service/dash-host';
+import { verifyToken } from '@/reviews-service/signed';
+import { GET as appCallback } from '../../app/callback/route';
 import { SESSION_COOKIE, SESSION_HOURS, makeSessionCookie } from '@/reviews-service/dash-session';
 
 const base = () => (process.env.DASHBOARD_BASE_URL ?? 'https://reviews.tysonlabs.in').replace(/\/$/, '');
@@ -16,6 +18,10 @@ const adminEmails = () => (process.env.DASHBOARD_ADMIN_EMAILS ?? '').split(',').
 
 // Google sends the browser back here. Only a verified email with access to at least one business (or a TysonLabs admin) gets a session.
 export async function GET(request: NextRequest) {
+  // The separate reviews app signs in through this same registered redirect address; its start cookie says so.
+  let appFlow = false;
+  try { appFlow = verifyToken<{ flow?: string }>(request.cookies.get(OAUTH_COOKIE)?.value, 'oauth-start')?.flow === 'app'; } catch { /* secret missing: fall through to the normal error handling */ }
+  if (appFlow) return appCallback(request);
   if (!onDashboardHost(request)) return new NextResponse(null, { status: 404 });
   try {
     await limitByIp(request, 'signin', 30);

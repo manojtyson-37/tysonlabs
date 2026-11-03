@@ -7,8 +7,8 @@ import { signToken, verifyToken } from './signed';
  * Access to a business still comes from the tenant_members table, never from Google.
  */
 export interface SignInGateway {
-  authUrl(p: { state: string; codeChallenge: string }): string;
-  exchange(code: string, verifier: string): Promise<{ email: string; emailVerified: boolean }>;
+  authUrl(p: { state: string; codeChallenge: string; redirectUri?: string }): string;
+  exchange(code: string, verifier: string, redirectUri?: string): Promise<{ email: string; emailVerified: boolean }>;
 }
 
 const env = (n: string) => {
@@ -18,21 +18,21 @@ const env = (n: string) => {
 };
 
 export class RealSignInGateway implements SignInGateway {
-  authUrl({ state, codeChallenge }: { state: string; codeChallenge: string }) {
+  authUrl({ state, codeChallenge, redirectUri }: { state: string; codeChallenge: string; redirectUri?: string }) {
     return (
       'https://accounts.google.com/o/oauth2/v2/auth?' +
       new URLSearchParams({
-        client_id: env('GOOGLE_CLIENT_ID'), redirect_uri: env('GOOGLE_SIGNIN_REDIRECT_URI'), response_type: 'code', scope: 'openid email',
+        client_id: env('GOOGLE_CLIENT_ID'), redirect_uri: redirectUri ?? env('GOOGLE_SIGNIN_REDIRECT_URI'), response_type: 'code', scope: 'openid email',
         state, code_challenge: codeChallenge, code_challenge_method: 'S256', prompt: 'select_account',
       })
     );
   }
 
-  async exchange(code: string, verifier: string) {
+  async exchange(code: string, verifier: string, redirectUri?: string) {
     const res = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ client_id: env('GOOGLE_CLIENT_ID'), client_secret: env('GOOGLE_CLIENT_SECRET'), grant_type: 'authorization_code', code, code_verifier: verifier, redirect_uri: env('GOOGLE_SIGNIN_REDIRECT_URI') }),
+      body: new URLSearchParams({ client_id: env('GOOGLE_CLIENT_ID'), client_secret: env('GOOGLE_CLIENT_SECRET'), grant_type: 'authorization_code', code, code_verifier: verifier, redirect_uri: redirectUri ?? env('GOOGLE_SIGNIN_REDIRECT_URI') }),
     });
     if (!res.ok) throw new Error('token_exchange_failed');
     const { id_token } = (await res.json()) as { id_token?: string };
@@ -54,18 +54,18 @@ export const setSignIn = (g: SignInGateway | undefined) => { gateway = g; }; // 
 export const OAUTH_COOKIE = 'tl_dash_oauth';
 
 /** Step 1: where to send the browser, and the short-lived cookie that remembers state and the PKCE verifier. */
-export function startSignIn(): { url: string; cookie: string } {
+export function startSignIn(redirectUri?: string, flow?: 'app'): { url: string; cookie: string } {
   const state = randomBytes(24).toString('base64url');
   const { verifier, challenge } = pkcePair();
-  return { url: getSignIn().authUrl({ state, codeChallenge: challenge }), cookie: signToken({ state, verifier }, 'oauth-start', 600) };
+  return { url: getSignIn().authUrl({ state, codeChallenge: challenge, redirectUri }), cookie: signToken({ state, verifier, ...(flow ? { flow } : {}) }, 'oauth-start', 600) };
 }
 
 /** Step 2: returns the verified email, or null for anything wrong (bad state, expired, unverified email, Google error). */
-export async function finishSignIn(code: string | null, state: string | null, cookie: string | undefined): Promise<string | null> {
+export async function finishSignIn(code: string | null, state: string | null, cookie: string | undefined, redirectUri?: string): Promise<string | null> {
   const saved = verifyToken<{ state: string; verifier: string }>(cookie, 'oauth-start');
   if (!saved || !code || !state || state !== saved.state) return null;
   try {
-    const r = await getSignIn().exchange(code, saved.verifier);
+    const r = await getSignIn().exchange(code, saved.verifier, redirectUri);
     return r.emailVerified ? r.email : null;
   } catch {
     return null;

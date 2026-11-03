@@ -24,8 +24,13 @@ export const dashboardClientId = () => {
 
 /** Reads the cookie and loads the person's access from the database on every request, so removing a member takes effect at once. */
 export async function currentSession(): Promise<DashSession | null> {
-  const email = emailFromCookie((await cookies()).get(SESSION_COOKIE)?.value);
-  if (!email) return null;
+  return sessionFor(emailFromCookie((await cookies()).get(SESSION_COOKIE)?.value));
+}
+
+/** The same access check for an already-verified email (used by the separate app's API, which asserts the signed-in email). */
+export async function sessionFor(rawEmail: string | null): Promise<DashSession | null> {
+  if (!rawEmail) return null;
+  const email = rawEmail.trim().toLowerCase();
   const memberships = await membershipsFor(email);
   const isAdmin = adminEmails().includes(email);
   if (!isAdmin && memberships.length === 0) return null;

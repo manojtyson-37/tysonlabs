@@ -1,0 +1,193 @@
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { bootstrap, mkReview } from './helpers';
+import { authenticate, AuthedClient } from '@/reviews-service/apikeys';
+import { bearer } from './helpers';
+import { completeConsent, createConnectSession, linkLocation, startConsent } from '@/reviews-service/service';
+import { provisionBusiness } from '@/reviews-service/members';
+import { verifyToken } from '@/reviews-service/signed';
+import { HANDOFF_PURPOSE, appSession, makeHandoffToken, redeemHandoff } from '@/reviews-service/app-auth';
+import { NextRequest } from 'next/server';
+import { GET as dashboardCallback } from '@/app/api/auth/google/callback/route';
+import { OAUTH_COOKIE, setSignIn, startSignIn, type SignInGateway } from '@/reviews-service/signin';
+import { GET, POST } from '@/app/api/dash/[...path]/route';
+
+const SECRET = 'test-app-shared-secret-0123456789abcdef';
+let ctx: Awaited<ReturnType<typeof bootstrap>>;
+let A: { id: string; key: string };
+let a: AuthedClient;
+
+const req = (method: string, path: string, email: string | null, body?: unknown, key: string | null = SECRET) =>
+  new Request(`https://tysonlabs.test/api/dash/${path}`, {
+    method,
+    headers: { ...(key ? { 'x-app-key': key } : {}), ...(email ? { 'x-user-email': email } : {}), 'content-type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+const call = (method: 'GET' | 'POST', path: string, email: string | null, body?: unknown, key: string | null = SECRET) =>
+  (method === 'GET' ? GET : POST)(req(method, path, email, body, key), { params: Promise.resolve({ path: path.split('?')[0].split('/') }) });
+
+beforeAll(async () => {
+  process.env.DASHBOARD_SESSION_SECRET = 'test-dashboard-session-secret-0123456789';
+  process.env.APP_SHARED_SECRET = SECRET;
+  ctx = await bootstrap();
+  A = await ctx.mkClient('app-A');
+  a = await authenticate(bearer(A.key), 'write');
+  process.env.DASHBOARD_CLIENT_ID = A.id;
+  process.env.DASHBOARD_ADMIN_EMAILS = 'boss@tysonlabs.in';
+  await provisionBusiness(a, { ref: 'shop-one', ownerEmail: 'owner@shop.in' }, 'test');
+  await provisionBusiness(a, { ref: 'shop-one', ownerEmail: 'staff@shop.in', role: 'staff' }, 'test');
+  await provisionBusiness(a, { ref: 'shop-two', ownerEmail: 'other@shop.in' }, 'test');
+});
+afterAll(async () => {
+  setSignIn(undefined);
+  await ctx.o.query('DELETE FROM rate_limits');
+  await ctx.o.end();
+});
+
+describe('app authentication', () => {
+  it('rejects a missing or wrong app key and an email with no access', async () => {
+    expect((await call('GET', 'me', 'owner@shop.in', undefined, null)).status).toBe(401);
+    expect((await call('GET', 'me', 'owner@shop.in', undefined, `${SECRET}x`)).status).toBe(401);
+    expect((await call('GET', 'me', null)).status).toBe(401);
+    expect((await call('GET', 'me', 'stranger@x.in')).status).toBe(401);
+    await expect(appSession(req('GET', 'me', 'owner@shop.in', undefined, 'short'))).rejects.toBeTruthy();
+  });
+
+  it('handoff token is signed by the service, expires, and can be redeemed exactly once', async () => {
+    const t = makeHandoffToken('Owner@Shop.in');
+    expect(verifyToken(t, HANDOFF_PURPOSE, Date.now(), SECRET)).toBeNull(); // the app's shared secret cannot mint or verify it
+    expect(verifyToken(t, 'dash-session')).toBeNull();
+    expect(verifyToken(t, HANDOFF_PURPOSE, Date.now() + 130_000)).toBeNull();
+    expect(await redeemHandoff(`${t}x`)).toBeNull();
+    expect(await redeemHandoff(t)).toBe('Owner@Shop.in');
+    expect(await redeemHandoff(t)).toBeNull(); // replay
+  });
+
+  it('the redeem endpoint needs the app key and works once', async () => {
+    const t = makeHandoffToken('owner@shop.in');
+    expect((await call('POST', 'handoff', null, { token: t }, null)).status).toBe(401);
+    const first = await call('POST', 'handoff', null, { token: t });
+    expect(await first.json()).toEqual({ email: 'owner@shop.in' });
+    expect((await call('POST', 'handoff', null, { token: t })).status).toBe(401);
+  });
+});
+
+describe('dash API access', () => {
+  it('lists only the businesses the person belongs to, with their role', async () => {
+    const r = await (await call('GET', 'me', 'Owner@Shop.in')).json();
+    expect(r.isAdmin).toBe(false);
+    expect(r.businesses.map((b: { ref: string }) => b.ref)).toEqual(['shop-one']);
+    expect(r.businesses[0].role).toBe('owner');
+    expect((await (await call('GET', 'me', 'staff@shop.in')).json()).businesses[0].role).toBe('staff');
+  });
+
+  it('an admin sees every business and the admin list', async () => {
+    const r = await (await call('GET', 'me', 'boss@tysonlabs.in')).json();
+    expect(r.isAdmin).toBe(true);
+    expect(r.businesses.map((b: { ref: string }) => b.ref).sort()).toEqual(['shop-one', 'shop-two']);
+    const adm = await (await call('GET', 'admin/businesses', 'boss@tysonlabs.in')).json();
+    expect(adm.businesses.find((b: { ref: string }) => b.ref === 'shop-one').members).toHaveLength(2);
+  });
+
+  it('refuses another business, and admin routes for non-admins', async () => {
+    expect((await call('GET', 'b/shop-two/overview', 'owner@shop.in')).status).toBe(403);
+    expect((await call('POST', 'b/shop-two/sync', 'owner@shop.in', {})).status).toBe(403);
+    expect((await call('GET', 'admin/businesses', 'owner@shop.in')).status).toBe(403);
+    expect((await call('POST', 'admin/members', 'owner@shop.in', { ref: 'x-shop', email: 'a@b.in' })).status).toBe(403);
+  });
+
+  it('admin can add a member, who then sees that business', async () => {
+    expect((await call('POST', 'admin/members', 'boss@tysonlabs.in', { ref: 'shop-three', email: 'New@Shop.in', role: 'owner' })).status).toBe(200);
+    expect((await (await call('GET', 'me', 'new@shop.in')).json()).businesses[0].ref).toBe('shop-three');
+    expect((await call('POST', 'admin/members', 'boss@tysonlabs.in', { ref: 'Bad Name', email: 'a@b.in' })).status).toBe(400);
+  });
+
+  it('staff cannot connect or link Google; unknown routes are 404', async () => {
+    expect((await call('POST', 'b/shop-one/connect', 'staff@shop.in', { returnUrl: 'https://app.test/integrations' })).status).toBe(403);
+    expect((await call('POST', 'b/shop-one/link', 'staff@shop.in', { locationId: 'LOC1' })).status).toBe(403);
+    expect((await call('GET', 'nothing/here', 'owner@shop.in')).status).toBe(404);
+  });
+});
+
+describe('dash API reviews and replies', () => {
+  it('shows reviews, drafts, and posts only after the draft or edited text goes through the safety check', async () => {
+    const t = (await ctx.o.query("SELECT id FROM tenants WHERE client_id = $1 AND external_ref = 'shop-one'", [A.id])).rows[0].id;
+    const { url } = await createConnectSession(a, { tenantRef: 'shop-one', returnUrl: 'https://app.test/integrations' });
+    const state = new URL(await startConsent(url.split('/connect/')[1])).searchParams.get('state')!;
+    await completeConsent({ state, code: 'c', error: null });
+    await linkLocation(a, 'shop-one', 'LOC1');
+    const rv = mkReview('R1', 5, '2026-11-01T10:00:00Z', 'Great');
+    await ctx.o.query(
+      'INSERT INTO reviews (client_id, tenant_id, google_location_id, google_review_id, reviewer_name, rating, comment, google_create_time, google_update_time) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8)',
+      [A.id, t, 'LOC1', rv.reviewId, 'Pat Q', 5, rv.comment, rv.createTime]);
+
+    const ov = await (await call('GET', 'b/shop-one/overview', 'owner@shop.in')).json();
+    expect(ov.summary.total).toBe(1);
+    expect(ov.recent).toHaveLength(1);
+    const list = await (await call('GET', 'b/shop-one/reviews?filter=unreplied', 'owner@shop.in')).json();
+    expect(list.reviews).toHaveLength(1);
+    const reviewId = list.reviews[0].id;
+
+    const d = await (await call('POST', 'b/shop-one/drafts', 'staff@shop.in', { reviewId })).json();
+    expect(d.draftId).toBeTruthy();
+    expect(d.text.length).toBeGreaterThan(10);
+
+    const bad = await call('POST', 'b/shop-one/reply', 'staff@shop.in', { reviewId, draftId: d.draftId, text: 'Call 98765 43210 for your treatment', idempotencyKey: 'idem-key-0001' });
+    expect(bad.status).toBeGreaterThanOrEqual(400);
+    expect((await bad.json()).error).toBe('UNSAFE_REPLY');
+
+    const good = await call('POST', 'b/shop-one/reply', 'staff@shop.in', { reviewId, draftId: d.draftId, text: d.text, idempotencyKey: 'idem-key-0002' });
+    expect(await good.clone().json()).toEqual({ ok: true });
+    expect(good.status).toBe(200);
+    const row = (await ctx.o.query('SELECT approved_by, status FROM reply_drafts WHERE id = $1', [d.draftId])).rows[0];
+    expect(row.approved_by).toBe('staff@shop.in'); // the signed-in person, not anything the app sent
+    expect(row.status).toBe('POSTED');
+
+    const conn = await (await call('GET', 'b/shop-one/connection', 'owner@shop.in')).json();
+    expect(conn.connected).toBe(true);
+    expect(conn.canConnect).toBe(true);
+    expect(conn.linked.map((l: { name: string }) => l.name)).toContain('Clinic A');
+    expect((await (await call('GET', 'b/shop-one/connection', 'staff@shop.in')).json()).canConnect).toBe(false);
+  });
+
+  it('a reply without text or draft is refused', async () => {
+    expect((await call('POST', 'b/shop-one/reply', 'staff@shop.in', { reviewId: '00000000-0000-0000-0000-000000000000' })).status).toBe(400);
+  });
+});
+
+describe('app sign-in handoff through the registered callback', () => {
+  const fake = (email: string): SignInGateway => ({
+    authUrl: ({ state }) => `https://accounts.test/auth?state=${state}`,
+    exchange: async () => ({ email, emailVerified: true }),
+  });
+  const run = async (email: string, flow: 'app' | undefined) => {
+    process.env.APP_BASE_URL = 'https://app.test';
+    process.env.GOOGLE_APP_SIGNIN_REDIRECT_URI = 'https://reviews.test/api/auth/google/callback';
+    process.env.DASHBOARD_HOST = 'reviews.test';
+    setSignIn(fake(email));
+    const { url, cookie } = startSignIn(process.env.GOOGLE_APP_SIGNIN_REDIRECT_URI, flow);
+    const state = new URL(url).searchParams.get('state')!;
+    return dashboardCallback(new NextRequest(`https://reviews.test/api/auth/google/callback?code=c&state=${state}`, { headers: { host: 'reviews.test', cookie: `${OAUTH_COOKIE}=${cookie}` } }));
+  };
+
+  it('a member is sent to the app with a short-lived signed token and no dashboard cookie', async () => {
+    const res = await run('owner@shop.in', 'app');
+    const loc = new URL(res.headers.get('location')!);
+    expect(loc.origin).toBe('https://app.test');
+    expect(loc.pathname).toBe('/auth/handoff');
+    expect(verifyToken<{ email: string }>(loc.searchParams.get('token'), HANDOFF_PURPOSE)?.email).toBe('owner@shop.in');
+    expect(res.headers.get('set-cookie') ?? '').not.toContain('tl_dash=');
+  });
+
+  it('a person with no access is sent back to the app login, with no token', async () => {
+    const loc = new URL((await run('stranger@x.in', 'app')).headers.get('location')!);
+    expect(loc.pathname).toBe('/login');
+    expect(loc.searchParams.get('e')).toBe('no_access');
+    expect(loc.searchParams.get('token')).toBeNull();
+  });
+
+  it('the dashboard flow without the app flag still signs in to the dashboard', async () => {
+    const res = await run('owner@shop.in', undefined);
+    expect(new URL(res.headers.get('location')!).origin).not.toBe('https://app.test');
+    expect(res.headers.get('set-cookie') ?? '').toContain('tl_dash=');
+  });
+});
