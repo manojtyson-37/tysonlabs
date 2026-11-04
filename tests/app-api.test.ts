@@ -234,10 +234,16 @@ describe('dash API business profile and performance', () => {
     [{ hours: [{ day: 'MONDAY', open: '18:00', close: '09:00' }] }, 'INVALID_HOURS'],
     [{ hours: [{ day: 'FUNDAY', open: '09:00', close: '10:00' }] }, 'INVALID_HOURS'],
     [{ title: 'New name' }, 'NO_CHANGES'],
+    [{ hours: [{ day: 'MONDAY', open: '24:00', close: '24:00' }] }, 'INVALID_HOURS'],
   ])('refuses %j', async (changes, code) => {
     const r = await call('POST', 'b/shop-one/profile', 'owner@shop.in', { changes });
     expect(r.status).toBe(400);
     expect((await r.json()).error).toBe(code);
+  });
+
+  it('accepts a close time of 24:00 for places open until midnight', async () => {
+    const r = await call('POST', 'b/shop-one/profile-preview', 'owner@shop.in', { changes: { hours: [{ day: 'FRIDAY', open: '10:00', close: '24:00' }] } });
+    expect(r.status).toBe(200);
   });
 
   it('returns performance numbers, or a clear not-enabled answer', async () => {

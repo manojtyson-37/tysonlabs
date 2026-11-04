@@ -33,6 +33,7 @@ export async function getProfile(a: AuthedClient, tenantRef: string): Promise<Go
 }
 
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+const CLOSE = /^(([01]\d|2[0-3]):[0-5]\d|24:00)$/; // 24:00 closes at midnight
 const PHONE = /^\+?[0-9 ()-]{7,20}$/;
 
 /** Turns whatever the caller sent into a clean change, or throws a specific error. Unknown fields are ignored. */
@@ -59,7 +60,7 @@ export function cleanChange(raw: unknown): ProfileChange {
     out.hours = r.hours.map((h) => {
       const x = (h ?? {}) as Record<string, unknown>;
       const day = String(x.day);
-      if (!(DAYS as readonly string[]).includes(day) || seen.has(day) || !HHMM.test(String(x.open)) || !HHMM.test(String(x.close)) || String(x.open) >= String(x.close)) throw new ServiceError(400, 'INVALID_HOURS');
+      if (!(DAYS as readonly string[]).includes(day) || seen.has(day) || !HHMM.test(String(x.open)) || !CLOSE.test(String(x.close)) || String(x.open) >= String(x.close)) throw new ServiceError(400, 'INVALID_HOURS');
       seen.add(day);
       return { day: day as (typeof DAYS)[number], open: String(x.open), close: String(x.close) };
     });

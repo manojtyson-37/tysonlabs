@@ -220,7 +220,7 @@ export class RealGoogleGateway implements GoogleGateway {
     if (fields.websiteUri !== undefined) { body.websiteUri = fields.websiteUri; mask.push('websiteUri'); }
     if (fields.description !== undefined) { body.profile = { description: fields.description }; mask.push('profile.description'); }
     if (fields.hours !== undefined) {
-      const hm = (v: string) => ({ hours: Number(v.slice(0, 2)), minutes: Number(v.slice(3, 5)) });
+      const hm = (v: string) => ({ hours: Number(v.slice(0, 2)), minutes: Number(v.slice(3, 5)) }); // 24:00 is a valid close time
       body.regularHours = { periods: fields.hours.map((h) => ({ openDay: h.day, openTime: hm(h.open), closeDay: h.day, closeTime: hm(h.close) })) };
       mask.push('regularHours');
     }
