@@ -4,6 +4,7 @@ import { getDrafter, getGoogle } from './container';
 import { rateLimit, unscoped, withScope } from './db';
 import { GoogleError } from './google';
 import { MAX_REPLY_LENGTH, replySafety, templateReply } from './drafts';
+import { sendNewReviewPush } from './push';
 import { ServiceError, accessTokenFor, audit, disconnect, getConnection, resolveTenant } from './service';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -36,8 +37,11 @@ export async function syncTenant(clientId: string, tenantId: string): Promise<{ 
   const runId = await withScope(scope, async (db) => (await db.query('INSERT INTO sync_runs (client_id, tenant_id) VALUES ($1,$2) RETURNING id', [clientId, tenantId])).rows[0].id as string);
   let outcome: SyncOutcome = 'ok';
   let seen = 0;
+  let fresh = 0; // genuinely new, recent reviews found by this run (updates and old backfill do not count)
   try {
     const token = await accessTokenFor({ clientId }, tenantId);
+    // A business with no reviews yet is being backfilled for the first time: that is history, not news.
+    const hadAny = await withScope(scope, async (db) => ((await db.query('SELECT 1 FROM reviews WHERE tenant_id = $1 LIMIT 1', [tenantId])).rowCount ?? 0) > 0);
     const links = await withScope(scope, async (db) => (await db.query('SELECT google_account_id, google_location_id FROM location_links WHERE tenant_id = $1', [tenantId])).rows as { google_account_id: string; google_location_id: string }[]);
     for (const link of links) {
       let pageToken: string | undefined;
@@ -49,21 +53,25 @@ export async function syncTenant(clientId: string, tenantId: string): Promise<{ 
           const known = await db.query('SELECT google_review_id, google_update_time FROM reviews WHERE tenant_id = $1 AND google_review_id = ANY($2)', [tenantId, ids]);
           const have = new Map(known.rows.map((r) => [r.google_review_id as string, new Date(r.google_update_time).getTime()]));
           let n = 0;
+          let added = 0;
           for (const r of result.reviews) {
             if (have.get(r.reviewId) === new Date(r.updateTime).getTime()) continue;
             n++;
             // Write-time rule: the link must still belong to this tenant. Reviews are always keyed by tenant, never by link alone.
-            await db.query(
+            const w = await db.query(
               `INSERT INTO reviews (client_id, tenant_id, google_location_id, google_review_id, reviewer_name, rating, comment, google_create_time, google_update_time, reply_text, reply_time)
                SELECT $1,$2,l.google_location_id,$4,$5,$6,$7,$8,$9,$10,$11 FROM location_links l WHERE l.tenant_id = $2 AND l.google_location_id = $3
                ON CONFLICT (tenant_id, google_review_id) DO UPDATE SET reviewer_name=EXCLUDED.reviewer_name, rating=EXCLUDED.rating, comment=EXCLUDED.comment,
-                 google_update_time=EXCLUDED.google_update_time, reply_text=EXCLUDED.reply_text, reply_time=EXCLUDED.reply_time, deleted_at=NULL, updated_at=now()`,
+                 google_update_time=EXCLUDED.google_update_time, reply_text=EXCLUDED.reply_text, reply_time=EXCLUDED.reply_time, deleted_at=NULL, updated_at=now()
+               RETURNING (xmax = 0) AND google_create_time > now() - interval '3 days' AS fresh`,
               [clientId, tenantId, link.google_location_id, r.reviewId, r.reviewerName ?? null, r.rating, r.comment ?? null, r.createTime, r.updateTime, r.reply?.comment ?? null, r.reply?.updateTime ?? null],
             );
+            if (w.rows[0]?.fresh) added++;
           }
-          return n;
+          return { n, added };
         });
-        if (!result.nextPageToken || changed === 0) break;
+        if (hadAny) fresh += changed.added;
+        if (!result.nextPageToken || changed.n === 0) break;
         pageToken = result.nextPageToken;
       }
     }
@@ -80,6 +88,7 @@ export async function syncTenant(clientId: string, tenantId: string): Promise<{ 
       );
     }).catch(() => undefined);
   }
+  if (fresh > 0) await sendNewReviewPush(clientId, tenantId, fresh); // never throws
   return { outcome, reviewsSeen: seen };
 }
 

@@ -86,6 +86,17 @@ export class FakeGoogle implements GoogleGateway {
   }
 }
 
+/** Stands in for the push service: records what would be sent, and can answer with an error status per endpoint. */
+export class FakePush {
+  sent: import('@/reviews-service/push').PushMessage[] = [];
+  failWith: Record<string, number> = {};
+  send = async (m: import('@/reviews-service/push').PushMessage) => {
+    const statusCode = this.failWith[m.endpoint];
+    if (statusCode) throw Object.assign(new Error('push failed'), { statusCode });
+    this.sent.push(m);
+  };
+}
+
 export const mkReview = (id: string, rating: number, updateTime: string, comment = 'ok', extra: Partial<GoogleReview> = {}): GoogleReview => ({
   reviewId: id, reviewerName: 'Reviewer ' + id, rating, comment, createTime: updateTime, updateTime, ...extra,
 });

@@ -8,6 +8,7 @@ import { availableLocations, createConnectSession, getConnection, linkLocation, 
 import { withScope } from '@/reviews-service/db';
 import { ensureNotifications } from '@/reviews-service/notify';
 import { getPerformance, getProfile, previewProfile, updateProfile } from '@/reviews-service/profile';
+import { isAllowedPushEndpoint, removeSubscription, saveSubscription, vapidPublicKey } from '@/reviews-service/push';
 import type { AuthedClient } from '@/reviews-service/apikeys';
 
 /**
@@ -46,6 +47,8 @@ export async function GET(request: Request, { params }: Ctx) {
     const s = await appSession(request);
     const url = new URL(request.url);
     if (path.length === 1 && path[0] === 'me') return ok({ email: s.email, isAdmin: s.isAdmin, businesses: await businesses(s) });
+
+    if (path.length === 2 && path[0] === 'push' && path[1] === 'config') return ok({ publicKey: vapidPublicKey() });
 
     if (path.length === 2 && path[0] === 'admin' && path[1] === 'businesses') {
       if (!s.isAdmin) throw new ServiceError(403, 'FORBIDDEN');
@@ -102,6 +105,22 @@ export async function POST(request: Request, { params }: Ctx) {
     }
     const s = await appSession(request);
     const b = await body(request);
+
+    if (path.length === 2 && path[0] === 'push' && path[1] === 'subscribe') {
+      const keys = (b.keys && typeof b.keys === 'object' ? b.keys : {}) as Record<string, unknown>;
+      const endpoint = str(b.endpoint, 2048), p256dh = str(keys.p256dh, 256), auth = str(keys.auth, 128);
+      if (!endpoint || !p256dh || !auth || !isAllowedPushEndpoint(endpoint)) throw new ServiceError(400, 'INVALID_SUBSCRIPTION');
+      const saved = await saveSubscription(s.email, endpoint, p256dh, auth);
+      if (saved === 'cap') throw new ServiceError(409, 'TOO_MANY_DEVICES');
+      if (saved === 'taken') throw new ServiceError(409, 'ENDPOINT_IN_USE');
+      return ok({ ok: true });
+    }
+    if (path.length === 2 && path[0] === 'push' && path[1] === 'unsubscribe') {
+      const endpoint = str(b.endpoint, 2048);
+      if (!endpoint) throw new ServiceError(400, 'INVALID_SUBSCRIPTION');
+      await removeSubscription(s.email, endpoint);
+      return ok({ ok: true });
+    }
 
     if (path.length === 2 && path[0] === 'admin' && path[1] === 'members') {
       if (!s.isAdmin) throw new ServiceError(403, 'FORBIDDEN');
