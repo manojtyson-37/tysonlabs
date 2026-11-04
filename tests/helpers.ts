@@ -77,6 +77,8 @@ export class FakeGoogle implements GoogleGateway {
     this.patches.push({ locationId, fields, validateOnly });
     if (!validateOnly) this.profile = { ...this.profile, ...fields };
   }
+  notificationTopics: { accountId: string; topic: string }[] = [];
+  async setNotificationSetting(_t: string, accountId: string, topic: string) { this.notificationTopics.push({ accountId, topic }); }
   perfError: Error | null = null;
   async fetchPerformance(): Promise<import('@/reviews-service/google').PerformanceReport> {
     if (this.perfError) throw this.perfError;

@@ -36,6 +36,8 @@ export interface GoogleGateway {
   patchLocation(accessToken: string, locationId: string, fields: ProfileChange, validateOnly: boolean): Promise<void>;
   /** Daily performance numbers. Throws GoogleError('api_not_enabled') when the API is off for the project. */
   fetchPerformance(accessToken: string, locationId: string, days: number): Promise<PerformanceReport>;
+  /** Sends this account's new and updated review notifications to a Pub/Sub topic. */
+  setNotificationSetting(accessToken: string, accountId: string, topic: string): Promise<void>;
 }
 
 export const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'] as const;
@@ -187,6 +189,16 @@ export class RealGoogleGateway implements GoogleGateway {
       { method: 'PUT', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ comment }) },
     );
     if (res.status === 401) throw new GoogleError('unauthorized');
+    if (!res.ok) throw new GoogleError(`http_${res.status}`);
+  }
+
+  async setNotificationSetting(accessToken: string, accountId: string, topic: string) {
+    const res = await fetch(`https://mybusinessnotifications.googleapis.com/v1/accounts/${encodeURIComponent(accountId)}/notificationSetting?updateMask=pubsubTopic,notificationTypes`, {
+      method: 'PATCH', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: `accounts/${accountId}/notificationSetting`, pubsubTopic: topic, notificationTypes: ['NEW_REVIEW', 'UPDATED_REVIEW'] }),
+    });
+    if (res.status === 401) throw new GoogleError('unauthorized');
+    if (res.status === 403) throw new GoogleError('api_not_enabled');
     if (!res.ok) throw new GoogleError(`http_${res.status}`);
   }
 
