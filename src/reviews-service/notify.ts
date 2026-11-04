@@ -9,12 +9,18 @@ import { accessTokenFor } from './service';
  * only thing that proves a request came from our subscription. A valid push only ever triggers a normal sync of one business, so a
  * forged or replayed message cannot read or change anything.
  */
+// The token sits in the push URL, so platform logs can contain it: rotate it now and then. During a rotation the previous value is
+// also accepted (GBP_NOTIFY_TOKEN_PREVIOUS), so the subscription can be switched over without downtime.
 export const notifyTokenOk = (given: string | null): boolean => {
-  const want = process.env.GBP_NOTIFY_TOKEN;
-  if (!want || want.length < 32 || !given) return false;
+  if (!given) return false;
   const a = Buffer.from(given);
-  const b = Buffer.from(want);
-  return a.length === b.length && timingSafeEqual(a, b);
+  let ok = false;
+  for (const want of [process.env.GBP_NOTIFY_TOKEN, process.env.GBP_NOTIFY_TOKEN_PREVIOUS]) {
+    if (!want || want.length < 32) continue;
+    const b = Buffer.from(want);
+    if (a.length === b.length && timingSafeEqual(a, b)) ok = true;
+  }
+  return ok;
 };
 
 const LOCATION = /^accounts\/[0-9]+\/locations\/([0-9]+)$/;
@@ -28,17 +34,19 @@ export async function handlePush(envelope: unknown): Promise<'synced' | 'ignored
   if (payload.notificationType !== 'NEW_REVIEW' && payload.notificationType !== 'UPDATED_REVIEW') return 'ignored';
   const m = typeof payload.locationName === 'string' ? LOCATION.exec(payload.locationName) : null;
   if (!m) return 'ignored';
-  if (!(await rateLimit(`notify:${m[1]}`, 30))) return 'busy';
+  // A global cap first (cheap, one row), so a flood of made up location ids cannot grow the limiter table.
+  if (!(await rateLimit('notify:all', 600))) return 'busy';
   const row = await unscoped(async (db) => (await db.query('SELECT * FROM notify_lookup_location($1)', [m[1]])).rows[0] as { client_id: string; tenant_id: string } | undefined);
   if (!row) return 'ignored';
-  await syncTenant(row.client_id, row.tenant_id);
-  return 'synced';
+  // Busy answers are still acknowledged: the 15 minute cron sync picks up anything a push could not.
+  if (!(await rateLimit(`notify:${row.tenant_id}`, 30))) return 'busy';
+  return (await syncTenant(row.client_id, row.tenant_id)).outcome === 'skipped' ? 'busy' : 'synced';
 }
 
 /** Points Google's notifications for the business's account at our topic. Safe to repeat. No-op when no topic is configured. */
 export async function ensureNotifications(clientId: string, tenantId: string): Promise<boolean> {
   const topic = process.env.GBP_NOTIFY_TOPIC;
-  if (!topic) return false;
+  if (!topic || !/^projects\/[a-z0-9-]+\/topics\/[A-Za-z0-9._~+%-]+$/.test(topic)) return false;
   const link = await withScope({ clientId, tenantId }, async (db) => (await db.query('SELECT google_account_id FROM location_links WHERE tenant_id = $1 LIMIT 1', [tenantId])).rows[0] as { google_account_id: string } | undefined);
   if (!link) return false;
   const token = await accessTokenFor({ clientId }, tenantId);

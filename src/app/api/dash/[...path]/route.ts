@@ -6,6 +6,7 @@ import { listMembers, provisionBusiness } from '@/reviews-service/members';
 import { createDraft, getDraft, listReviews, listTenants, postReply, summary, syncNow, newIdempotencyKey } from '@/reviews-service/reviews';
 import { availableLocations, createConnectSession, getConnection, linkLocation, resolveTenant, ServiceError } from '@/reviews-service/service';
 import { withScope } from '@/reviews-service/db';
+import { ensureNotifications } from '@/reviews-service/notify';
 import { getPerformance, getProfile, previewProfile, updateProfile } from '@/reviews-service/profile';
 import type { AuthedClient } from '@/reviews-service/apikeys';
 
@@ -143,6 +144,7 @@ export async function POST(request: Request, { params }: Ctx) {
       if (action === 'link') {
         if (!c.scopes.includes('connect')) throw new ServiceError(403, 'OWNER_ONLY');
         await linkLocation(c, ref, str(b.locationId, 200));
+        await ensureNotifications(c.clientId, await resolveTenant(c, ref)).catch(() => undefined); // best effort: the 15 minute sync still runs without it
         return ok({ ok: true });
       }
     }

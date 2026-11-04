@@ -37,7 +37,7 @@ export interface GoogleGateway {
   /** Daily performance numbers. Throws GoogleError('api_not_enabled') when the API is off for the project. */
   fetchPerformance(accessToken: string, locationId: string, days: number): Promise<PerformanceReport>;
   /** Sends this account's new and updated review notifications to a Pub/Sub topic. */
-  setNotificationSetting(accessToken: string, accountId: string, topic: string): Promise<void>;
+  setNotificationSetting(accessToken: string, accountId: string, topic: string): Promise<'set' | 'kept_existing'>;
 }
 
 export const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'] as const;
@@ -192,14 +192,18 @@ export class RealGoogleGateway implements GoogleGateway {
     if (!res.ok) throw new GoogleError(`http_${res.status}`);
   }
 
-  async setNotificationSetting(accessToken: string, accountId: string, topic: string) {
-    const res = await fetch(`https://mybusinessnotifications.googleapis.com/v1/accounts/${encodeURIComponent(accountId)}/notificationSetting?updateMask=pubsubTopic,notificationTypes`, {
+  async setNotificationSetting(accessToken: string, accountId: string, topic: string): Promise<'set' | 'kept_existing'> {
+    const url = `https://mybusinessnotifications.googleapis.com/v1/accounts/${encodeURIComponent(accountId)}/notificationSetting`;
+    // Never overwrite a topic the customer already configured for their own systems.
+    const cur = await this.get<{ pubsubTopic?: string }>(url, accessToken);
+    if (cur.pubsubTopic && cur.pubsubTopic !== topic) return 'kept_existing';
+    const res = await fetch(`${url}?updateMask=pubsubTopic,notificationTypes`, {
       method: 'PATCH', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: `accounts/${accountId}/notificationSetting`, pubsubTopic: topic, notificationTypes: ['NEW_REVIEW', 'UPDATED_REVIEW'] }),
     });
     if (res.status === 401) throw new GoogleError('unauthorized');
-    if (res.status === 403) throw new GoogleError('api_not_enabled');
-    if (!res.ok) throw new GoogleError(`http_${res.status}`);
+    if (!res.ok) throw new GoogleError(`http_${res.status}`); // 403 here can mean the topic does not allow Google to publish
+    return 'set';
   }
 
   async getLocation(accessToken: string, locationId: string): Promise<GoogleProfile> {

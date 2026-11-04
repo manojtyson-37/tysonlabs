@@ -37,7 +37,7 @@ describe('review notifications', () => {
 
   it('a new review notification syncs that business', async () => {
     const before = ctx.fake.reviewCalls;
-    expect(await handlePush(push({ notificationType: 'NEW_REVIEW', locationName: 'accounts/1/locations/LOC1'.replace('LOC1', '123') }))).toBe('ignored'); // not linked
+    expect(await handlePush(push({ notificationType: 'NEW_REVIEW', locationName: 'accounts/1/locations/123' }))).toBe('ignored'); // not linked
     const r = await ctx.o.query("UPDATE location_links SET google_location_id = '987654' WHERE google_location_id = 'LOC1' RETURNING 1");
     expect(r.rowCount).toBe(1);
     ctx.fake.reviews['987654'] = ctx.fake.reviews.LOC1;
@@ -56,6 +56,40 @@ describe('review notifications', () => {
     expect(await handlePush(null)).toBe('ignored');
     expect(await handlePush({ message: { data: 'not base64 json' } })).toBe('ignored');
     expect(await handlePush({ message: { data: 123 } })).toBe('ignored');
+  });
+
+  it('accepts the previous token during a rotation, and rejects a same length wrong token', () => {
+    process.env.GBP_NOTIFY_TOKEN_PREVIOUS = 'previous-token-0123456789-0123456789';
+    expect(notifyTokenOk('previous-token-0123456789-0123456789')).toBe(true);
+    expect(notifyTokenOk('x'.repeat(TOKEN.length))).toBe(false);
+    expect(notifyTokenOk('é'.repeat(TOKEN.length))).toBe(false);
+    delete process.env.GBP_NOTIFY_TOKEN_PREVIOUS;
+    expect(notifyTokenOk('previous-token-0123456789-0123456789')).toBe(false);
+  });
+
+  it('a push while a sync holds the lease is acknowledged as busy, and a global flood is capped', async () => {
+    await ctx.o.query("UPDATE connections SET sync_lock_until = now() + interval '5 minutes'");
+    expect(await handlePush(push({ notificationType: 'UPDATED_REVIEW', locationName: 'accounts/1/locations/987654' }))).toBe('busy');
+    await ctx.o.query('UPDATE connections SET sync_lock_until = NULL');
+    for (let i = 0; i < 601; i++) await ctx.o.query("SELECT rate_limit_hit('notify:all', 600, 60)");
+    expect(await handlePush(push({ notificationType: 'NEW_REVIEW', locationName: 'accounts/1/locations/987654' }))).toBe('busy');
+    await ctx.o.query("DELETE FROM rate_limits WHERE bucket LIKE 'notify:%'");
+  });
+
+  it('a location that is not linked, or whose connection is not active, is ignored', async () => {
+    expect(await handlePush(push({ notificationType: 'NEW_REVIEW', locationName: 'accounts/1/locations/55555' }))).toBe('ignored');
+    await ctx.o.query("UPDATE connections SET status = 'DISCONNECTED'");
+    expect(await handlePush(push({ notificationType: 'NEW_REVIEW', locationName: 'accounts/1/locations/987654' }))).toBe('ignored');
+    await ctx.o.query("UPDATE connections SET status = 'ACTIVE'");
+  });
+
+  it('rejects a malformed topic and does not call Google', async () => {
+    const t = (await ctx.o.query("SELECT tenant_id FROM location_links WHERE google_location_id = '987654'")).rows[0].tenant_id as string;
+    const n = ctx.fake.notificationTopics.length;
+    process.env.GBP_NOTIFY_TOPIC = 'not a topic';
+    expect(await ensureNotifications(a.clientId, t)).toBe(false);
+    expect(ctx.fake.notificationTopics.length).toBe(n);
+    process.env.GBP_NOTIFY_TOPIC = 'projects/p/topics/t';
   });
 
   it('points the account at the topic when one is configured', async () => {
