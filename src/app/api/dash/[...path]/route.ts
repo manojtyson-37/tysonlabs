@@ -6,6 +6,7 @@ import { listMembers, provisionBusiness } from '@/reviews-service/members';
 import { createDraft, getDraft, listReviews, listTenants, postReply, summary, syncNow, newIdempotencyKey } from '@/reviews-service/reviews';
 import { availableLocations, createConnectSession, getConnection, linkLocation, resolveTenant, ServiceError } from '@/reviews-service/service';
 import { withScope } from '@/reviews-service/db';
+import { getPerformance, getProfile, previewProfile, updateProfile } from '@/reviews-service/profile';
 import type { AuthedClient } from '@/reviews-service/apikeys';
 
 /**
@@ -64,6 +65,12 @@ export async function GET(request: Request, { params }: Ctx) {
       if (path[2] === 'reviews') {
         const list = (await listReviews(c, ref, { limit: 100 })).reviews;
         return ok({ reviews: url.searchParams.get('filter') === 'unreplied' ? list.filter((r) => !r.replyText) : list });
+      }
+      if (path[2] === 'profile') {
+        return ok({ profile: await getProfile(c, ref), canEdit: c.scopes.includes('connect') });
+      }
+      if (path[2] === 'performance') {
+        return ok(await getPerformance(c, ref, Number(url.searchParams.get('days')) || 30));
       }
       if (path[2] === 'connection') {
         const conn = await getConnection(c, ref);
@@ -128,6 +135,10 @@ export async function POST(request: Request, { params }: Ctx) {
       if (action === 'connect') {
         if (!c.scopes.includes('connect')) throw new ServiceError(403, 'OWNER_ONLY');
         return ok({ url: (await createConnectSession(c, { tenantRef: ref, returnUrl: str(b.returnUrl, 500) })).url });
+      }
+      if (action === 'profile-preview' || action === 'profile') {
+        if (!c.scopes.includes('connect')) throw new ServiceError(403, 'OWNER_ONLY'); // editing the public listing is an owner decision
+        return ok(action === 'profile' ? await updateProfile(c, ref, b.changes, s.email) : await previewProfile(c, ref, b.changes));
       }
       if (action === 'link') {
         if (!c.scopes.includes('connect')) throw new ServiceError(403, 'OWNER_ONLY');

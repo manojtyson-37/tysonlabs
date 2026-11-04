@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { bootstrap, mkReview } from './helpers';
+import { bootstrap, mkReview, GoogleError } from './helpers';
 import { authenticate, AuthedClient } from '@/reviews-service/apikeys';
 import { bearer } from './helpers';
 import { completeConsent, createConnectSession, linkLocation, startConsent } from '@/reviews-service/service';
@@ -193,5 +193,59 @@ describe('app sign-in handoff through the registered callback', () => {
     const res = await run('owner@shop.in', undefined);
     expect(new URL(res.headers.get('location')!).origin).not.toBe('https://app.test');
     expect(res.headers.get('set-cookie') ?? '').toContain('tl_dash=');
+  });
+});
+
+describe('dash API business profile and performance', () => {
+  it('shows the live listing with the review link to anyone in the business, but only owners can edit', async () => {
+    const owner = await (await call('GET', 'b/shop-one/profile', 'owner@shop.in')).json();
+    expect(owner.profile.title).toBe('Clinic A');
+    expect(owner.profile.reviewLink).toContain('g.page');
+    expect(owner.canEdit).toBe(true);
+    expect((await (await call('GET', 'b/shop-one/profile', 'staff@shop.in')).json()).canEdit).toBe(false);
+    expect((await call('GET', 'b/shop-two/profile', 'owner@shop.in')).status).toBe(403);
+  });
+
+  it('staff cannot preview or change the listing', async () => {
+    expect((await call('POST', 'b/shop-one/profile-preview', 'staff@shop.in', { changes: { primaryPhone: '+91 90000 00000' } })).status).toBe(403);
+    expect((await call('POST', 'b/shop-one/profile', 'staff@shop.in', { changes: { primaryPhone: '+91 90000 00000' } })).status).toBe(403);
+  });
+
+  it('preview only validates; saving changes the listing and audits field names, not values', async () => {
+    const fake = ctx.fake;
+    fake.patches.length = 0;
+    const pv = await call('POST', 'b/shop-one/profile-preview', 'owner@shop.in', { changes: { primaryPhone: '+91 90000 11111' } });
+    expect(pv.status).toBe(200);
+    expect(fake.patches.at(-1)?.validateOnly).toBe(true);
+    expect(fake.profile.primaryPhone).not.toBe('+91 90000 11111');
+    const save = await call('POST', 'b/shop-one/profile', 'owner@shop.in', { changes: { primaryPhone: '+91 90000 11111', description: 'Open all week' } });
+    expect(save.status).toBe(200);
+    expect(fake.patches.at(-1)?.validateOnly).toBe(false);
+    expect(fake.profile.primaryPhone).toBe('+91 90000 11111');
+    const audit = (await ctx.o.query("SELECT entity FROM audit_log WHERE action = 'profile.updated' ORDER BY id DESC LIMIT 1")).rows[0].entity as string;
+    expect(audit).toContain('primaryPhone');
+    expect(audit).not.toContain('90000');
+  });
+
+  it.each([
+    [{ primaryPhone: 'call me' }, 'INVALID_PHONE'],
+    [{ websiteUri: 'javascript:alert(1)' }, 'INVALID_WEBSITE'],
+    [{ description: 'x'.repeat(751) }, 'INVALID_DESCRIPTION'],
+    [{ hours: [{ day: 'MONDAY', open: '18:00', close: '09:00' }] }, 'INVALID_HOURS'],
+    [{ hours: [{ day: 'FUNDAY', open: '09:00', close: '10:00' }] }, 'INVALID_HOURS'],
+    [{ title: 'New name' }, 'NO_CHANGES'],
+  ])('refuses %j', async (changes, code) => {
+    const r = await call('POST', 'b/shop-one/profile', 'owner@shop.in', { changes });
+    expect(r.status).toBe(400);
+    expect((await r.json()).error).toBe(code);
+  });
+
+  it('returns performance numbers, or a clear not-enabled answer', async () => {
+    const ok = await (await call('GET', 'b/shop-one/performance?days=30', 'owner@shop.in')).json();
+    expect(ok.available).toBe(true);
+    expect(ok.report.totals.views).toBe(120);
+    ctx.fake.perfError = new GoogleError('api_not_enabled');
+    expect(await (await call('GET', 'b/shop-one/performance', 'owner@shop.in')).json()).toEqual({ available: false, reason: 'NOT_ENABLED' });
+    ctx.fake.perfError = null;
   });
 });

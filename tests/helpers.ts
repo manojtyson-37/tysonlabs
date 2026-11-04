@@ -68,6 +68,20 @@ export class FakeGoogle implements GoogleGateway {
     if (this.postError) throw this.postError;
     this.posted.push({ locationId, reviewId, comment });
   }
+  profile: import('@/reviews-service/google').GoogleProfile = { title: 'Clinic A', primaryPhone: '+91 98765 43210', websiteUri: 'https://clinic.test', description: 'Hello', address: '1 Main Road, Hyderabad', category: 'Clinic', hours: [{ day: 'MONDAY', open: '09:00', close: '18:00' }], reviewLink: 'https://g.page/r/ABC/review', mapsLink: 'https://maps.google.com/?cid=1' };
+  patches: { locationId: string; fields: import('@/reviews-service/google').ProfileChange; validateOnly: boolean }[] = [];
+  patchError: Error | null = null;
+  async getLocation() { return this.profile; }
+  async patchLocation(_t: string, locationId: string, fields: import('@/reviews-service/google').ProfileChange, validateOnly: boolean) {
+    if (this.patchError) throw this.patchError;
+    this.patches.push({ locationId, fields, validateOnly });
+    if (!validateOnly) this.profile = { ...this.profile, ...fields };
+  }
+  perfError: Error | null = null;
+  async fetchPerformance(): Promise<import('@/reviews-service/google').PerformanceReport> {
+    if (this.perfError) throw this.perfError;
+    return { from: '2026-10-05', to: '2026-11-03', totals: { views: 120, calls: 7, websiteClicks: 11, directions: 5, bookings: 0, conversations: 0 }, daily: [{ date: '2026-11-03', views: 4, calls: 1, websiteClicks: 0, directions: 0 }] };
+  }
 }
 
 export const mkReview = (id: string, rating: number, updateTime: string, comment = 'ok', extra: Partial<GoogleReview> = {}): GoogleReview => ({

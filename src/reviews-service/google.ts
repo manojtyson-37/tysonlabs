@@ -30,6 +30,40 @@ export interface GoogleGateway {
   listReviews(accessToken: string, accountId: string, locationId: string, pageToken?: string): Promise<GoogleReviewPage>;
   /** Creates or replaces the owner's reply to a review. */
   postReply(accessToken: string, accountId: string, locationId: string, reviewId: string, comment: string): Promise<void>;
+  /** The live listing as the merchant last set it, plus the review and maps links Google provides. */
+  getLocation(accessToken: string, locationId: string): Promise<GoogleProfile>;
+  /** Changes only the fields named in `fields`. With validateOnly nothing is changed; Google only checks the request. */
+  patchLocation(accessToken: string, locationId: string, fields: ProfileChange, validateOnly: boolean): Promise<void>;
+  /** Daily performance numbers. Throws GoogleError('api_not_enabled') when the API is off for the project. */
+  fetchPerformance(accessToken: string, locationId: string, days: number): Promise<PerformanceReport>;
+}
+
+export const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'] as const;
+export type Day = (typeof DAYS)[number];
+export interface HoursPeriod { day: Day; open: string; close: string } // HH:MM, 24 hour
+export interface GoogleProfile {
+  title: string;
+  primaryPhone?: string;
+  websiteUri?: string;
+  description?: string;
+  address?: string;
+  category?: string;
+  hours: HoursPeriod[];
+  reviewLink?: string;
+  mapsLink?: string;
+}
+/** Only these fields can be changed from the dashboard. Name, address and categories stay in Google's own editor. */
+export interface ProfileChange {
+  primaryPhone?: string;
+  websiteUri?: string;
+  description?: string;
+  hours?: HoursPeriod[];
+}
+export interface PerformanceReport {
+  from: string;
+  to: string;
+  totals: { views: number; calls: number; websiteClicks: number; directions: number; bookings: number; conversations: number };
+  daily: { date: string; views: number; calls: number; websiteClicks: number; directions: number }[];
 }
 
 export interface GoogleReview {
@@ -154,6 +188,84 @@ export class RealGoogleGateway implements GoogleGateway {
     );
     if (res.status === 401) throw new GoogleError('unauthorized');
     if (!res.ok) throw new GoogleError(`http_${res.status}`);
+  }
+
+  async getLocation(accessToken: string, locationId: string): Promise<GoogleProfile> {
+    const j = await this.get<{
+      title?: string; phoneNumbers?: { primaryPhone?: string }; websiteUri?: string; profile?: { description?: string };
+      storefrontAddress?: { addressLines?: string[]; locality?: string; postalCode?: string; administrativeArea?: string };
+      categories?: { primaryCategory?: { displayName?: string } };
+      regularHours?: { periods?: { openDay: Day; openTime?: { hours?: number; minutes?: number }; closeTime?: { hours?: number; minutes?: number } }[] };
+      metadata?: { newReviewUri?: string; mapsUri?: string };
+    }>(`https://mybusinessbusinessinformation.googleapis.com/v1/locations/${encodeURIComponent(locationId)}?readMask=title,phoneNumbers,websiteUri,profile,storefrontAddress,categories,regularHours,metadata`, accessToken);
+    const t = (x?: { hours?: number; minutes?: number }) => `${String(x?.hours ?? 0).padStart(2, '0')}:${String(x?.minutes ?? 0).padStart(2, '0')}`;
+    const a = j.storefrontAddress;
+    return {
+      title: j.title ?? '',
+      primaryPhone: j.phoneNumbers?.primaryPhone,
+      websiteUri: j.websiteUri,
+      description: j.profile?.description,
+      address: a ? [...(a.addressLines ?? []), a.locality, a.administrativeArea, a.postalCode].filter(Boolean).join(', ') : undefined,
+      category: j.categories?.primaryCategory?.displayName,
+      hours: (j.regularHours?.periods ?? []).map((p) => ({ day: p.openDay, open: t(p.openTime), close: t(p.closeTime) })),
+      reviewLink: j.metadata?.newReviewUri,
+      mapsLink: j.metadata?.mapsUri,
+    };
+  }
+
+  async patchLocation(accessToken: string, locationId: string, fields: ProfileChange, validateOnly: boolean) {
+    const body: Record<string, unknown> = {};
+    const mask: string[] = [];
+    if (fields.primaryPhone !== undefined) { body.phoneNumbers = { primaryPhone: fields.primaryPhone }; mask.push('phoneNumbers.primaryPhone'); }
+    if (fields.websiteUri !== undefined) { body.websiteUri = fields.websiteUri; mask.push('websiteUri'); }
+    if (fields.description !== undefined) { body.profile = { description: fields.description }; mask.push('profile.description'); }
+    if (fields.hours !== undefined) {
+      const hm = (v: string) => ({ hours: Number(v.slice(0, 2)), minutes: Number(v.slice(3, 5)) });
+      body.regularHours = { periods: fields.hours.map((h) => ({ openDay: h.day, openTime: hm(h.open), closeDay: h.day, closeTime: hm(h.close) })) };
+      mask.push('regularHours');
+    }
+    if (!mask.length) return;
+    const qs = new URLSearchParams({ updateMask: mask.join(',') });
+    if (validateOnly) qs.set('validateOnly', 'true');
+    const res = await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/locations/${encodeURIComponent(locationId)}?${qs}`, {
+      method: 'PATCH', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+    });
+    if (res.status === 401) throw new GoogleError('unauthorized');
+    if (res.status === 400) throw new GoogleError('invalid_change');
+    if (!res.ok) throw new GoogleError(`http_${res.status}`);
+  }
+
+  async fetchPerformance(accessToken: string, locationId: string, days: number): Promise<PerformanceReport> {
+    const end = new Date(Date.now() - 86_400_000);
+    const start = new Date(end.getTime() - (days - 1) * 86_400_000);
+    const p = (d: Date, k: string) => [`dailyRange.${k}.year`, String(d.getUTCFullYear())] as const;
+    const qs = new URLSearchParams();
+    for (const m of ['BUSINESS_IMPRESSIONS_DESKTOP_MAPS', 'BUSINESS_IMPRESSIONS_DESKTOP_SEARCH', 'BUSINESS_IMPRESSIONS_MOBILE_MAPS', 'BUSINESS_IMPRESSIONS_MOBILE_SEARCH', 'CALL_CLICKS', 'WEBSITE_CLICKS', 'BUSINESS_DIRECTION_REQUESTS', 'BUSINESS_BOOKINGS', 'BUSINESS_CONVERSATIONS']) qs.append('dailyMetrics', m);
+    for (const [d, k] of [[start, 'startDate'], [end, 'endDate']] as const) {
+      qs.set(p(d, k)[0], p(d, k)[1]); qs.set(`dailyRange.${k}.month`, String(d.getUTCMonth() + 1)); qs.set(`dailyRange.${k}.day`, String(d.getUTCDate()));
+    }
+    const res = await fetch(`https://businessprofileperformance.googleapis.com/v1/locations/${encodeURIComponent(locationId)}:fetchMultiDailyMetricsTimeSeries?${qs}`, { headers: { Authorization: `Bearer ${accessToken}` } });
+    if (res.status === 401) throw new GoogleError('unauthorized');
+    if (res.status === 403) throw new GoogleError('api_not_enabled');
+    if (!res.ok) throw new GoogleError(`http_${res.status}`);
+    const j = (await res.json()) as { multiDailyMetricTimeSeries?: { dailyMetricTimeSeries?: { dailyMetric: string; timeSeries?: { datedValues?: { date: { year: number; month: number; day: number }; value?: string }[] } }[] }[] };
+    const byDate = new Map<string, { views: number; calls: number; websiteClicks: number; directions: number }>();
+    const totals = { views: 0, calls: 0, websiteClicks: 0, directions: 0, bookings: 0, conversations: 0 };
+    for (const grp of j.multiDailyMetricTimeSeries ?? []) for (const s of grp.dailyMetricTimeSeries ?? []) {
+      for (const v of s.timeSeries?.datedValues ?? []) {
+        const n = Number(v.value ?? 0) || 0;
+        const key = `${v.date.year}-${String(v.date.month).padStart(2, '0')}-${String(v.date.day).padStart(2, '0')}`;
+        const row = byDate.get(key) ?? { views: 0, calls: 0, websiteClicks: 0, directions: 0 };
+        if (s.dailyMetric.startsWith('BUSINESS_IMPRESSIONS')) { row.views += n; totals.views += n; }
+        else if (s.dailyMetric === 'CALL_CLICKS') { row.calls += n; totals.calls += n; }
+        else if (s.dailyMetric === 'WEBSITE_CLICKS') { row.websiteClicks += n; totals.websiteClicks += n; }
+        else if (s.dailyMetric === 'BUSINESS_DIRECTION_REQUESTS') { row.directions += n; totals.directions += n; }
+        else if (s.dailyMetric === 'BUSINESS_BOOKINGS') totals.bookings += n;
+        else if (s.dailyMetric === 'BUSINESS_CONVERSATIONS') totals.conversations += n;
+        byDate.set(key, row);
+      }
+    }
+    return { from: start.toISOString().slice(0, 10), to: end.toISOString().slice(0, 10), totals, daily: [...byDate.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, r]) => ({ date, ...r })) };
   }
 
   private async token(body: Record<string, string>): Promise<GoogleTokens> {
