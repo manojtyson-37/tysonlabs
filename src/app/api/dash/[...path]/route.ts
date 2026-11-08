@@ -3,9 +3,10 @@ import { appSession, redeemHandoff, requireAppKey } from '@/reviews-service/app-
 import { authorise, dashboardClientId, type DashSession } from '@/reviews-service/dash-session';
 import { handleError, noStore } from '@/reviews-service/http';
 import { listMembers, provisionBusiness } from '@/reviews-service/members';
-import { createDraft, getDraft, listReviews, listTenants, postReply, summary, syncNow, newIdempotencyKey } from '@/reviews-service/reviews';
-import { availableLocations, createConnectSession, getConnection, linkLocation, resolveTenant, ServiceError } from '@/reviews-service/service';
-import { withScope } from '@/reviews-service/db';
+import { createDraft, exportTenant, getDraft, listReviews, listTenants, postReply, summary, syncNow, newIdempotencyKey } from '@/reviews-service/reviews';
+import { audit, availableLocations, createConnectSession, getConnection, linkLocation, resolveTenant, ServiceError } from '@/reviews-service/service';
+import { rateLimit, withScope } from '@/reviews-service/db';
+import { confirmDeletion, requestDeletion } from '@/reviews-service/deletion';
 import { ensureNotifications } from '@/reviews-service/notify';
 import { getPerformance, getProfile, previewProfile, updateProfile } from '@/reviews-service/profile';
 import { isAllowedPushEndpoint, removeSubscription, saveSubscription, vapidPublicKey } from '@/reviews-service/push';
@@ -27,6 +28,14 @@ const adminClient = (s: DashSession): AuthedClient => ({ clientId: dashboardClie
 function forBusiness(s: DashSession, ref: string): AuthedClient {
   const c = authorise(s, ref);
   if (!c) throw new ServiceError(403, 'FORBIDDEN');
+  return c;
+}
+
+/** Owner of this exact business (a membership with the owner role). Staff and TysonLabs admins who are not members are refused: erasing a clinic's data is the owner's decision. */
+function ownerOf(s: DashSession, ref: string): AuthedClient {
+  const c = forBusiness(s, ref);
+  // The membership must be under the same client the access came from, so one ref under two clients can never mix.
+  if (!c.scopes.includes('connect') || !s.memberships.some((m) => m.ref === ref && m.clientId === c.clientId && m.role === 'owner')) throw new ServiceError(403, 'OWNER_ONLY');
   return c;
 }
 
@@ -69,6 +78,16 @@ export async function GET(request: Request, { params }: Ctx) {
       if (path[2] === 'reviews') {
         const list = (await listReviews(c, ref, { limit: 100 })).reviews;
         return ok({ reviews: url.searchParams.get('filter') === 'unreplied' ? list.filter((r) => !r.replyText) : list });
+      }
+      if (path[2] === 'export') {
+        const owner = ownerOf(s, ref); // the whole archive, including who approved each reply, is for the clinic's owner, not TysonLabs admins who are not members
+        if (!(await rateLimit(`export:${s.email}:${ref}`, 5, 3600))) throw new ServiceError(429, 'RATE_LIMITED');
+        const data = await exportTenant(owner, ref); // same data as the API key export: no tokens, keys or secrets are in it
+        const tenantId = await resolveTenant(owner, ref);
+        await withScope({ clientId: owner.clientId, tenantId }, (db) => audit(db, owner, owner.clientId, tenantId, 'export.downloaded', s.email.slice(0, 200)));
+        const day = new Date().toISOString().slice(0, 10);
+        const name = `tysonlabs-reviews-${ref.replace(/[^a-z0-9-]/gi, '')}-${day}.json`;
+        return new NextResponse(JSON.stringify(data, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Content-Disposition': `attachment; filename="${name}"`, 'Cache-Control': 'no-store' } });
       }
       if (path[2] === 'profile') {
         return ok({ profile: await getProfile(c, ref), canEdit: c.scopes.includes('connect') });
@@ -126,6 +145,14 @@ export async function POST(request: Request, { params }: Ctx) {
       if (!s.isAdmin) throw new ServiceError(403, 'FORBIDDEN');
       await provisionBusiness(adminClient(s), { ref: str(b.ref, 100), ownerEmail: str(b.email, 254), role: b.role === 'staff' ? 'staff' : 'owner' }, s.email);
       return ok({ ok: true });
+    }
+
+    // Erasing a business: the same two-confirmation rule as the API, only for the signed-in owner's own business and only as a full erase.
+    if (path.length === 3 && path[0] === 'b' && path[2] === 'deletion-requests') {
+      return ok(await requestDeletion(ownerOf(s, path[1]), path[1], { action: 'erase_tenant' }));
+    }
+    if (path.length === 5 && path[0] === 'b' && path[2] === 'deletion-requests' && path[4] === 'confirm') {
+      return ok(await confirmDeletion(ownerOf(s, path[1]), path[1], path[3], { step: b.step, token: b.token, phrase: b.phrase }));
     }
 
     if (path.length === 3 && path[0] === 'b') {

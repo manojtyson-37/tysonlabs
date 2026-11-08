@@ -4,6 +4,7 @@ import { getDrafter, getGoogle } from './container';
 import { rateLimit, unscoped, withScope } from './db';
 import { GoogleError } from './google';
 import { MAX_REPLY_LENGTH, replySafety, templateReply } from './drafts';
+import { sha256 } from './crypto';
 import { sendNewReviewPush } from './push';
 import { ServiceError, accessTokenFor, audit, disconnect, getConnection, resolveTenant } from './service';
 
@@ -332,12 +333,14 @@ export async function exportTenant(a: AuthedClient, tenantRef: string) {
  */
 export async function eraseTenant(a: AuthedClient, tenantRef: string): Promise<{ googleRevoked: boolean }> {
   const tenantId = await resolveTenant(a, tenantRef);
+  // The one surviving audit row must not hold a person's email: app sessions ('dash:<email>') are stored as a hash.
+  const actorRef = a.apiKeyId.startsWith('dash:') ? `dash:${sha256(a.apiKeyId).toString('hex').slice(0, 24)}` : a.apiKeyId;
   const googleRevoked = await disconnect(a, tenantRef); // wipes the stored token whether or not Google answers
   await withScope({ clientId: a.clientId, tenantId }, async (db) => {
     await db.query('SELECT erase_tenant_audit($1)', [tenantId]);
     await db.query('DELETE FROM tenants WHERE id = $1 AND client_id = $2', [tenantId, a.clientId]);
     // The one audit row left carries only the client id and an action, with no tenant reference.
-    await db.query("INSERT INTO audit_log (client_id, tenant_id, actor_type, actor_ref, action) VALUES ($1, NULL, 'client', $2, 'tenant.erased')", [a.clientId, a.apiKeyId]);
+    await db.query("INSERT INTO audit_log (client_id, tenant_id, actor_type, actor_ref, action) VALUES ($1, NULL, 'client', $2, 'tenant.erased')", [a.clientId, actorRef]);
   });
   return { googleRevoked };
 }

@@ -255,3 +255,110 @@ describe('dash API business profile and performance', () => {
     ctx.fake.perfError = null;
   });
 });
+
+describe('dash API export and erase (owner only)', () => {
+  const OWNER = 'wipe-owner@shop.in', STAFF = 'wipe-staff@shop.in';
+  beforeAll(async () => {
+    await provisionBusiness(a, { ref: 'wipe-me', ownerEmail: OWNER }, 'test');
+    await provisionBusiness(a, { ref: 'wipe-me', ownerEmail: STAFF, role: 'staff' }, 'test');
+    await provisionBusiness(a, { ref: 'wipe-keep', ownerEmail: 'keep-owner@shop.in' }, 'test');
+    const { url } = await createConnectSession(a, { tenantRef: 'wipe-me', returnUrl: 'https://app.test/integrations' });
+    const state = new URL(await startConsent(url.split('/connect/')[1])).searchParams.get('state')!;
+    await completeConsent({ state, code: 'c', error: null });
+    await ctx.o.query('DELETE FROM rate_limits');
+  });
+
+  it('owner downloads an attachment with the data and no tokens, keys or secrets; the download is audited', async () => {
+    const r = await call('GET', 'b/wipe-me/export', OWNER);
+    expect(r.status).toBe(200);
+    expect(r.headers.get('content-disposition')).toMatch(/^attachment; filename="tysonlabs-reviews-wipe-me-\d{4}-\d{2}-\d{2}\.json"$/);
+    expect(r.headers.get('cache-control')).toBe('no-store');
+    const text = await r.text();
+    const data = JSON.parse(text);
+    expect(data.tenantRef).toBe('wipe-me');
+    expect(Object.keys(data).sort()).toEqual(['auditLog', 'connection', 'exportedAt', 'locations', 'replyDrafts', 'reviews', 'tenantRef']);
+    // Every key at every depth is checked, so a reviewer who writes the word "token" in a comment cannot break this and a secret column cannot slip in.
+    const keys = new Set<string>();
+    const walk = (v: unknown) => { if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) { keys.add(k); walk(x); } };
+    walk(data);
+    expect([...keys].filter((k) => /token|secret|password|api_?key|ciphertext|wrapped|hash|credential/i.test(k))).toEqual([]);
+    expect(Number((await ctx.o.query("SELECT count(*) AS n FROM audit_log WHERE action = 'export.downloaded' AND entity = $1", [OWNER])).rows[0].n)).toBe(1);
+  });
+
+  it('staff, strangers and other businesses cannot export; the export is rate limited', async () => {
+    expect((await call('GET', 'b/wipe-me/export', STAFF)).status).toBe(403);
+    expect((await call('GET', 'b/wipe-me/export', 'owner@shop.in')).status).toBe(403);
+    expect((await call('GET', 'b/wipe-me/export', 'boss@tysonlabs.in')).status).toBe(403); // an admin who is not a member of the clinic
+    expect((await call('GET', 'b/wipe-me/export', 'nobody@x.in')).status).toBe(401);
+    expect((await call('GET', 'b/wipe-me/export', OWNER, undefined, null)).status).toBe(401);
+    let last = 200;
+    for (let i = 0; i < 6; i++) last = (await call('GET', 'b/wipe-me/export', OWNER)).status;
+    expect(last).toBe(429);
+    await ctx.o.query('DELETE FROM rate_limits');
+  });
+
+  it('staff, other owners and admins who are not members cannot start an erase', async () => {
+    for (const who of [STAFF, 'owner@shop.in', 'boss@tysonlabs.in']) {
+      expect((await call('POST', 'b/wipe-me/deletion-requests', who, {})).status).toBe(403);
+    }
+    expect(Number((await ctx.o.query("SELECT count(*) AS n FROM deletion_requests WHERE tenant_id = (SELECT id FROM tenants WHERE external_ref = 'wipe-me')")).rows[0].n)).toBe(0);
+  });
+
+  it('erase needs two confirmations with the exact phrase, always erases the owner\'s own business only, and ignores a body action', async () => {
+    const t = await call('POST', 'b/wipe-me/deletion-requests', OWNER, { action: 'unlink_location', locationId: 'x' });
+    expect(t.status).toBe(200);
+    const req = await t.json();
+    expect(req.action).toBe('erase_tenant'); // body cannot pick another action
+    const id = req.requestId as string;
+    const c1 = req.confirmation;
+    expect(c1.phrase).toBe('ERASE wipe-me');
+    const path = `b/wipe-me/deletion-requests/${id}/confirm`;
+    expect((await call('POST', path, STAFF, { step: 1, token: c1.token, phrase: c1.phrase })).status).toBe(403);
+    expect((await call('POST', `b/wipe-keep/deletion-requests/${id}/confirm`, 'keep-owner@shop.in', { step: 1, token: c1.token, phrase: c1.phrase })).status).toBe(404); // another business's owner cannot use it
+    expect((await call('POST', path, OWNER, { step: 2, token: c1.token, phrase: c1.phrase })).status).toBe(409); // cannot skip step 1
+    expect((await call('POST', path, OWNER, { step: 1, token: c1.token, phrase: 'ERASE other' })).status).toBe(403);
+    const once = await (await call('POST', path, OWNER, { step: 1, token: c1.token, phrase: c1.phrase })).json();
+    expect(once.status).toBe('CONFIRMED_ONCE');
+    const exists = async (ref: string) => Number((await ctx.o.query('SELECT count(*) AS n FROM tenants WHERE external_ref = $1', [ref])).rows[0].n);
+    expect(await exists('wipe-me')).toBe(1); // still there after one confirmation
+    const done = await call('POST', path, OWNER, { step: 2, token: once.confirmation.token, phrase: c1.phrase });
+    expect(done.status).toBe(200);
+    expect((await done.json()).status).toBe('DONE');
+    expect(await exists('wipe-me')).toBe(0);
+    expect(await exists('wipe-keep')).toBe(1); // nobody else's data was touched
+    const trace = (await ctx.o.query("SELECT actor_ref FROM audit_log WHERE action = 'tenant.erased' AND tenant_id IS NULL ORDER BY id DESC LIMIT 1")).rows[0].actor_ref as string;
+    expect(trace).toMatch(/^dash:[0-9a-f]{24}$/); // a hash, never the owner's email
+    // The finished request cannot be replayed with the old final secret.
+    const replay = await call('POST', path, OWNER, { step: 2, token: once.confirmation.token, phrase: c1.phrase });
+    expect([401, 404, 409]).toContain(replay.status);
+    expect((await call('GET', 'me', OWNER)).status).toBe(401); // access ends with the business
+  });
+});
+
+describe('dash API erase safety', () => {
+  const O = 'safe-owner@shop.in';
+  const tenant = async (ref: string) => Number((await ctx.o.query('SELECT count(*) AS n FROM tenants WHERE external_ref = $1', [ref])).rows[0].n);
+  beforeAll(async () => {
+    await provisionBusiness(a, { ref: 'safe-one', ownerEmail: O }, 'test');
+    await ctx.o.query('DELETE FROM rate_limits');
+  });
+
+  it('an expired request is refused with 410 and leaves the business intact', async () => {
+    const r = await (await call('POST', 'b/safe-one/deletion-requests', O, {})).json();
+    await ctx.o.query("UPDATE deletion_requests SET expires_at = now() - interval '1 minute' WHERE id = $1", [r.requestId]);
+    const res = await call('POST', `b/safe-one/deletion-requests/${r.requestId}/confirm`, O, { step: 1, token: r.confirmation.token, phrase: r.confirmation.phrase });
+    expect(res.status).toBe(410);
+    expect(await tenant('safe-one')).toBe(1);
+  });
+
+  it('five wrong guesses cancel the request, and even the right secret afterwards deletes nothing', async () => {
+    const r = await (await call('POST', 'b/safe-one/deletion-requests', O, {})).json();
+    const path = `b/safe-one/deletion-requests/${r.requestId}/confirm`;
+    let last = 0;
+    for (let i = 0; i < 5; i++) last = (await call('POST', path, O, { step: 1, token: 'wrong-wrong-wrong-wrong', phrase: r.confirmation.phrase })).status;
+    expect(last).toBe(403);
+    const after = await call('POST', path, O, { step: 1, token: r.confirmation.token, phrase: r.confirmation.phrase });
+    expect(after.status).toBe(409);
+    expect(await tenant('safe-one')).toBe(1);
+  });
+});
