@@ -18,7 +18,7 @@ cleanup() { "$BIN/pg_ctl" -D "$work/pg" -m immediate stop >/dev/null 2>&1 || tru
 
 openssl enc -d -aes-256-cbc -pbkdf2 -pass env:BACKUP_PASSPHRASE -in "$file" | tar -xz -C "$work"
 # Tables come from the backup's own manifest, in FK-safe order, so older backups restore too.
-ALL="clients api_keys tenants connections location_links connect_sessions audit_log reviews reply_drafts sync_runs deletion_requests"
+ALL="clients api_keys tenants tenant_members connections location_links connect_sessions audit_log reviews reply_drafts sync_runs deletion_requests push_subscriptions"
 TABLES=""; for t in $ALL; do grep -q "^$t=" "$work/manifest.txt" && TABLES="$TABLES $t"; done
 "$BIN/initdb" -D "$work/pg" -U postgres --auth=trust -E UTF8 >/dev/null
 "$BIN/pg_ctl" -D "$work/pg" -o "-p $port -c listen_addresses=127.0.0.1 -c unix_socket_directories=" -w -l "$work/pg.log" start >/dev/null
