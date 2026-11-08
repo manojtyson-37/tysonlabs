@@ -6,6 +6,8 @@ import { setPool } from '@/reviews-service/db';
 import { generateApiKey } from '@/reviews-service/apikeys';
 import type { GoogleGateway, GoogleLocation, GoogleReview, GoogleReviewPage } from '@/reviews-service/google';
 import { GoogleError } from '@/reviews-service/google';
+import { ServiceError } from '@/reviews-service/service';
+import type { BillingGateway } from '@/reviews-service/billing-gateway';
 
 process.env.API_KEY_PEPPER = 'test-pepper';
 process.env.REVIEWS_BASE_URL = 'https://reviews.test';
@@ -86,6 +88,36 @@ export class FakeGoogle implements GoogleGateway {
   }
 }
 
+/** Stands in for Razorpay: records calls, never touches the network. */
+export class FakeBilling implements BillingGateway {
+  isConfigured = true;
+  created: { tenantRef: string; startAt?: number }[] = [];
+  cancelled: { id: string; atCycleEnd: boolean }[] = [];
+  /** What Razorpay "knows": subscription id -> status. Set a status to change what getSubscription answers; delete the key for 404. */
+  remote = new Map<string, import('@/reviews-service/billing-gateway').RemoteSubscription>();
+  failCancel = false;
+  createDelayMs = 0;
+  planAmount: number | null = 94282; // Rs 799 + 18% GST, in paise
+  n = 0;
+  configured() { return this.isConfigured; }
+  keyId() { return 'rzp_test_fake'; }
+  async createSubscription(i: { tenantRef: string; startAt?: number }) {
+    this.created.push(i);
+    const id = `sub_FAKE${++this.n}`;
+    if (this.createDelayMs) await new Promise((r) => setTimeout(r, this.createDelayMs));
+    this.remote.set(id, { status: 'created', startAt: i.startAt ?? null, currentEnd: null });
+    return { id };
+  }
+  async cancelSubscription(id: string, atCycleEnd: boolean) {
+    if (this.failCancel) throw new ServiceError(502, 'BILLING_ERROR');
+    this.cancelled.push({ id, atCycleEnd });
+    const r = this.remote.get(id);
+    if (r && !atCycleEnd) r.status = 'cancelled';
+  }
+  async getSubscription(id: string) { return this.remote.get(id) ?? null; }
+  async getPlanAmount() { return this.planAmount; }
+}
+
 /** Stands in for the push service: records what would be sent, and can answer with an error status per endpoint. */
 export class FakePush {
   sent: import('@/reviews-service/push').PushMessage[] = [];
@@ -109,16 +141,19 @@ export async function bootstrap() {
   // Every file starts from empty tenant data (clients cascade to everything below them), so files cannot affect each other.
   await o.query('DELETE FROM audit_log');
   await o.query('DELETE FROM clients');
+  await o.query('DELETE FROM billing_events');
+  await o.query('UPDATE billing_settings SET trial_days = 30, trial_requires_card = false, price_inr = 799');
   setPool(new Pool({ connectionString: process.env.TEST_APP_URL }));
   const fake = new FakeGoogle();
-  setDependencies({ wrapper: new EnvKeyWrapper(randomBytes(32).toString('base64')), google: fake });
+  const billing = new FakeBilling();
+  setDependencies({ wrapper: new EnvKeyWrapper(randomBytes(32).toString('base64')), google: fake, billing });
   const mkClient = async (name: string) => {
     const c = await o.query("INSERT INTO clients (name, allowed_return_urls) VALUES ($1, ARRAY['https://app.test/integrations']) RETURNING id", [name]);
     const k = generateApiKey();
     await o.query('INSERT INTO api_keys (client_id, key_id, secret_hash) VALUES ($1,$2,$3)', [c.rows[0].id, k.keyId, k.secretHash]);
     return { id: c.rows[0].id as string, key: k.key, keyId: k.keyId };
   };
-  return { o, fake, mkClient };
+  return { o, fake, billing, mkClient };
 }
 
 export const bearer = (key: string) => new Request('https://reviews.test/x', { headers: { authorization: `Bearer ${key}` } });

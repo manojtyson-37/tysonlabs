@@ -5,6 +5,7 @@ import { rateLimit, unscoped, withScope } from './db';
 import { GoogleError } from './google';
 import { MAX_REPLY_LENGTH, replySafety, templateReply } from './drafts';
 import { sha256 } from './crypto';
+import { assertBillingAllows, billingActive, cancelSubscriptionBeforeErase } from './billing';
 import { sendNewReviewPush } from './push';
 import { ServiceError, accessTokenFor, audit, disconnect, getConnection, resolveTenant } from './service';
 
@@ -17,7 +18,7 @@ const MAX_PAGES_PER_LOCATION = 20;
 
 // ---------- sync ----------
 
-export type SyncOutcome = 'ok' | 'needs_reauth' | 'google_error' | 'skipped';
+export type SyncOutcome = 'ok' | 'needs_reauth' | 'google_error' | 'skipped' | 'subscription_required';
 
 /**
  * Pulls reviews for every location linked to the tenant. Safe to run twice at once (a lease on the connection makes the
@@ -25,6 +26,11 @@ export type SyncOutcome = 'ok' | 'needs_reauth' | 'google_error' | 'skipped';
  */
 export async function syncTenant(clientId: string, tenantId: string): Promise<{ outcome: SyncOutcome; reviewsSeen: number }> {
   const scope = { clientId, tenantId };
+  if (!(await billingActive(clientId, tenantId))) {
+    // Not paid up: no Google calls. Bump the attempt time so the cron queue (oldest attempt first) is not clogged by gated businesses.
+    await withScope(scope, (db) => db.query('UPDATE connections SET last_attempt_at = now() WHERE tenant_id = $1', [tenantId])).catch(() => undefined);
+    return { outcome: 'subscription_required', reviewsSeen: 0 };
+  }
   const leased = await withScope(scope, async (db) => {
     const r = await db.query(
       `UPDATE connections SET sync_lock_until = now() + ($2 || ' minutes')::interval, last_attempt_at = now()
@@ -95,6 +101,7 @@ export async function syncTenant(clientId: string, tenantId: string): Promise<{ 
 
 export async function syncNow(a: AuthedClient, tenantRef: string) {
   const tenantId = await resolveTenant(a, tenantRef);
+  await assertBillingAllows(a.clientId, tenantId);
   if (!(await rateLimit(`sync:${tenantId}`, 6))) throw new ServiceError(429, 'RATE_LIMITED');
   const c = await getConnection(a, tenantRef);
   if (c.status === 'NEEDS_REAUTH') throw new ServiceError(409, 'NEEDS_REAUTH');
@@ -106,7 +113,7 @@ export async function syncNow(a: AuthedClient, tenantRef: string) {
 export async function runSyncBatch(limit = 40, concurrency = 4, budgetMs = 240_000) {
   const deadline = Date.now() + budgetMs; // stop starting new tenants well before the function timeout
   const due = await unscoped(async (db) => (await db.query('SELECT client_id, tenant_id FROM cron_due_connections($1)', [limit])).rows as { client_id: string; tenant_id: string }[]);
-  const tally: Record<SyncOutcome, number> = { ok: 0, needs_reauth: 0, google_error: 0, skipped: 0 };
+  const tally: Record<SyncOutcome, number> = { ok: 0, needs_reauth: 0, google_error: 0, skipped: 0, subscription_required: 0 };
   let next = 0;
   await Promise.all(
     Array.from({ length: Math.min(concurrency, due.length) }, async () => {
@@ -231,6 +238,7 @@ export async function postReply(
   if (hasText && typeof input.text !== 'string') throw new ServiceError(400, 'INVALID_TEXT'); // null, numbers and objects never reach Google
 
   const tenantId = await resolveTenant(a, tenantRef);
+  await assertBillingAllows(a.clientId, tenantId); // posting is a paid feature; drafts, reads, export and erase stay open
   const scope = { clientId: a.clientId, tenantId };
 
   // A post that has been in flight too long (crashed function, timeout) is released so the review is not blocked forever.
@@ -333,6 +341,9 @@ export async function exportTenant(a: AuthedClient, tenantRef: string) {
  */
 export async function eraseTenant(a: AuthedClient, tenantRef: string): Promise<{ googleRevoked: boolean }> {
   const tenantId = await resolveTenant(a, tenantRef);
+  // First, because it is the step that can be refused: a customer must not keep being charged for a business we erased. If Razorpay
+  // cannot be reached this throws and nothing has been touched.
+  await cancelSubscriptionBeforeErase(a, tenantId);
   // The one surviving audit row must not hold a person's email: app sessions ('dash:<email>') are stored as a hash.
   const actorRef = a.apiKeyId.startsWith('dash:') ? `dash:${sha256(a.apiKeyId).toString('hex').slice(0, 24)}` : a.apiKeyId;
   const googleRevoked = await disconnect(a, tenantRef); // wipes the stored token whether or not Google answers

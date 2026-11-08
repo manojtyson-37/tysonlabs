@@ -2,13 +2,16 @@ import { EnvKeyWrapper, KeyWrapper } from './crypto';
 import { GoogleGateway, RealGoogleGateway } from './google';
 import { DraftGenerator, GeminiDraftGenerator } from './drafts';
 import { LibraryDraftGenerator } from './library';
+import { BillingGateway, RazorpayGateway } from './billing-gateway';
 
 let wrapper: KeyWrapper | undefined;
 let google: GoogleGateway | undefined;
 let drafter: DraftGenerator | undefined;
+let billing: BillingGateway | undefined;
 
 export const getWrapper = (): KeyWrapper => (wrapper ??= new EnvKeyWrapper());
 export const getGoogle = (): GoogleGateway => (google ??= new RealGoogleGateway());
+export const getBilling = (): BillingGateway => (billing ??= new RazorpayGateway());
 // Default is the built-in reply library (no review text leaves our systems). AI drafting needs three things on purpose:
 // DRAFTS_MODE=ai, a Gemini key, and AI_DRAFTS_POLICY_ACK=policy-updated (a reminder that the privacy and terms pages say review
 // text is not sent to an AI provider and must be changed first).
@@ -22,10 +25,11 @@ export const getDrafter = (): DraftGenerator => {
 };
 
 /** Test seam. */
-export function setDependencies(d: { wrapper?: KeyWrapper; google?: GoogleGateway; drafter?: DraftGenerator }) {
+export function setDependencies(d: { wrapper?: KeyWrapper; google?: GoogleGateway; drafter?: DraftGenerator; billing?: BillingGateway }) {
   wrapper = d.wrapper;
   google = d.google;
   drafter = d.drafter;
+  billing = d.billing;
 }
 
 export function baseUrl(): string {

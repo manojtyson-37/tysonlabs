@@ -40,7 +40,9 @@ export async function handlePush(envelope: unknown): Promise<'synced' | 'ignored
   if (!row) return 'ignored';
   // Busy answers are still acknowledged: the 15 minute cron sync picks up anything a push could not.
   if (!(await rateLimit(`notify:${row.tenant_id}`, 30))) return 'busy';
-  return (await syncTenant(row.client_id, row.tenant_id)).outcome === 'skipped' ? 'busy' : 'synced';
+  const outcome = (await syncTenant(row.client_id, row.tenant_id)).outcome;
+  if (outcome === 'subscription_required') return 'ignored'; // acknowledged: the business is not paid up, redelivery would change nothing
+  return outcome === 'skipped' ? 'busy' : 'synced';
 }
 
 /** Points Google's notifications for the business's account at our topic. Safe to repeat. No-op when no topic is configured. */

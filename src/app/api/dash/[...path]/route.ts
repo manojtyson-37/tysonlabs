@@ -6,6 +6,7 @@ import { listMembers, provisionBusiness } from '@/reviews-service/members';
 import { createDraft, exportTenant, getDraft, listReviews, listTenants, postReply, summary, syncNow, newIdempotencyKey } from '@/reviews-service/reviews';
 import { audit, availableLocations, createConnectSession, getConnection, linkLocation, resolveTenant, ServiceError } from '@/reviews-service/service';
 import { rateLimit, withScope } from '@/reviews-service/db';
+import { adminAction, cancel as cancelSubscription, getBillingView, getSettings, subscribe, updateSettings } from '@/reviews-service/billing';
 import { confirmDeletion, requestDeletion } from '@/reviews-service/deletion';
 import { ensureNotifications } from '@/reviews-service/notify';
 import { getPerformance, getProfile, previewProfile, updateProfile } from '@/reviews-service/profile';
@@ -46,6 +47,7 @@ async function businesses(s: DashSession) {
   const visible = s.isAdmin ? all : all.filter((t) => s.memberships.some((m) => m.ref === t.ref && m.clientId === t.clientId));
   return visible.map((t) => ({
     ref: t.ref, role: s.isAdmin ? 'owner' : s.memberships.find((m) => m.ref === t.ref && m.clientId === t.clientId)!.role,
+    member: s.memberships.some((m) => m.ref === t.ref && m.clientId === t.clientId), // false: an admin looking at a business they do not belong to (owner-only actions are refused)
     status: t.status, googleEmail: t.googleEmail, reviews: t.reviews, unreplied: t.unreplied, lastSyncedAt: t.lastSyncedAt,
   }));
 }
@@ -66,9 +68,15 @@ export async function GET(request: Request, { params }: Ctx) {
       return ok({ businesses: await Promise.all(tenants.map(async (t) => ({ ...t, members: (await listMembers(c, t.ref)).map((m) => ({ email: m.email, role: m.role, lastLoginAt: m.last_login_at })) }))) });
     }
 
+    if (path.length === 2 && path[0] === 'admin' && path[1] === 'billing-settings') {
+      if (!s.isAdmin) throw new ServiceError(403, 'FORBIDDEN');
+      return ok(await getSettings());
+    }
+
     if (path.length === 3 && path[0] === 'b') {
       const ref = path[1];
       const c = forBusiness(s, ref);
+      if (path[2] === 'billing') return ok(await getBillingView(c, ref)); // any member may see it; changing it is owner only (POST)
       if (path[2] === 'overview') {
         const [sum, recent, all] = await Promise.all([summary(c, ref), listReviews(c, ref, { limit: 5 }), businesses(s)]);
         const business = all.find((b) => b.ref === ref);
@@ -146,6 +154,17 @@ export async function POST(request: Request, { params }: Ctx) {
       await provisionBusiness(adminClient(s), { ref: str(b.ref, 100), ownerEmail: str(b.email, 254), role: b.role === 'staff' ? 'staff' : 'owner' }, s.email);
       return ok({ ok: true });
     }
+
+    if (path.length === 2 && path[0] === 'admin' && path[1] === 'billing-settings') {
+      if (!s.isAdmin) throw new ServiceError(403, 'FORBIDDEN');
+      return ok(await updateSettings(adminClient(s), { trialDays: b.trialDays, trialRequiresCard: b.trialRequiresCard, priceInr: b.priceInr }));
+    }
+    if (path.length === 4 && path[0] === 'admin' && path[1] === 'b' && path[3] === 'billing') {
+      if (!s.isAdmin) throw new ServiceError(403, 'FORBIDDEN');
+      return ok(await adminAction(adminClient(s), path[2], { action: b.action, days: b.days, state: b.state }));
+    }
+    if (path.length === 4 && path[0] === 'b' && path[2] === 'billing' && path[3] === 'subscribe') return ok(await subscribe(ownerOf(s, path[1]), path[1]));
+    if (path.length === 4 && path[0] === 'b' && path[2] === 'billing' && path[3] === 'cancel') return ok(await cancelSubscription(ownerOf(s, path[1]), path[1]));
 
     // Erasing a business: the same two-confirmation rule as the API, only for the signed-in owner's own business and only as a full erase.
     if (path.length === 3 && path[0] === 'b' && path[2] === 'deletion-requests') {

@@ -13,7 +13,7 @@ OUT="${REVIEWS_BACKUP_DIR:-$HOME/.tysonlabs-reviews/backups}"
 KEEP="${REVIEWS_BACKUP_KEEP:-30}"
 PSQL="${PSQL:-/opt/homebrew/opt/postgresql@17/bin/psql}"
 # Parents before children. Must match every public table except rate_limits (checked below, so a new table cannot be forgotten).
-TABLES="clients api_keys tenants tenant_members connections location_links connect_sessions audit_log reviews reply_drafts sync_runs deletion_requests push_subscriptions"
+TABLES="clients api_keys tenants tenant_members tenant_billing connections location_links connect_sessions audit_log reviews reply_drafts sync_runs deletion_requests push_subscriptions billing_settings billing_events"
 
 umask 077
 case "$KEEP" in ''|*[!0-9]*) echo "REVIEWS_BACKUP_KEEP must be a whole number"; exit 2;; esac

@@ -1,4 +1,5 @@
 import webpush from 'web-push';
+import { billingActive } from './billing';
 import { rateLimit, unscoped, withScope } from './db';
 
 /**
@@ -49,6 +50,7 @@ export async function removeSubscription(email: string, endpoint: string): Promi
 export async function sendNewReviewPush(clientId: string, tenantId: string, count: number): Promise<void> {
   try {
     if (count <= 0 || !vapidPublicKey() || !process.env.VAPID_SUBJECT) return;
+    if (!(await billingActive(clientId, tenantId))) return;
     const subs = await unscoped(async (db) => (await db.query('SELECT * FROM push_for_tenant($1,$2)', [clientId, tenantId])).rows as { endpoint: string; p256dh: string; auth: string }[]);
     if (!subs.length) return; // nobody to tell: do not spend a rate limit slot
     // At most a few pushes per business per ten minutes, however many syncs find something.

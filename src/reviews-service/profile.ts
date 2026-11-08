@@ -1,3 +1,4 @@
+import { assertBillingAllows } from './billing';
 import { AuthedClient } from './apikeys';
 import { getGoogle } from './container';
 import { rateLimit, withScope } from './db';
@@ -80,6 +81,7 @@ export async function previewProfile(a: AuthedClient, tenantRef: string, raw: un
 export async function updateProfile(a: AuthedClient, tenantRef: string, raw: unknown, approvedBy: string) {
   const change = cleanChange(raw);
   const { tenantId, locationId, token } = await firstLocation(a, tenantRef);
+  await assertBillingAllows(a.clientId, tenantId); // writing to Google is a paid feature; previews and reads stay open
   if (!(await rateLimit(`profile:${tenantId}`, 20))) throw new ServiceError(429, 'RATE_LIMITED');
   try { await getGoogle().patchLocation(token, locationId, change, false); } catch (e) { mapGoogle(e); }
   // The audit row records which fields changed and who approved, never the values.
