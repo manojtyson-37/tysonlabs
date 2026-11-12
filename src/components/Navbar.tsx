@@ -7,10 +7,10 @@ import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 const NAV_ITEMS = [
-  { label: 'Use Cases', href: '/use-cases' },
-  { label: 'Projects', href: '/projects' },
+  { label: 'Reviews', href: '/reviews' },
   { label: 'Products', href: '/products' },
-  { label: 'Services', href: '/services' },
+  { label: 'Custom builds', href: '/services' },
+  { label: 'Projects', href: '/projects' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -66,7 +66,7 @@ export function Navbar() {
             href="/contact"
             className="btn-tactile inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-sm active:scale-[0.98]"
           >
-            <span>Get in touch</span>
+            <span>Get early access</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>

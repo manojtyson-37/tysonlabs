@@ -1,392 +1,237 @@
 import React from 'react';
 import Link from 'next/link';
-import { getFeaturedProjects } from '@/data/projects';
-import { HomeProjectsExplorer } from '@/components/HomeProjectsExplorer';
-import { FaqSection } from '@/components/FaqSection';
-import { ArrowUpRight, ExternalLink } from 'lucide-react';
-import { GithubIcon } from '@/components/Icons';
+import { ArrowUpRight, Star, Check, Link2, Sparkles, SendHorizontal, BellRing, ShieldCheck, Download } from 'lucide-react';
 import { CONTACT_EMAIL } from '@/lib/site';
 
-export default function HomePage() {
-  const featuredProjects = getFeaturedProjects();
+const STEPS = [
+  {
+    icon: Link2,
+    title: 'Connect your Google Business Profile',
+    body: 'Sign in with Google and pick the locations to manage. We read reviews and post replies, nothing else.',
+  },
+  {
+    icon: Sparkles,
+    title: 'A reply is drafted for every review',
+    body: 'Each draft is specific to what the patient or customer wrote, in a tone you set. New reviews trigger an alert on your phone.',
+  },
+  {
+    icon: SendHorizontal,
+    title: 'You approve, we post',
+    body: 'Edit if you like, then approve. Nothing goes to Google without your say. Disconnect any time.',
+  },
+];
 
-  const selectedShowcases = [
-    {
-      index: '01',
-      vertical: 'Hospitality & Retail',
-      name: 'DinePulse',
-      subtitle: 'High-Throughput Restaurant Billing & Kitchen OS',
-      story: 'Built for high-volume Indian restaurants. Replaces slow legacy POS machines with an ultra-fast 3-click touch till, instant KOT kitchen dispatch, FSSAI veg/non-veg compliance tags, dynamic UPI QR payments, and automated WhatsApp guest bills.',
-      impact: ['3 Clicks to Bill', 'Real-Time KOT Dispatch', 'WhatsApp Receipts'],
-      stack: ['Next.js 15', 'TypeScript', 'Tailwind CSS', 'ESC/POS', 'Razorpay UPI'],
-      liveUrl: 'https://dineplus.vercel.app/pos',
-      caseStudySlug: 'dinepulse',
-      githubUrl: 'https://github.com/manojtyson-37/dinepulse',
-    },
-    {
-      index: '02',
-      vertical: 'Manufacturing & ERP',
-      name: 'Silaa Atelier',
-      subtitle: 'Apparel Factory Roll Inventory & Marker Yield Engine',
-      story: 'Garment factories lose up to 12% of expensive fabric rolls to manual marker calculation errors and untracked remnants spread across WhatsApp chats. Built a production ERP that tracks fabric roll batches by dye lot, calculates cutting yields down to the millimeter, and monitors 500-garment stitching runs.',
-      impact: ['99.2% Fabric Yield', 'Zero Lost Rolls', 'CNC DXF Export'],
-      stack: ['FastAPI', 'Next.js 15', 'PostgreSQL', 'SQLAlchemy'],
-      liveUrl: 'https://erp.silacollective.in/',
-      caseStudySlug: 'silaa-atelier',
-      githubUrl: 'https://github.com/manojtyson-37/Silaa',
-    },
-    {
-      index: '03',
-      vertical: 'Interactive AI & Systems',
-      name: 'Tyson Chess',
-      subtitle: 'In-Browser Stockfish 18 WASM Engine & Tactical Coach',
-      story: 'I built this because I used to play on the chess.com app and solving more than 3 puzzles a day required paying ₹99 per week. So I thought: why not build it myself? Tyson Chess runs 100% free in the browser with unlimited puzzles, in-browser Stockfish 18 WASM, 6 calibrated bots, and a coach that explains moves in plain English.',
-      impact: ['100% Free & Unlimited', 'Saves ₹99 / Week', 'Zero Server Latency'],
-      stack: ['React', 'TypeScript', 'Stockfish 18 WASM', 'Web Workers', 'Tailwind CSS'],
-      liveUrl: 'https://tysonchess-two.vercel.app',
-      caseStudySlug: 'tysonchess',
-      githubUrl: 'https://github.com/manojtyson-37/Tysonchess',
-    },
-    {
-      index: '04',
-      vertical: 'Fintech & Commerce',
-      name: 'Tysonpe',
-      subtitle: 'Creator Commerce Storefront & 1-Click Checkout Engine',
-      story: 'Indian educators and creators lose 10–30% of their revenue to platform fees, while global checkout tools fail to support Indian UPI apps or automated Indian GST tax compliance. Built an independent creator platform with 1-click UPI payments (GPay, PhonePe, Paytm), automated GST tax invoice PDFs, and dynamic watermarked video protection.',
-      impact: ['0% Middleman Take', '1-Click UPI Intent', 'Automated GST Tax PDFs'],
-      stack: ['Next.js 15', 'TypeScript', 'Prisma', 'PostgreSQL', 'Razorpay UPI'],
-      caseStudySlug: 'tysonpe',
-      githubUrl: 'https://github.com/manojtyson-37/Tysonpe',
-    },
-    {
-      index: '05',
-      vertical: 'Healthcare Operations',
-      name: 'PhysioCare',
-      subtitle: 'Multi-Tenant Clinic Management & Rehab Recovery Portal',
-      story: 'Physical therapy practices juggle paper cards, Google Calendars, and separate billing tools, resulting in double bookings and unbilled rehab packages. Built an all-in-one clinic platform: clash-free room scheduling, patient mobility angle tracking (e.g. 115° knee recovery), automated GST invoices, and WhatsApp appointment reminders.',
-      impact: ['Zero Double-Bookings', '+35% Re-Attendance', 'WhatsApp Reminders'],
-      stack: ['Next.js 15', 'TypeScript', 'Supabase', 'Tailwind CSS', 'PostgreSQL'],
-      liveUrl: 'https://saas-physio.vercel.app',
-      caseStudySlug: 'physiocare',
-      githubUrl: 'https://github.com/manojtyson-37/SAAS-Physio',
-    },
-  ];
+const CONTROL = [
+  { icon: Check, title: 'Owner approves every reply', body: 'Drafts wait in your inbox. Posting needs an explicit approval.' },
+  { icon: BellRing, title: 'Alerts for new reviews', body: 'Web push alerts so a bad review never sits unanswered for a week.' },
+  { icon: Download, title: 'Your data, your call', body: 'Export your data, or erase it with a two-step confirmation.' },
+  { icon: ShieldCheck, title: 'Minimal Google access', body: 'Only the Business Profile permission. Revoke it from your Google account any time.' },
+];
 
-  const studioCapabilities = [
-    {
-      number: '01',
-      title: 'Autonomous Multi-Agent AI Workflows',
-      description: 'Custom AI agent teams that automate complex business tasks like market research, code writing, and automated quality testing without hallucination.',
-      highlight: 'Chief of Staff AI · Gemini Hospitality Copilot',
-      href: '/projects?category=ai-agents',
-    },
-    {
-      number: '02',
-      title: 'High-Performance Web Apps & Interactive Systems',
-      description: 'Zero-layout-shift web applications, responsive editorial storefronts, tactile consumer portals, and interactive browser tools.',
-      highlight: 'ECHORA Luxury Boutique · Tyson AI Chess Coach',
-      href: '/projects?category=web-experiences',
-    },
-    {
-      number: '03',
-      title: 'Vertical SaaS & Operations Operating Systems',
-      description: 'High-throughput restaurant POS tills, apparel manufacturing ERPs, clinic management, and compliant Indian GST accounting engines.',
-      highlight: 'DinePulse Till · Silaa Atelier ERP',
-      href: '/projects?category=business-tools',
-    },
-    {
-      number: '04',
-      title: 'Specialized Business Tools & Proving Ground Labs',
-      description: 'Interactive AI coaching algorithms, automated YouTube video synthesis pipelines, and developer telemetry toolkits.',
-      highlight: 'Tyson AI Coach · Autonomous Video Pipeline',
-      href: '/labs',
-    },
-  ];
+const BUILT = [
+  { name: 'DinePulse', what: 'Restaurant billing and kitchen tickets', slug: 'dinepulse' },
+  { name: 'Silaa Atelier', what: 'Garment factory roll inventory ERP', slug: 'silaa-atelier' },
+  { name: 'Tysonpe', what: 'Creator storefront with UPI checkout', slug: 'tysonpe' },
+];
 
+function ReviewMock() {
   return (
-    <div className="space-y-20 sm:space-y-32">
-      {/* Clean Editorial Hero Section */}
-      <section className="max-w-4xl mx-auto px-6 sm:px-8 pt-10 sm:pt-20 pb-4 space-y-6">
-        <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">
-          Manoj Tyson · Software & Systems Engineer · Bangalore, IN
+    <div
+      role="img"
+      aria-label="Illustrative example of the review inbox: a five-star review with a drafted reply awaiting approval"
+      className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#111216] shadow-[0_20px_60px_-20px_rgba(0,0,0,0.25)] overflow-hidden"
+    >
+      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono text-zinc-500">
+        <span>Review inbox</span>
+        <span className="px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300">1 awaiting approval</span>
+      </div>
+      <div className="p-5 space-y-4">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-0.5 text-amber-500">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <Star key={i} className="w-4 h-4 fill-current" />
+            ))}
+          </div>
+          <p className="text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed">
+            &ldquo;Doctor explained everything clearly and the front desk was quick. My knee already feels better.&rdquo;
+          </p>
         </div>
-
-        <h1 className="font-display font-semibold text-5xl sm:text-7xl md:text-8xl text-zinc-950 dark:text-white tracking-tight leading-[1.02] [text-wrap:balance]">
-          Software built to run real businesses.
-        </h1>
-
-        <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal max-w-2xl [text-wrap:pretty]">
-          I design, engineer, and ship full-stack web applications, compiled WebAssembly engines, and custom operating systems for operators and businesses that need to scale. Everything built end-to-end with 100% sovereign code ownership.
-        </p>
-
-        {/* Action Row */}
-        <div className="flex flex-wrap items-center gap-4 pt-3">
-          <a
-            href="#selected-work"
-            className="btn-tactile px-6 py-3.5 rounded-full bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-sm font-semibold transition-all shadow-sm active:scale-[0.98]"
-          >
-            <span>Selected Projects ↓</span>
-          </a>
-
-          <Link
-            href="/use-cases"
-            className="btn-tactile px-6 py-3.5 rounded-full border border-zinc-300 dark:border-zinc-700 hover:border-black dark:hover:border-white text-zinc-800 dark:text-zinc-200 text-sm font-semibold transition-all active:scale-[0.98]"
-          >
-            <span>Case Studies & Problems Solved ↗</span>
-          </Link>
+        <div className="rounded-xl bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200/70 dark:border-teal-900 p-4 space-y-3">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-teal-700 dark:text-teal-300">Draft reply</div>
+          <p className="text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed">
+            Thank you for the kind words. We are glad the treatment is helping your knee. Do keep up the exercises and see you at your next visit.
+          </p>
+          <div className="flex gap-2">
+            <span className="px-3 py-1.5 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-black text-xs font-semibold">Approve &amp; post</span>
+            <span className="px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300">Edit</span>
+          </div>
         </div>
+      </div>
+      <div className="px-4 py-2 border-t border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-500">Illustrative example</div>
+    </div>
+  );
+}
 
-        {/* Minimalist Social & Direct Contact Links */}
-        <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-zinc-500 pt-2">
-          <a
-            href="https://github.com/manojtyson-37"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-black dark:hover:text-white transition-colors"
-          >
-            GitHub ↗
-          </a>
-          <span>·</span>
-          <a
-            href="https://linkedin.com/in/manojramu"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-black dark:hover:text-white transition-colors"
-          >
-            LinkedIn ↗
-          </a>
-          <span>·</span>
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            className="hover:text-black dark:hover:text-white transition-colors"
-          >
-            {CONTACT_EMAIL}
-          </a>
+export default function HomePage() {
+  return (
+    <div className="space-y-20 sm:space-y-28">
+      {/* Hero */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-8 pt-10 sm:pt-16 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="space-y-6">
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-teal-700 dark:text-teal-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+            TysonLabs Reviews · for clinics and local businesses
+          </div>
+          <h1 className="font-display font-semibold text-4xl sm:text-6xl text-zinc-950 dark:text-white tracking-tight leading-[1.05] [text-wrap:balance]">
+            Answer every Google review in seconds, not weeks.
+          </h1>
+          <p className="text-lg text-zinc-600 dark:text-zinc-500 leading-relaxed max-w-xl [text-wrap:pretty]">
+            Your reviews decide who walks in. We draft a reply to each one, you approve it, and it goes live on Google. Built in Bangalore for clinics and local businesses.
+          </p>
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <Link
+              href="/contact"
+              className="btn-tactile px-6 py-3.5 rounded-full bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-sm font-semibold transition-all shadow-sm active:scale-[0.98]"
+            >
+              <span>Get early access</span>
+            </Link>
+            <Link
+              href="/reviews"
+              className="btn-tactile px-6 py-3.5 rounded-full border border-zinc-300 dark:border-zinc-700 hover:border-black dark:hover:border-white text-zinc-800 dark:text-zinc-200 text-sm font-semibold transition-all active:scale-[0.98]"
+            >
+              <span>How it works</span>
+            </Link>
+          </div>
         </div>
+        <ReviewMock />
       </section>
 
-      {/* Selected Work (Editorial Case Studies) */}
-      <section id="selected-work" className="max-w-5xl mx-auto px-6 sm:px-8 space-y-12">
-        <div className="space-y-2 pb-4 border-b border-zinc-200/80 dark:border-zinc-800">
-          <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">
-            01 / SELECTED WORK & CASE STUDIES
-          </div>
-          <h2 className="font-display font-semibold text-3xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight">
-            Production systems engineered for operators.
+      {/* How it works */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-8 space-y-10">
+        <div className="space-y-2 max-w-2xl">
+          <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">How it works</div>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
+            Three steps. You stay in control.
           </h2>
         </div>
-
-        <div className="space-y-12">
-          {selectedShowcases.map((project) => (
-            <article
-              key={project.name}
-              className="p-8 sm:p-10 rounded-2xl bg-zinc-50/70 dark:bg-[#111216] border border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-6"
-            >
-              {/* Header: Index & Vertical */}
-              <div className="flex items-center justify-between text-xs font-mono pb-4 border-b border-zinc-200/70 dark:border-zinc-800/70">
-                <div className="flex items-center gap-2.5">
-                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">
-                    {project.index}
-                  </span>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                    {project.vertical}
-                  </span>
-                </div>
-                <span className="text-zinc-500 text-[11px] uppercase tracking-wider">
-                  Live System
+        <div className="grid md:grid-cols-3 gap-5">
+          {STEPS.map((s, i) => (
+            <div key={s.title} className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-[#111216] space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="w-9 h-9 rounded-lg bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300 flex items-center justify-center">
+                  <s.icon className="w-4.5 h-4.5" />
                 </span>
+                <span className="font-mono text-xs text-zinc-500">0{i + 1}</span>
               </div>
-
-              {/* Title & Subtitle */}
-              <div className="space-y-1.5">
-                <h3 className="font-display font-semibold text-2xl sm:text-3xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
-                  <Link href={`/projects/${project.caseStudySlug}`} className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
-                    {project.name}
-                  </Link>
-                </h3>
-                <p className="text-sm font-mono text-zinc-500 dark:text-zinc-400">
-                  {project.subtitle}
-                </p>
-              </div>
-
-              {/* The Narrative & Problem Solved */}
-              <p className="text-base text-zinc-700 dark:text-zinc-300 leading-relaxed max-w-3xl [text-wrap:pretty]">
-                {project.story}
-              </p>
-
-              {/* Measurable Outcomes */}
-              <div className="flex flex-wrap gap-2.5 pt-1">
-                {project.impact.map((item, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#16171E] border border-zinc-200/80 dark:border-zinc-800 text-xs font-mono text-zinc-800 dark:text-zinc-200"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-
-              {/* Tech Stack Chips */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {project.stack.map((tech) => (
-                  <span
-                    key={tech}
-                    className="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200/60 dark:border-zinc-800"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-
-              {/* Action Links */}
-              <div className="pt-6 border-t border-zinc-200/70 dark:border-zinc-800/70 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-                <Link
-                  href={`/projects/${project.caseStudySlug}`}
-                  className="btn-tactile inline-flex items-center gap-1.5 text-zinc-800 dark:text-zinc-200 hover:text-black dark:hover:text-white font-semibold transition-colors"
-                >
-                  <span>Read full architecture monograph</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </Link>
-
-                <div className="flex items-center gap-3">
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-tactile inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-semibold transition-colors active:scale-[0.98]"
-                    >
-                      <span>Launch live build</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                  {project.githubUrl && (
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 rounded text-zinc-400 hover:text-black dark:text-zinc-500 dark:hover:text-white transition-colors"
-                      title="Inspect Source Code on GitHub"
-                    >
-                      <GithubIcon className="w-4 h-4" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </article>
+              <h3 className="font-display font-semibold text-lg text-zinc-950 dark:text-white">{s.title}</h3>
+              <p className="text-sm text-zinc-600 dark:text-zinc-500 leading-relaxed">{s.body}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Complete Index of All 16 Projects */}
-      <section className="max-w-5xl mx-auto px-6 sm:px-8 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-zinc-200/80 dark:border-zinc-800">
-          <div>
-            <div className="text-xs uppercase tracking-wider font-mono text-zinc-500 mb-1">
-              02 / COMPLETE PORTFOLIO
-            </div>
-            <h2 className="font-display font-semibold text-3xl text-zinc-950 dark:text-white tracking-tight">
-              All 16 shipped codebases.
-            </h2>
-          </div>
-          <Link
-            href="/projects"
-            className="text-xs font-mono text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors inline-flex items-center gap-1"
-          >
-            <span>Explore directory</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        <HomeProjectsExplorer initialProjects={featuredProjects} />
-      </section>
-
-      {/* Studio Capabilities / Disciplines */}
-      <section className="max-w-5xl mx-auto px-6 sm:px-8 space-y-8">
-        <div className="space-y-2 pb-4 border-b border-zinc-200/80 dark:border-zinc-800">
-          <div className="text-xs uppercase tracking-wider font-mono text-zinc-500">
-            03 / DISCIPLINES & EXPERTISE
-          </div>
-          <h2 className="font-display font-semibold text-3xl text-zinc-950 dark:text-white tracking-tight">
-            Engineering capabilities.
+      {/* Control and trust */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-8 space-y-10">
+        <div className="space-y-2 max-w-2xl">
+          <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">Trust</div>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
+            Your reputation, your approval.
           </h2>
         </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {CONTROL.map((c) => (
+            <div key={c.title} className="space-y-2">
+              <c.icon className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+              <h3 className="font-semibold text-zinc-950 dark:text-white">{c.title}</h3>
+              <p className="text-sm text-zinc-600 dark:text-zinc-500 leading-relaxed">{c.body}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-sm text-zinc-500">
+          Read the <Link href="/privacy#google-user-data" className="underline">privacy policy</Link> for exactly what we read and keep.
+        </p>
+      </section>
 
-        <div className="divide-y divide-zinc-200/80 dark:divide-zinc-800 border-y border-zinc-200/80 dark:border-zinc-800">
-          {studioCapabilities.map((cap) => (
+      {/* Products */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-8 space-y-10">
+        <div className="space-y-2 max-w-2xl">
+          <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">Products</div>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
+            Software for the front desk of a small business.
+          </h2>
+        </div>
+        <div className="grid md:grid-cols-2 gap-5">
+          <div className="p-7 rounded-2xl border border-teal-200 dark:border-teal-900 bg-teal-50/40 dark:bg-teal-950/20 space-y-3">
+            <div className="text-xs font-mono uppercase tracking-wider text-teal-700 dark:text-teal-300">Early access</div>
+            <h3 className="font-display font-semibold text-2xl text-zinc-950 dark:text-white">TysonLabs Reviews</h3>
+            <p className="text-sm text-zinc-600 dark:text-zinc-500 leading-relaxed">
+              One inbox for your Google reviews, with a drafted reply for each and alerts when new ones land.
+            </p>
+            <Link href="/reviews" className="inline-flex items-center gap-1 text-sm font-semibold underline">
+              See how it works <ArrowUpRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="p-7 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-3">
+            <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">Live</div>
+            <h3 className="font-display font-semibold text-2xl text-zinc-950 dark:text-white">PhysioCare clinic system</h3>
+            <p className="text-sm text-zinc-600 dark:text-zinc-500 leading-relaxed">
+              Appointments without double bookings, patient records, GST invoices and WhatsApp reminders for physiotherapy and other clinics.
+            </p>
+            <Link href="/projects/physiocare" className="inline-flex items-center gap-1 text-sm font-semibold underline">
+              View the system <ArrowUpRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Custom builds */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-8 space-y-8">
+        <div className="space-y-2 max-w-2xl">
+          <div className="text-xs font-mono uppercase tracking-wider text-zinc-500">Custom builds</div>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl text-zinc-950 dark:text-white tracking-tight [text-wrap:balance]">
+            Need something made for your business?
+          </h2>
+          <p className="text-zinc-600 dark:text-zinc-500 leading-relaxed [text-wrap:pretty]">
+            I also build custom software end to end, and you own the code. Recent work:
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-5">
+          {BUILT.map((b) => (
             <Link
-              key={cap.number}
-              href={cap.href}
-              className="group py-6 block transition-colors duration-200"
+              key={b.slug}
+              href={`/projects/${b.slug}`}
+              className="group p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors space-y-1"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs text-zinc-400 dark:text-zinc-500 font-semibold">{cap.number}</span>
-                    <h3 className="font-display font-semibold text-lg text-zinc-950 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
-                      {cap.title}
-                    </h3>
-                  </div>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl [text-wrap:pretty]">
-                    {cap.description}
-                  </p>
-                  <div className="text-xs font-mono text-zinc-500 pt-1">
-                    Proven in: <span className="text-zinc-800 dark:text-zinc-300 font-medium">{cap.highlight}</span>
-                  </div>
-                </div>
-
-                <ArrowUpRight className="w-4 h-4 text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors shrink-0 mt-1" />
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-zinc-950 dark:text-white">{b.name}</h3>
+                <ArrowUpRight className="w-4 h-4 text-zinc-500 group-hover:text-black dark:group-hover:text-white" />
               </div>
+              <p className="text-sm text-zinc-600 dark:text-zinc-500">{b.what}</p>
             </Link>
           ))}
         </div>
+        <Link href="/projects" className="inline-flex items-center gap-1 text-sm font-semibold underline">
+          All projects <ArrowUpRight className="w-4 h-4" />
+        </Link>
       </section>
 
-      {/* Review Manager (Google Business Profile app) */}
-      <section id="review-manager" className="max-w-5xl mx-auto px-6 sm:px-8">
-        <div className="p-8 sm:p-10 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-4">
-          <div className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-            TysonLabs Review Manager
-          </div>
-          <h2 className="font-display font-semibold text-2xl sm:text-3xl text-zinc-950 dark:text-white [text-wrap:balance]">
-            Reply to every Google review, with your approval.
-          </h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl [text-wrap:pretty]">
-            Review Manager is a web app for clinics and local businesses. With the owner&apos;s permission it reads reviews from their Google Business Profile, drafts a reply with AI, and posts the reply to Google only after the owner approves it. Google data is used solely for this purpose.
-          </p>
-          <div className="flex flex-wrap gap-4 text-sm font-semibold">
-            <Link href="/reviews" className="underline">How Review Manager works</Link>
-            <Link href="/privacy#google-user-data" className="underline">Privacy Policy</Link>
-            <Link href="/terms" className="underline">Terms of Service</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <div className="max-w-5xl mx-auto px-6 sm:px-8">
-        <FaqSection />
-      </div>
-
-      {/* Direct Inquiries & Contact Banner */}
-      <section className="max-w-5xl mx-auto px-6 sm:px-8 pb-16">
+      {/* CTA */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-8 pb-16">
         <div className="p-8 sm:p-12 rounded-2xl bg-zinc-950 text-white dark:bg-[#111216] border border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="space-y-2 max-w-xl">
-            <div className="text-xs font-mono text-zinc-400 uppercase tracking-wider">
-              WORK DIRECTLY WITH MANOJ
-            </div>
+            <div className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Founder-led · Manoj Tyson, Bangalore</div>
             <h2 className="font-display font-semibold text-2xl sm:text-3xl text-white [text-wrap:balance]">
-              Have a system worth building?
+              Start answering reviews this week.
             </h2>
-            <p className="text-sm text-zinc-400 leading-relaxed [text-wrap:pretty]">
-              Whether you need an offline-resilient point of sale till, an apparel manufacturing ERP, or an autonomous workflow engine, I build it with 100% sovereign code ownership.
+            <p className="text-sm text-zinc-500 leading-relaxed">
+              Tell us about your clinic or business and we will set it up with you. Or write to {CONTACT_EMAIL}.
             </p>
           </div>
           <Link
             href="/contact"
             className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-black hover:bg-zinc-200 font-semibold text-sm transition-all whitespace-nowrap active:scale-[0.98]"
           >
-            <span>Get in touch</span>
+            <span>Get early access</span>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>

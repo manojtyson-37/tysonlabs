@@ -534,7 +534,7 @@ export const PROJECTS: Project[] = [
         'Zero recurring monthly fees for Shopify plugins or hosting bloat'
       ]
     },
-    relatedSlugs: ['silaa-atelier', 'pooja-portfolio'],
+    relatedSlugs: ['silaa-atelier'],
     accentColor: '#E8D5BC'
   },
   {
@@ -774,40 +774,6 @@ export const PROJECTS: Project[] = [
     },
     relatedSlugs: ['dinepulse', 'agents-and-skills'],
     accentColor: '#22C55E'
-  },
-  {
-    slug: 'pooja-portfolio',
-    name: 'Pooja Shekar · Architectural Design Portfolio',
-    tagline: 'Minimalist, high-performance portfolio for a senior product designer.',
-    shortDescription: 'Next.js 15 product designer portfolio featuring interactive archetype cards, structured multi-phase case studies, and static pre-rendering.',
-    detailedDescription: 'The Pooja Shekar Portfolio is a showcase of editorial digital design. Built on Next.js 15 App Router with full static generation, it features a bespoke design system, interactive 3D archetype flip cards, and an extensive case-study rendering engine supporting comparative design walkthroughs.',
-    category: 'web-experiences',
-    categoryLabel: 'Web & Experiences',
-    status: 'live',
-    statusLabel: 'Live Production',
-    featured: false,
-    publicationApproved: true,
-    rank: 15,
-    sourceUrl: 'https://github.com/manojtyson-37/pooja-portfolio',
-    techStack: ['Next.js 15', 'TypeScript', 'Tailwind CSS v4', 'Framer Motion', 'Static Site Generation'],
-    lastVerified: 'October 2026',
-    highlights: [
-      '100% statically generated pages achieving perfect 100 Lighthouse performance metrics',
-      'Modular case-study layout engine supporting 12 polymorphic block types (prose, stats, journey, comparisons)',
-      'Editorial typography and micro-interactions optimized for hiring managers and design leaders'
-    ],
-    businessUseCase: {
-      targetIndustry: 'Senior Product Designers & Design Executives',
-      whyBuilt: 'Design leaders and hiring executives review hundreds of portfolio sites and get frustrated by slow page loads, broken mobile layouts, and shallow superficial mockups without measurable UX impact.',
-      problemSolved: 'A high-craft Next.js 15 portfolio featuring 12 modular case-study layout blocks, interactive 3D archetype cards, and a perfect 100 Google Lighthouse score that demonstrates design systems maturity.',
-      businessImpact: [
-        'Perfect 100/100 Lighthouse performance metrics on all pages',
-        'Deep, structured case studies highlighting measurable business impact',
-        'Instant static page pre-rendering with zero layout shift'
-      ]
-    },
-    relatedSlugs: ['echora', 'jayamahal-palace'],
-    accentColor: '#F43F5E'
   },
   {
     slug: 'kusum-dental-care',
