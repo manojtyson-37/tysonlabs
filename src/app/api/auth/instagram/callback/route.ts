@@ -4,11 +4,16 @@ import {
   getConnectedInstagramAccounts,
   exchangeDirectInstagramCode,
   getDirectInstagramUserProfile,
+  subscribePageToWebhooks,
+  fetchHistoricalInstagramData,
 } from '@/lib/instagram';
+import { ingestInstagramComment, ingestInstagramDm } from '@/lib/inbox-db';
 
 /**
  * Handles the OAuth redirect for both Direct Instagram Login (no Facebook Page)
  * and Facebook Login for Business.
+ * Automatically subscribes the connected Facebook Page to Webhooks and kicks off
+ * initial historical ingestion for the connected account.
  */
 export async function GET(request: Request) {
   try {
@@ -35,6 +40,8 @@ export async function GET(request: Request) {
 
     const cookieHeader = request.headers.get('cookie') || '';
     const isDirectMode = cookieHeader.includes('ig_oauth_mode=direct');
+    const acceptsHtml = request.headers.get('accept')?.includes('text/html') ?? true;
+    const wantsJson = url.searchParams.get('format') === 'json';
 
     // 1. If Direct Instagram Login (api.instagram.com)
     if (isDirectMode) {
@@ -50,6 +57,13 @@ export async function GET(request: Request) {
           name: 'Instagram Creator',
           account_type: 'BUSINESS',
         }));
+
+        if (!wantsJson && acceptsHtml) {
+          return NextResponse.redirect(
+            `${protocol}://${host}/inbox?connected=true&ig=${encodeURIComponent(profile.username)}`,
+            { status: 303 }
+          );
+        }
 
         return NextResponse.json({
           success: true,
@@ -81,6 +95,72 @@ export async function GET(request: Request) {
     });
 
     const accounts = await getConnectedInstagramAccounts(accessToken);
+
+    // Auto-subscribe webhooks and ingest recent comments/DMs for connected accounts
+    for (const acc of accounts) {
+      try {
+        if (acc.pageId && acc.pageAccessToken) {
+          await subscribePageToWebhooks(acc.pageId, acc.pageAccessToken);
+        }
+        // Fetch and ingest recent posts & comments into database
+        const { posts, conversations } = await fetchHistoricalInstagramData({
+          igUserId: acc.id,
+          accessToken: acc.pageAccessToken || accessToken,
+          maxPosts: 15,
+        });
+
+        for (const post of posts) {
+          if (post.comments && Array.isArray(post.comments.data)) {
+            for (const c of post.comments.data) {
+              await ingestInstagramComment({
+                commentId: c.id,
+                accountId: acc.id,
+                accountName: acc.username,
+                tenantId: acc.username,
+                fromId: c.from?.id || 'unknown',
+                fromUsername: c.from?.username || 'user',
+                text: c.text,
+                mediaId: post.id,
+                rawPayload: { postCaption: post.caption, permalink: post.permalink },
+              }).catch(() => null);
+            }
+          }
+        }
+
+        for (const conv of conversations) {
+          if (conv.messages && Array.isArray(conv.messages.data)) {
+            const participant = (conv.participants?.data || []).find(
+              (p: any) => p.id !== acc.id
+            ) || { id: 'user', username: 'Instagram User' };
+
+            for (const m of conv.messages.data) {
+              const isOutbound = m.from?.id === acc.id;
+              await ingestInstagramDm({
+                messageId: m.id,
+                accountId: acc.id,
+                accountName: acc.username,
+                tenantId: acc.username,
+                senderId: isOutbound ? acc.id : participant.id,
+                senderName: isOutbound ? acc.username : (participant.username || participant.name || 'User'),
+                recipientId: isOutbound ? participant.id : acc.id,
+                text: m.message || '',
+                timestamp: m.created_time ? new Date(m.created_time).getTime() : undefined,
+                rawPayload: { threadId: conv.id, isOutbound },
+              }).catch(() => null);
+            }
+          }
+        }
+      } catch (ingestErr: any) {
+        console.warn(`[Instagram Auto-Ingest] Warning for ${acc.username}:`, ingestErr.message);
+      }
+    }
+
+    if (!wantsJson && acceptsHtml && accounts.length > 0) {
+      return NextResponse.redirect(
+        `${protocol}://${host}/inbox?connected=true&ig=${encodeURIComponent(accounts[0].username)}`,
+        { status: 303 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
