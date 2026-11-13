@@ -37,7 +37,11 @@ export function getInstagramAuthUrl(options: {
   redirectUri: string;
   state: string;
 }): string {
-  const appId = options.appId || process.env.FACEBOOK_APP_ID || process.env.VITE_FACEBOOK_APP_ID || '';
+  const appId =
+    options.appId ||
+    process.env.FACEBOOK_APP_ID ||
+    process.env.VITE_FACEBOOK_APP_ID ||
+    '2229540584495459';
   const scopes = [
     'instagram_basic',
     'instagram_content_publish',
@@ -69,8 +73,15 @@ export async function exchangeCodeForLongLivedToken(options: {
   appId?: string;
   appSecret?: string;
 }): Promise<{ accessToken: string; expiresIn: number }> {
-  const appId = options.appId || process.env.FACEBOOK_APP_ID || process.env.VITE_FACEBOOK_APP_ID;
-  const appSecret = options.appSecret || process.env.FACEBOOK_APP_SECRET;
+  const appId =
+    options.appId ||
+    process.env.FACEBOOK_APP_ID ||
+    process.env.VITE_FACEBOOK_APP_ID ||
+    '2229540584495459';
+  const appSecret =
+    options.appSecret ||
+    process.env.FACEBOOK_APP_SECRET ||
+    'e5befb29390dff677e418a88c63c8fc5';
 
   if (!appId || !appSecret) {
     throw new Error('FACEBOOK_APP_ID and FACEBOOK_APP_SECRET are required for token exchange');
