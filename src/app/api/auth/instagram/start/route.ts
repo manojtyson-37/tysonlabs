@@ -14,14 +14,14 @@ export async function GET(request: Request) {
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const baseUrl = `${protocol}://${host}`;
 
-    const mode = url.searchParams.get('mode') || 'direct'; // 'direct' (api.instagram.com) or 'facebook' (facebook.com)
+    const mode = url.searchParams.get('mode') || 'facebook'; // 'facebook' (graph.facebook.com - active) or 'direct' (api.instagram.com)
     const redirectUri = `${baseUrl}/api/auth/instagram/callback`;
     const state = crypto.randomBytes(16).toString('hex');
 
     const authUrl =
-      mode === 'facebook'
-        ? getInstagramAuthUrl({ redirectUri, state })
-        : getDirectInstagramAuthUrl({ redirectUri, state });
+      mode === 'direct'
+        ? getDirectInstagramAuthUrl({ redirectUri, state })
+        : getInstagramAuthUrl({ redirectUri, state });
 
     const response = NextResponse.redirect(authUrl, 303);
     response.cookies.set('ig_oauth_state', state, {
