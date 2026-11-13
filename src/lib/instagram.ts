@@ -488,3 +488,54 @@ export async function replyToInstagramComment(options: {
   return res.json();
 }
 
+/**
+ * Enable real-time Webhook subscriptions for an account's Facebook Page.
+ * (Step 3 in Meta Webhook setup: POST /{page-id}/subscribed_apps)
+ */
+export async function subscribePageToWebhooks(
+  pageId: string,
+  pageAccessToken: string,
+  fields: string[] = ['messages', 'messaging_postbacks', 'feed']
+): Promise<{ success: boolean }> {
+  const url = `${META_GRAPH_BASE}/${pageId}/subscribed_apps`;
+  const params = new URLSearchParams({
+    subscribed_fields: fields.join(','),
+    access_token: pageAccessToken,
+  });
+
+  const res = await fetch(url, { method: 'POST', body: params });
+  if (!res.ok) {
+    const err = await res.text();
+    console.warn(`[Meta Webhooks] Could not subscribe page ${pageId}: ${err}`);
+    return { success: false };
+  }
+  return res.json();
+}
+
+/**
+ * Fetch and sync all historical posts, comments, and DM conversations from Meta Graph API.
+ */
+export async function fetchHistoricalInstagramData(options: {
+  igUserId: string;
+  accessToken: string;
+  maxPosts?: number;
+}) {
+  const { igUserId, accessToken, maxPosts = 25 } = options;
+
+  // 1. Fetch recent media posts and their comments
+  const mediaUrl = `${META_GRAPH_BASE}/${igUserId}/media?fields=id,caption,media_type,permalink,timestamp,comments_count,comments{id,text,timestamp,from{id,username},like_count,replies{id,text,timestamp,from{id,username}}}&limit=${maxPosts}&access_token=${accessToken}`;
+  const mediaRes = await fetch(mediaUrl);
+  const mediaData = mediaRes.ok ? await mediaRes.json() : { data: [] };
+
+  // 2. Fetch recent direct message conversations
+  const convUrl = `${META_GRAPH_BASE}/${igUserId}/conversations?fields=id,participants,updated_time,unread_count,messages{id,created_time,from,to,message}&access_token=${accessToken}`;
+  const convRes = await fetch(convUrl);
+  const convData = convRes.ok ? await convRes.json() : { data: [] };
+
+  return {
+    posts: Array.isArray(mediaData.data) ? mediaData.data : [],
+    conversations: Array.isArray(convData.data) ? convData.data : [],
+  };
+}
+
+

@@ -64,7 +64,37 @@ export function InboxClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+
+  // Sync historical posts, comments, and conversations from Meta Graph API
+  const handleSyncHistorical = async () => {
+    setIsSyncing(true);
+    setActionNotice('Syncing posts, comments, and DMs from Meta Graph API…');
+
+    try {
+      const res = await fetch('/api/v1/inbox/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId: tenant,
+          accountName: tenant === 'travel_kathegalu' ? 'Travel Kathegalu' : 'Tyson Test',
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to sync historical data');
+
+      setActionNotice(
+        `Sync complete: ${data.syncedPosts} posts inspected, ${data.syncedCommentsCount} real comments ingested, ${data.syncedConversations} DM threads synced.`
+      );
+      await fetchConversations();
+    } catch (err: any) {
+      setActionNotice(`Sync error: ${err.message}`);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Load conversations
   const fetchConversations = useCallback(async () => {
@@ -236,6 +266,25 @@ export function InboxClient() {
             <option value="travel_kathegalu">Travel Kathegalu (@travel_kathegalu)</option>
             <option value="tyson_test">Tyson Test (@instatest_tyson)</option>
           </select>
+
+          <button
+            onClick={handleSyncHistorical}
+            disabled={isSyncing}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 px-3 py-1.5 text-xs font-bold hover:opacity-90 transition disabled:opacity-50"
+            title="Pull all real historical comments and DMs from Meta Graph API"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Syncing Graph API…' : 'Sync Live Posts & DMs'}
+          </button>
+
+          <a
+            href="/api/auth/instagram/start"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+            title="Connect an Instagram Professional account via Meta OAuth"
+          >
+            <User className="w-3.5 h-3.5 text-fuchsia-600" />
+            + Connect Account
+          </a>
 
           <button
             onClick={() => handleSimulate('dm')}
