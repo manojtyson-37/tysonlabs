@@ -44,6 +44,7 @@ interface Message {
   media_url?: string | null;
   parent_id?: string | null;
   status: 'delivered' | 'sent' | 'failed';
+  raw_payload?: any;
   created_at: string;
 }
 
@@ -482,10 +483,27 @@ export function InboxClient() {
               {/* Reel / Post Context Banner if Comment */}
               {activeConv.channel_type === 'comment' && (
                 <div className="bg-amber-50/80 dark:bg-amber-950/40 border-b border-amber-200/60 dark:border-amber-800/40 px-4 py-2.5 flex items-center justify-between text-xs text-amber-900 dark:text-amber-200">
-                  <span className="font-medium">
-                    📌 Attached Post: Reel #BengaluruCafe_JayanagarEast (Drive clips & live Maps listing)
-                  </span>
-                  <span className="text-[11px] opacity-75">Media ID: {activeConv.subject_media_id}</span>
+                  <div className="flex items-center gap-2 truncate max-w-[80%]">
+                    <span className="font-semibold text-amber-950 dark:text-amber-100 flex-shrink-0">
+                      📌 Attached Reel:
+                    </span>
+                    <span className="truncate text-amber-800 dark:text-amber-300">
+                      {messages[0]?.raw_payload?.postCaption
+                        ? messages[0].raw_payload.postCaption.split('\n')[0]
+                        : 'Bengaluru Legend Food Walks'}
+                    </span>
+                    {messages[0]?.raw_payload?.permalink && (
+                      <a
+                        href={messages[0].raw_payload.permalink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-0.5 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex-shrink-0 ml-2"
+                      >
+                        View Reel ↗
+                      </a>
+                    )}
+                  </div>
+                  <span className="text-[11px] opacity-75 font-mono">Media ID: {activeConv.subject_media_id}</span>
                 </div>
               )}
 
