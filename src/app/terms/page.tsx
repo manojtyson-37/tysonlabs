@@ -57,21 +57,28 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-2">
-          <h2 className={h2}>5. Availability and changes</h2>
+          <h2 className={h2}>5. Meta &amp; Instagram services</h2>
           <p>
-            The service depends on Google&apos;s APIs and may change or be interrupted. We may update the service or these terms; material changes will be reflected by the revision date above.
+            When you use our services to manage or publish content to Instagram or WhatsApp, you confirm that you have the right and authorization to publish such material on behalf of the connected business or profile. You agree to comply with Meta&apos;s Platform Terms, Instagram Community Guidelines, and Commercial Terms. You remain solely responsible for all images, videos, audio, and captions published through the service.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h2 className={h2}>6. Disclaimer and liability</h2>
+          <h2 className={h2}>6. Availability and changes</h2>
+          <p>
+            The service depends on third-party APIs (including Google and Meta) and may change or be interrupted. We may update the service or these terms; material changes will be reflected by the revision date above.
+          </p>
+        </section>
+
+        <section className="space-y-2">
+          <h2 className={h2}>7. Disclaimer and liability</h2>
           <p>
             The service is provided &ldquo;as is&rdquo; without warranties of any kind. To the extent permitted by law, TysonLabs is not liable for indirect or consequential loss, or for content you publish. Nothing here limits liability that cannot be limited by law.
           </p>
         </section>
 
         <section className="space-y-2">
-          <h2 className={h2}>7. Termination</h2>
+          <h2 className={h2}>8. Termination</h2>
           <p>
             You can stop using the service and disconnect at any time. We may suspend access for misuse or breach of these terms.
           </p>

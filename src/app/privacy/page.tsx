@@ -109,6 +109,57 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
+        <section id="meta-instagram-data" className="space-y-3 scroll-mt-24">
+          <h2 className="font-display font-bold text-lg text-zinc-950 dark:text-[#F4F3F8]">
+            6. Meta &amp; Instagram Platform Data
+          </h2>
+          <p>
+            TysonLabs provides automation and management tools for businesses, creators, and brands using the Meta Platform (including WhatsApp Business Platform and Instagram Graph API). This section explains how we access, process, and safeguard data received from Meta and Instagram.
+          </p>
+          <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">What we access</h3>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Instagram Account &amp; Profile:</strong> Instagram Business or Creator account ID, username, profile picture, follower counts, and account category (via scopes <code>instagram_basic</code> and <code>pages_show_list</code>).</li>
+            <li><strong>Content Publishing:</strong> Media files (images, videos, reels, carousels) and captions you explicitly schedule and approve for publishing to your feed, stories, or reels (via <code>instagram_content_publish</code>).</li>
+            <li><strong>Analytics &amp; Performance:</strong> Post-level and account-level metrics (impressions, reach, profile views, engagement) to evaluate content performance (via <code>instagram_manage_insights</code>).</li>
+            <li><strong>Comments &amp; Engagement:</strong> Public comments and replies on your published Instagram media to support comment moderation and customer response (via <code>instagram_manage_comments</code>).</li>
+            <li><strong>WhatsApp Business Data:</strong> WhatsApp Business Account (WABA) ID, verified phone number ID, and messaging events for transaction and notification routing (via <code>whatsapp_business_messaging</code> and <code>whatsapp_business_management</code>).</li>
+          </ul>
+          <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">How we use your data</h3>
+          <p>
+            We use Instagram and Meta platform data solely to operate the management dashboard, produce scheduled content queues, deliver authorized business communications, and display analytics to authorized account owners. We do not use this data for cross-site tracking, profiling, or behavioral advertising.
+          </p>
+          <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">Our commitments (What we never do)</h3>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>We do not sell, rent, or monetize Meta or Instagram platform data to data brokers or third parties.</li>
+            <li>We do not publish any post, story, reel, or comment to Instagram without explicit human authorization or pre-approved scheduled workflow triggers.</li>
+            <li>We do not transfer your data to unauthorized third parties or use it to train public artificial intelligence models.</li>
+          </ul>
+          <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">Storage, security, and token retention</h3>
+          <p>
+            All Meta OAuth tokens and system credentials are encrypted at rest using strong cryptographic keys. Tokens are used strictly within secure backend environments. We retain active credentials only while your integration remains authorized.
+          </p>
+          <h3 className="font-semibold text-zinc-900 dark:text-[#F4F3F8]">Data deletion &amp; revoking access</h3>
+          <p>
+            You can revoke application permissions at any time via your Facebook or Meta Business account settings under{' '}
+            <a
+              href="https://www.facebook.com/settings?tab=applications"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-900 dark:text-white underline font-medium"
+            >
+              Apps and Websites
+            </a>
+            . For complete deletion instructions or to check the status of an automated data deletion request, visit our{' '}
+            <Link href="/data-deletion" className="text-zinc-900 dark:text-white underline font-medium">
+              User Data Deletion page
+            </Link>{' '}
+            or contact{' '}
+            <a href={`mailto:${PRIVACY_EMAIL}`} className="text-zinc-900 dark:text-white underline font-medium">
+              {PRIVACY_EMAIL}
+            </a>.
+          </p>
+        </section>
+
         <section className="space-y-2 pt-4 border-t border-black/[0.08] dark:border-[#30333B]">
           <p className="text-xs text-zinc-500 dark:text-[#717684]">
             For questions regarding this policy, please email{' '}
