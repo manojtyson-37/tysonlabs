@@ -15,6 +15,7 @@ describe('Instagram Graph API Helpers', () => {
     expect(url).toContain('state=test-state-123');
     expect(url).toContain('scope=');
     expect(url).toContain('instagram_basic');
+    expect(url).toContain('instagram_manage_messages');
     expect(url).toContain('instagram_content_publish');
     expect(url).toContain('instagram_manage_insights');
     expect(url).toContain('pages_show_list');
