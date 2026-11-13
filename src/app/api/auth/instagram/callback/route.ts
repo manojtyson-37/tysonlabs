@@ -51,6 +51,9 @@ export async function GET(request: Request) {
       longLivedToken: accessToken,
     });
   } catch (error: any) {
+    if (error?.digest === 'NEXT_PRERENDER_INTERRUPTED') {
+      throw error;
+    }
     console.error('[Instagram Auth Callback] Error:', error);
     return NextResponse.json(
       { error: error.message || 'Internal server error during Instagram token exchange' },

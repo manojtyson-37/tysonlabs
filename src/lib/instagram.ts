@@ -384,3 +384,107 @@ export function parseSignedRequest(signedRequest: string, appSecret?: string): R
 
   return data;
 }
+
+/**
+ * Verify Meta Webhook HMAC-SHA256 signature (from x-hub-signature-256 header).
+ */
+export function verifyMetaWebhookHmac(
+  rawBody: string | Buffer,
+  signatureHeader: string | null | undefined,
+  appSecret?: string
+): boolean {
+  const secret = appSecret || process.env.FACEBOOK_APP_SECRET || 'e5befb29390dff677e418a88c63c8fc5';
+  if (!secret) return false;
+  if (!signatureHeader) return false;
+
+  const [method, hash] = signatureHeader.split('=');
+  if (method !== 'sha256' || !hash) return false;
+
+  const expectedHash = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
+
+  const hashBuf = Buffer.from(hash, 'hex');
+  const expectedBuf = Buffer.from(expectedHash, 'hex');
+
+  if (hashBuf.length !== expectedBuf.length) return false;
+  return crypto.timingSafeEqual(hashBuf, expectedBuf);
+}
+
+/**
+ * Send an Instagram Direct Message (reply to a follower).
+ * Endpoint: POST https://graph.facebook.com/v21.0/{ig_user_id}/messages
+ */
+export async function sendInstagramDirectMessage(options: {
+  igUserId: string;
+  recipientId: string;
+  text: string;
+  accessToken?: string;
+}): Promise<{ recipient_id: string; message_id: string }> {
+  const token =
+    options.accessToken ||
+    process.env.INSTAGRAM_USER_ACCESS_TOKEN ||
+    process.env.META_ACCESS_TOKEN;
+
+  if (!token) {
+    throw new Error('No Instagram access token available to send direct message');
+  }
+
+  const url = `${META_GRAPH_BASE}/${options.igUserId}/messages`;
+  const body = {
+    recipient: { id: options.recipientId },
+    message: { text: options.text },
+  };
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to send Instagram DM: ${err}`);
+  }
+
+  return res.json();
+}
+
+/**
+ * Reply to an Instagram comment on a post/reel.
+ * Endpoint: POST https://graph.facebook.com/v21.0/{comment_id}/replies
+ */
+export async function replyToInstagramComment(options: {
+  commentId: string;
+  text: string;
+  accessToken?: string;
+}): Promise<{ id: string }> {
+  const token =
+    options.accessToken ||
+    process.env.INSTAGRAM_USER_ACCESS_TOKEN ||
+    process.env.META_ACCESS_TOKEN;
+
+  if (!token) {
+    throw new Error('No Instagram access token available to reply to comment');
+  }
+
+  const url = `${META_GRAPH_BASE}/${options.commentId}/replies`;
+  const params = new URLSearchParams({
+    message: options.text,
+    access_token: token,
+  });
+
+  const res = await fetch(url, {
+    method: 'POST',
+    body: params,
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to reply to Instagram comment: ${err}`);
+  }
+
+  return res.json();
+}
+

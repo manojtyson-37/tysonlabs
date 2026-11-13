@@ -32,6 +32,9 @@ export async function GET(request: Request) {
 
     return response;
   } catch (error) {
+    if ((error as any)?.digest === 'NEXT_PRERENDER_INTERRUPTED') {
+      throw error;
+    }
     console.error('[Instagram Auth Start] Error:', error);
     return NextResponse.json({ error: 'Failed to initiate Instagram OAuth' }, { status: 500 });
   }

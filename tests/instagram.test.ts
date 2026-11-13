@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import crypto from 'crypto';
-import { getInstagramAuthUrl, parseSignedRequest } from '@/lib/instagram';
+import { getInstagramAuthUrl, parseSignedRequest, verifyMetaWebhookHmac } from '@/lib/instagram';
 
 describe('Instagram Graph API Helpers', () => {
   it('generates a valid Meta OAuth URL with required Instagram scopes', () => {
@@ -71,5 +71,17 @@ describe('Instagram Graph API Helpers', () => {
     const signedRequest = `${sig}.${encodedPayload}`;
 
     expect(() => parseSignedRequest(signedRequest, secret)).toThrow('Invalid signed_request signature');
+  });
+
+  it('validates Meta webhook x-hub-signature-256 header correctly', () => {
+    const secret = 'test-meta-app-secret-12345';
+    const payload = JSON.stringify({ object: 'instagram', entry: [] });
+
+    const hash = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    const header = `sha256=${hash}`;
+
+    expect(verifyMetaWebhookHmac(payload, header, secret)).toBe(true);
+    expect(verifyMetaWebhookHmac(payload, 'sha256=invalidhash', secret)).toBe(false);
+    expect(verifyMetaWebhookHmac(payload, null, secret)).toBe(false);
   });
 });
