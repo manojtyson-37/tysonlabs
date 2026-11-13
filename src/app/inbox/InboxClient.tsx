@@ -278,12 +278,20 @@ export function InboxClient() {
           </button>
 
           <a
-            href="/api/auth/instagram/start"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-            title="Connect an Instagram Professional account via Meta OAuth"
+            href="/api/auth/instagram/start?mode=direct"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white px-3 py-1.5 text-xs font-bold hover:opacity-95 transition shadow-sm"
+            title="Log in directly with Instagram credentials (No Facebook Page or Meta account required!)"
           >
-            <User className="w-3.5 h-3.5 text-fuchsia-600" />
-            + Connect Account
+            <User className="w-3.5 h-3.5" />
+            Log in with Instagram
+          </a>
+
+          <a
+            href="/api/auth/instagram/start?mode=facebook"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+            title="Connect via Facebook Page (for business accounts managed in Meta Business Suite)"
+          >
+            Connect via FB Page
           </a>
 
           <button

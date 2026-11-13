@@ -67,6 +67,118 @@ export function getInstagramAuthUrl(options: {
 }
 
 /**
+ * Generate Direct Instagram Login OAuth authorization URL (api.instagram.com).
+ * No Facebook Page or Facebook login required! Users log in directly with their
+ * Instagram username and password.
+ */
+export function getDirectInstagramAuthUrl(options: {
+  appId?: string;
+  redirectUri: string;
+  state: string;
+}): string {
+  const appId =
+    options.appId ||
+    process.env.FACEBOOK_APP_ID ||
+    '2229540584495459';
+  const scopes = [
+    'instagram_business_basic',
+    'instagram_business_manage_messages',
+    'instagram_business_manage_comments',
+    'instagram_business_content_publish',
+  ].join(',');
+
+  const params = new URLSearchParams({
+    client_id: appId,
+    redirect_uri: options.redirectUri,
+    response_type: 'code',
+    scope: scopes,
+    state: options.state,
+  });
+
+  return `https://api.instagram.com/oauth/authorize?${params.toString()}`;
+}
+
+/**
+ * Exchange Direct Instagram authorization code for 60-day long-lived token.
+ * (Endpoints: api.instagram.com/oauth/access_token & graph.instagram.com/access_token)
+ */
+export async function exchangeDirectInstagramCode(options: {
+  code: string;
+  redirectUri: string;
+  appId?: string;
+  appSecret?: string;
+}): Promise<{ accessToken: string; userId: string; expiresIn: number }> {
+  const appId =
+    options.appId ||
+    process.env.FACEBOOK_APP_ID ||
+    '2229540584495459';
+  const appSecret =
+    options.appSecret ||
+    process.env.FACEBOOK_APP_SECRET ||
+    'e5befb29390dff677e418a88c63c8fc5';
+
+  // 1. Get short-lived token from api.instagram.com
+  const form = new URLSearchParams({
+    client_id: appId,
+    client_secret: appSecret,
+    grant_type: 'authorization_code',
+    redirect_uri: options.redirectUri,
+    code: options.code,
+  });
+
+  const res = await fetch('https://api.instagram.com/oauth/access_token', {
+    method: 'POST',
+    body: form,
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Direct Instagram token exchange failed: ${err}`);
+  }
+
+  const data = await res.json();
+  const shortToken = data.access_token;
+  const userId = String(data.user_id);
+
+  // 2. Exchange for 60-day long-lived token
+  const longUrl = new URL('https://graph.instagram.com/access_token');
+  longUrl.searchParams.set('grant_type', 'ig_exchange_token');
+  longUrl.searchParams.set('client_secret', appSecret);
+  longUrl.searchParams.set('access_token', shortToken);
+
+  const longRes = await fetch(longUrl.toString());
+  if (longRes.ok) {
+    const longData = await longRes.json();
+    return {
+      accessToken: longData.access_token,
+      userId,
+      expiresIn: longData.expires_in || 5184000,
+    };
+  }
+
+  return { accessToken: shortToken, userId, expiresIn: 3600 };
+}
+
+/**
+ * Retrieve profile of the logged-in Instagram account via graph.instagram.com.
+ */
+export async function getDirectInstagramUserProfile(accessToken: string): Promise<{
+  id: string;
+  username: string;
+  name?: string;
+  profile_picture_url?: string;
+  account_type?: string;
+}> {
+  const url = `https://graph.instagram.com/v21.0/me?fields=id,username,name,profile_picture_url,account_type&access_token=${accessToken}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to fetch direct Instagram profile: ${err}`);
+  }
+  return res.json();
+}
+
+/**
  * Exchange OAuth authorization code for short-lived user access token,
  * and automatically upgrade it to a 60-day long-lived token.
  */

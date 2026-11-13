@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import crypto from 'crypto';
-import { getInstagramAuthUrl, parseSignedRequest, verifyMetaWebhookHmac } from '@/lib/instagram';
+import {
+  getInstagramAuthUrl,
+  getDirectInstagramAuthUrl,
+  parseSignedRequest,
+  verifyMetaWebhookHmac,
+} from '@/lib/instagram';
 
 describe('Instagram Graph API Helpers', () => {
   it('generates a valid Meta OAuth URL with required Instagram scopes', () => {
@@ -84,5 +89,21 @@ describe('Instagram Graph API Helpers', () => {
     expect(verifyMetaWebhookHmac(payload, header, secret)).toBe(true);
     expect(verifyMetaWebhookHmac(payload, 'sha256=invalidhash', secret)).toBe(false);
     expect(verifyMetaWebhookHmac(payload, null, secret)).toBe(false);
+  });
+
+  it('generates a direct Instagram login URL without Facebook Page requirement', () => {
+    const url = getDirectInstagramAuthUrl({
+      appId: '2229540584495459',
+      redirectUri: 'https://tysonlabs.in/api/auth/instagram/callback',
+      state: 'direct-state-456',
+    });
+
+    expect(url).toContain('https://api.instagram.com/oauth/authorize');
+    expect(url).toContain('client_id=2229540584495459');
+    expect(url).toContain('redirect_uri=https%3A%2F%2Ftysonlabs.in%2Fapi%2Fauth%2Finstagram%2Fcallback');
+    expect(url).toContain('scope=');
+    expect(url).toContain('instagram_business_basic');
+    expect(url).toContain('instagram_business_manage_messages');
+    expect(url).toContain('instagram_business_manage_comments');
   });
 });

@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { getInstagramAuthUrl } from '@/lib/instagram';
+import { getInstagramAuthUrl, getDirectInstagramAuthUrl } from '@/lib/instagram';
 import { SITE_URL } from '@/lib/site';
 
 /**
- * Initiates the Meta OAuth flow for Instagram Graph API.
+ * Initiates either Direct Instagram Login (no Facebook Page needed)
+ * or Facebook Login for Business (Page-linked Instagram accounts).
  */
 export async function GET(request: Request) {
   try {
@@ -13,13 +14,14 @@ export async function GET(request: Request) {
     const protocol = host.includes('localhost') ? 'http' : 'https';
     const baseUrl = `${protocol}://${host}`;
 
+    const mode = url.searchParams.get('mode') || 'direct'; // 'direct' (api.instagram.com) or 'facebook' (facebook.com)
     const redirectUri = `${baseUrl}/api/auth/instagram/callback`;
     const state = crypto.randomBytes(16).toString('hex');
 
-    const authUrl = getInstagramAuthUrl({
-      redirectUri,
-      state,
-    });
+    const authUrl =
+      mode === 'facebook'
+        ? getInstagramAuthUrl({ redirectUri, state })
+        : getDirectInstagramAuthUrl({ redirectUri, state });
 
     const response = NextResponse.redirect(authUrl, 303);
     response.cookies.set('ig_oauth_state', state, {
@@ -28,6 +30,14 @@ export async function GET(request: Request) {
       sameSite: 'lax',
       path: '/api/auth/instagram',
       maxAge: 600, // 10 minutes
+    });
+
+    response.cookies.set('ig_oauth_mode', mode, {
+      httpOnly: true,
+      secure: !host.includes('localhost'),
+      sameSite: 'lax',
+      path: '/api/auth/instagram',
+      maxAge: 600,
     });
 
     return response;
