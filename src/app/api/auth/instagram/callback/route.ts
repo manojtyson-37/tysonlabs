@@ -171,9 +171,15 @@ export async function GET(request: Request) {
       }
     }
 
-    if (!wantsJson && acceptsHtml && accounts.length > 0) {
+    if (!wantsJson && acceptsHtml) {
+      if (accounts.length > 0) {
+        return NextResponse.redirect(
+          `${protocol}://${host}/inbox?connected=true&ig=${encodeURIComponent(accounts[0].username)}`,
+          { status: 303 }
+        );
+      }
       return NextResponse.redirect(
-        `${protocol}://${host}/inbox?connected=true&ig=${encodeURIComponent(accounts[0].username)}`,
+        `${protocol}://${host}/inbox?error=no_accounts_found`,
         { status: 303 }
       );
     }

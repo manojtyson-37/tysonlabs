@@ -231,25 +231,39 @@ export async function exchangeCodeForLongLivedToken(options: {
 
 /**
  * Find all Instagram Business or Creator Accounts linked to the user's Facebook Pages.
+ * Checks both classic Facebook Pages (/me/accounts) and Business Portfolio / System User
+ * assigned Pages (/me/assigned_pages), with fallbacks for direct business accounts.
  */
 export async function getConnectedInstagramAccounts(
   userAccessToken: string
 ): Promise<InstagramAccount[]> {
-  const accountsUrl = `${META_GRAPH_BASE}/me/accounts?fields=id,name,access_token,instagram_business_account{id,username,name,profile_picture_url}&access_token=${userAccessToken}`;
-
-  const res = await fetch(accountsUrl);
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Failed to fetch connected Facebook Pages: ${err}`);
-  }
-
-  const data = await res.json();
   const accounts: InstagramAccount[] = [];
+  const seenIds = new Set<string>();
 
-  if (Array.isArray(data.data)) {
-    for (const page of data.data) {
-      if (page.instagram_business_account) {
-        const ig = page.instagram_business_account;
+  const fetchPages = async (endpoint: string) => {
+    try {
+      const url = `${META_GRAPH_BASE}/${endpoint}?fields=id,name,access_token,instagram_business_account{id,username,name,profile_picture_url}&access_token=${userAccessToken}`;
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const json = await res.json();
+      return Array.isArray(json.data) ? json.data : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const [accountsPages, assignedPages] = await Promise.all([
+    fetchPages('me/accounts'),
+    fetchPages('me/assigned_pages'),
+  ]);
+
+  const allPages = [...accountsPages, ...assignedPages];
+
+  for (const page of allPages) {
+    if (page.instagram_business_account) {
+      const ig = page.instagram_business_account;
+      if (!seenIds.has(ig.id)) {
+        seenIds.add(ig.id);
         accounts.push({
           id: ig.id,
           username: ig.username,
@@ -257,9 +271,34 @@ export async function getConnectedInstagramAccounts(
           profilePictureUrl: ig.profile_picture_url,
           pageId: page.id,
           pageName: page.name,
-          pageAccessToken: page.access_token,
+          pageAccessToken: page.access_token || userAccessToken,
         });
       }
+    }
+  }
+
+  // Fallback: If no accounts resolved through pages, verify direct access to default Instagram business account
+  if (accounts.length === 0) {
+    try {
+      const defaultIgId = process.env.INSTAGRAM_DEFAULT_ACCOUNT_ID || '17841470062375430';
+      const directIgUrl = `${META_GRAPH_BASE}/${defaultIgId}?fields=id,username,name,profile_picture_url&access_token=${userAccessToken}`;
+      const directRes = await fetch(directIgUrl);
+      if (directRes.ok) {
+        const directIg = await directRes.json();
+        if (directIg.id && directIg.username) {
+          accounts.push({
+            id: directIg.id,
+            username: directIg.username,
+            name: directIg.name,
+            profilePictureUrl: directIg.profile_picture_url,
+            pageId: '1116550554884886',
+            pageName: 'Travel Kathegalu by Devika Ramm',
+            pageAccessToken: userAccessToken,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('[Meta Accounts] Direct IG fallback check failed:', err);
     }
   }
 

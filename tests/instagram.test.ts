@@ -101,4 +101,47 @@ describe('Instagram Graph API Helpers', () => {
     expect(url).toContain('instagram_business_manage_messages');
     expect(url).toContain('instagram_business_manage_comments');
   });
+
+  it('resolves Instagram accounts connected via assigned_pages when accounts is empty', async () => {
+    const { getConnectedInstagramAccounts } = await import('@/lib/instagram');
+
+    const originalFetch = global.fetch;
+    global.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+      const urlStr = input.toString();
+      if (urlStr.includes('me/accounts')) {
+        return new Response(JSON.stringify({ data: [] }), { status: 200 });
+      }
+      if (urlStr.includes('me/assigned_pages')) {
+        return new Response(
+          JSON.stringify({
+            data: [
+              {
+                id: '1116550554884886',
+                name: 'Travel Kathegalu by Devika Ramm',
+                instagram_business_account: {
+                  id: '17841470062375430',
+                  username: 'travel_kathegalu',
+                  name: 'Travel Kathegalu ✈️🌍| Bangalore Travel',
+                  profile_picture_url: 'https://example.com/pic.jpg',
+                },
+              },
+            ],
+          }),
+          { status: 200 }
+        );
+      }
+      return originalFetch(input, init);
+    };
+
+    try {
+      const accounts = await getConnectedInstagramAccounts('mock_user_token_123');
+      expect(accounts).toHaveLength(1);
+      expect(accounts[0].username).toBe('travel_kathegalu');
+      expect(accounts[0].id).toBe('17841470062375430');
+      expect(accounts[0].pageId).toBe('1116550554884886');
+      expect(accounts[0].pageAccessToken).toBe('mock_user_token_123');
+    } finally {
+      global.fetch = originalFetch;
+    }
+  });
 });
