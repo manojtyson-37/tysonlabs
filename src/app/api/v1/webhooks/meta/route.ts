@@ -13,6 +13,7 @@ import {
   ingestInstagramComment,
   logWebhookEvent,
   getInboxAccount,
+  getInboxPool,
   findMatchingPaidRule,
   recordPaidRuleTrigger,
   recordOutboundMessage,
@@ -127,24 +128,43 @@ export async function POST(req: NextRequest) {
             // If inbound from follower, customer is senderId.
             const customerId = isEcho ? recipientId : senderId;
 
-            // Resolve sender profile using active account credentials
+            // Resolve sender/customer profile using active account credentials & database cache
             let senderName = `Instagram User (${customerId.slice(-4)})`;
             let senderUsername: string | undefined;
             let senderAvatar: string | undefined;
 
             try {
-              const dbAcc = await getInboxAccount(accountId);
-              const token =
-                dbAcc?.page_access_token ||
-                dbAcc?.access_token ||
-                process.env.INSTAGRAM_USER_ACCESS_TOKEN;
+              // 1. Check if we already have this customer's handle cached in inbox_conversations
+              try {
+                const pool = getInboxPool();
+                const cached = await pool.query(
+                  'SELECT participant_name, participant_avatar FROM inbox_conversations WHERE participant_id = $1 LIMIT 1',
+                  [customerId]
+                );
+                if (cached.rows[0]?.participant_name && !cached.rows[0].participant_name.startsWith('Instagram User')) {
+                  senderName = cached.rows[0].participant_name;
+                  senderUsername = cached.rows[0].participant_name.replace(/^@/, '');
+                  senderAvatar = cached.rows[0].participant_avatar || undefined;
+                }
+              } catch (cacheErr) {
+                // Ignore cache lookup errors
+              }
 
-              if (token && !isEcho) {
-                const profile = await getInstagramScopedUserProfile(customerId, token);
-                if (profile) {
-                  senderUsername = profile.username;
-                  senderName = profile.username ? `@${profile.username}` : (profile.name || senderName);
-                  senderAvatar = profile.profile_pic;
+              // 2. If username not found yet, query Meta Graph API
+              if (!senderUsername) {
+                const dbAcc = await getInboxAccount(accountId);
+                const token =
+                  dbAcc?.page_access_token ||
+                  dbAcc?.access_token ||
+                  process.env.INSTAGRAM_USER_ACCESS_TOKEN;
+
+                if (token) {
+                  const profile = await getInstagramScopedUserProfile(customerId, token);
+                  if (profile) {
+                    senderUsername = profile.username;
+                    senderName = profile.username ? `@${profile.username}` : (profile.name || senderName);
+                    senderAvatar = profile.profile_pic;
+                  }
                 }
               }
             } catch (profErr) {
@@ -163,7 +183,7 @@ export async function POST(req: NextRequest) {
                 recipientId,
                 text,
                 timestamp: item.timestamp,
-                rawPayload: item,
+                rawPayload: { ...item, participantUsername: senderName },
               });
               console.log(`[Meta Webhook] Ingested ${isEcho ? 'outbound echo' : 'inbound'} Instagram DM for customer ${customerId}`);
 

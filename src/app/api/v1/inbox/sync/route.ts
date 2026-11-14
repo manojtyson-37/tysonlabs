@@ -7,6 +7,7 @@ import {
   ingestInstagramDm,
   ingestInstagramComment,
   getInboxAccount,
+  getInboxPool,
 } from '@/lib/inbox-db';
 
 export async function POST(req: NextRequest) {
@@ -102,30 +103,51 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Step 4: Ingest direct message conversations
+    // Step 4: Ingest direct message conversations (both inbound and outbound)
+    const pPool = getInboxPool();
     for (const conv of conversations) {
-      if (conv.messages && Array.isArray(conv.messages.data)) {
-        const participant = (conv.participants?.data || []).find(
-          (p: any) => p.id !== igUserId
-        ) || { id: 'unknown_sender', username: 'Instagram User' };
+      const participant = (conv.participants?.data || []).find(
+        (p: any) => p.id !== igUserId
+      );
+      const participantHandle = participant?.username
+        ? `@${participant.username}`
+        : (participant?.name || null);
 
+      // Backfill and ensure conversation participant name is updated from Meta handle
+      if (participant?.id && participantHandle) {
+        try {
+          await pPool.query(
+            `UPDATE inbox_conversations 
+             SET participant_name = $1 
+             WHERE (participant_id = $2 OR id = $3) 
+               AND (participant_name LIKE 'Instagram User%' OR participant_name IS NULL)`,
+            [participantHandle, participant.id, `ig_dm_${igUserId}_${participant.id}`]
+          );
+        } catch (updErr) {
+          console.warn('[Inbox Sync] Could not backfill participant handle:', updErr);
+        }
+      }
+
+      if (conv.messages && Array.isArray(conv.messages.data)) {
         for (const msg of conv.messages.data) {
           const isFromAccount = msg.from?.id === igUserId;
-          if (!isFromAccount) {
-            await ingestInstagramDm({
-              messageId: msg.id,
-              accountId: igUserId,
-              accountName,
-              tenantId,
-              senderId: msg.from?.id || participant.id,
-              senderName: msg.from?.username || participant.username,
-              recipientId: igUserId,
-              text: msg.message?.trim() || '[Shared Reel / Instagram Media]',
-              timestamp: msg.created_time ? new Date(msg.created_time).getTime() : Date.now(),
-              rawPayload: msg,
-            });
-            syncedDmsCount++;
-          }
+          const targetSenderId = isFromAccount ? igUserId : (msg.from?.id || participant?.id || 'unknown_sender');
+          const targetSenderName = isFromAccount ? accountName : (participantHandle || msg.from?.username || 'Instagram User');
+          const targetRecipientId = isFromAccount ? (participant?.id || 'unknown_recipient') : igUserId;
+
+          await ingestInstagramDm({
+            messageId: msg.id,
+            accountId: igUserId,
+            accountName,
+            tenantId,
+            senderId: targetSenderId,
+            senderName: targetSenderName,
+            recipientId: targetRecipientId,
+            text: msg.message?.trim() || '[Shared Reel / Instagram Media]',
+            timestamp: msg.created_time ? new Date(msg.created_time).getTime() : Date.now(),
+            rawPayload: { ...msg, is_echo: isFromAccount, participantUsername: participantHandle },
+          });
+          syncedDmsCount++;
         }
       }
     }

@@ -834,8 +834,8 @@ export async function fetchHistoricalInstagramData(options: {
   const mediaRes = await fetch(mediaUrl);
   const mediaData = mediaRes.ok ? await mediaRes.json() : { data: [] };
 
-  // 2. Fetch recent direct message conversations
-  const convUrl = `${META_GRAPH_BASE}/${igUserId}/conversations?fields=id,participants,updated_time,unread_count,messages{id,created_time,from,to,message}&access_token=${accessToken}`;
+  // 2. Fetch recent direct message conversations with full participant handles
+  const convUrl = `${META_GRAPH_BASE}/${igUserId}/conversations?fields=id,participants{id,username,name},updated_time,unread_count,messages{id,created_time,from,to,message}&access_token=${accessToken}`;
   const convRes = await fetch(convUrl);
   const convData = convRes.ok ? await convRes.json() : { data: [] };
 

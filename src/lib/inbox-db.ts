@@ -177,6 +177,12 @@ export async function ingestInstagramDm(options: {
     ? accountName
     : (options.senderName || `Instagram User (${participantId.slice(-4)})`);
 
+  const resolvedParticipantName =
+    options.rawPayload?.participantUsername ||
+    options.rawPayload?.participantName ||
+    (!isEcho ? options.senderName : null) ||
+    `Instagram User (${participantId.slice(-4)})`;
+
   // 1. Upsert conversation
   if (isEcho) {
     // For outbound message: update last_message without overwriting participant profile
@@ -187,6 +193,10 @@ export async function ingestInstagramDm(options: {
          unread_count, status, updated_at
        ) VALUES ($1, $2, 'instagram', 'dm', $3, $4, $5, $6, $7, $8, $9, 0, 'replied', now())
        ON CONFLICT (id) DO UPDATE SET
+         participant_name = CASE 
+           WHEN EXCLUDED.participant_name NOT LIKE 'Instagram User%' THEN EXCLUDED.participant_name 
+           ELSE inbox_conversations.participant_name 
+         END,
          last_message = EXCLUDED.last_message,
          last_message_at = EXCLUDED.last_message_at,
          status = 'replied',
@@ -197,7 +207,7 @@ export async function ingestInstagramDm(options: {
         options.accountId,
         accountName,
         participantId,
-        `Instagram User (${participantId.slice(-4)})`,
+        resolvedParticipantName,
         options.senderAvatar || null,
         options.text,
         createdAt,
