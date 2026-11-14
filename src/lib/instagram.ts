@@ -655,6 +655,147 @@ export async function replyToInstagramComment(options: {
 }
 
 /**
+ * Check if an Instagram user follows the business account.
+ * Uses official Graph API field: is_user_follow_business
+ */
+export async function checkUserFollowsBusiness(
+  userScopedId: string,
+  accessToken?: string
+): Promise<{ isFollowing: boolean; name?: string; username?: string }> {
+  const token =
+    accessToken ||
+    process.env.INSTAGRAM_USER_ACCESS_TOKEN ||
+    process.env.META_ACCESS_TOKEN;
+
+  if (!token) {
+    return { isFollowing: true };
+  }
+
+  try {
+    const url = `${META_GRAPH_BASE}/${userScopedId}?fields=name,username,profile_pic,is_user_follow_business&access_token=${token}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      return { isFollowing: true };
+    }
+    const data = await res.json();
+    return {
+      isFollowing: data.is_user_follow_business === true,
+      name: data.name,
+      username: data.username,
+    };
+  } catch (err) {
+    console.warn('[Instagram Follow Check] Error:', err);
+    return { isFollowing: true };
+  }
+}
+
+/**
+ * Send an Instagram Direct Message with interactive Quick Reply pills.
+ * e.g. [ I'm following you! ]
+ */
+export async function sendInstagramQuickReplyMessage(options: {
+  igUserId: string;
+  recipientId: string;
+  text: string;
+  buttons: Array<{ title: string; payload: string }>;
+  accessToken?: string;
+}): Promise<{ recipient_id: string; message_id: string }> {
+  const token =
+    options.accessToken ||
+    process.env.INSTAGRAM_USER_ACCESS_TOKEN ||
+    process.env.META_ACCESS_TOKEN;
+
+  if (!token) throw new Error('No access token available');
+
+  const url = `${META_GRAPH_BASE}/${options.igUserId}/messages`;
+  const body = {
+    recipient: { id: options.recipientId },
+    message: {
+      text: options.text,
+      quick_replies: options.buttons.map((b) => ({
+        content_type: 'text',
+        title: b.title,
+        payload: b.payload,
+      })),
+    },
+  };
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to send quick reply DM: ${err}`);
+  }
+  return res.json();
+}
+
+/**
+ * Send an Instagram Direct Message Generic Card with clickable web buttons.
+ * e.g. [ Get the guide 🎁 ] -> (Web URL)
+ */
+export async function sendInstagramButtonCard(options: {
+  igUserId: string;
+  recipientId: string;
+  title: string;
+  subtitle?: string;
+  buttons: Array<{ type?: 'web_url' | 'postback'; title: string; url?: string; payload?: string }>;
+  accessToken?: string;
+}): Promise<{ recipient_id: string; message_id: string }> {
+  const token =
+    options.accessToken ||
+    process.env.INSTAGRAM_USER_ACCESS_TOKEN ||
+    process.env.META_ACCESS_TOKEN;
+
+  if (!token) throw new Error('No access token available');
+
+  const url = `${META_GRAPH_BASE}/${options.igUserId}/messages`;
+  const body = {
+    recipient: { id: options.recipientId },
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'generic',
+          elements: [
+            {
+              title: options.title,
+              subtitle: options.subtitle || '',
+              buttons: options.buttons.map((b) =>
+                b.url
+                  ? { type: 'web_url', url: b.url, title: b.title }
+                  : { type: 'postback', title: b.title, payload: b.payload || 'ACTION' }
+              ),
+            },
+          ],
+        },
+      },
+    },
+  };
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to send button card DM: ${err}`);
+  }
+  return res.json();
+}
+
+/**
  * Enable real-time Webhook subscriptions for an account's Facebook Page.
  * (Step 3 in Meta Webhook setup: POST /{page-id}/subscribed_apps)
  */

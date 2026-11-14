@@ -3,6 +3,10 @@ import {
   verifyMetaWebhookHmac,
   getInstagramScopedUserProfile,
   sendInstagramDirectMessage,
+  replyToInstagramComment,
+  checkUserFollowsBusiness,
+  sendInstagramQuickReplyMessage,
+  sendInstagramButtonCard,
 } from '@/lib/instagram';
 import {
   ingestInstagramDm,
@@ -12,6 +16,11 @@ import {
   findMatchingPaidRule,
   recordPaidRuleTrigger,
   recordOutboundMessage,
+  findMatchingReelAutomation,
+  incrementReelAutomationStat,
+  listReelAutomations,
+  saveLeadCapture,
+  getLeadCapture,
 } from '@/lib/inbox-db';
 
 const WEBHOOK_VERIFY_TOKEN =
@@ -110,6 +119,7 @@ export async function POST(req: NextRequest) {
 
             // Resolve sender profile using active account credentials
             let senderName = `Instagram User (${senderId.slice(-4)})`;
+            let senderUsername: string | undefined;
             let senderAvatar: string | undefined;
 
             try {
@@ -122,6 +132,7 @@ export async function POST(req: NextRequest) {
               if (token) {
                 const profile = await getInstagramScopedUserProfile(senderId, token);
                 if (profile) {
+                  senderUsername = profile.username;
                   senderName = profile.username ? `@${profile.username}` : (profile.name || senderName);
                   senderAvatar = profile.profile_pic;
                 }
@@ -187,6 +198,202 @@ export async function POST(req: NextRequest) {
               } catch (paidErr: any) {
                 console.warn('[Meta Webhook] Paid auto-reply check warning:', paidErr.message);
               }
+
+              // Check for Follower Gate / "I'm following you!" interaction, Email capture, or Reel DM trigger
+              try {
+                const quickReplyPayload = item.message?.quick_reply?.payload;
+                const isFollowCheckRequest =
+                  quickReplyPayload?.startsWith('CHECK_FOLLOW') ||
+                  text.toLowerCase().includes("i'm following you") ||
+                  text.toLowerCase().includes('im following you');
+
+                const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+
+                const dbAcc = await getInboxAccount(accountId);
+                const token = dbAcc?.page_access_token || dbAcc?.access_token;
+
+                if (token) {
+                  const autos = await listReelAutomations('travel_kathegalu');
+                  const activeAuto = autos.find((a) => a.is_active) || {
+                    id: 'default',
+                    tenant_id: 'travel_kathegalu',
+                    name: 'Default Guide Automation',
+                    reel_id: 'ALL',
+                    trigger_type: 'both' as const,
+                    trigger_keywords: 'GUIDE,PDF,DAY15,ITINERARY',
+                    require_follow: true,
+                    gate_message: "This guide is only for my followers! Would really appreciate the support first and then I'll send it over!",
+                    gate_button_text: "I'm following you!",
+                    not_following_message: "Looks like you're not following yet. Follow @travel_kathegalu, then tap again 👇",
+                    success_message: "you asked for this resource...\nhere it is 🎁\ntap the first button below to open it 👇",
+                    button_title: "Get the guide 🎁",
+                    button_url: "https://tysonlabs.in/guides/bengaluru-itinerary-2026.pdf",
+                    ask_email: false,
+                    is_active: true,
+                    total_comments_replied: 0,
+                    total_dms_sent: 0,
+                    total_followers_gated: 0,
+                    total_guides_unlocked: 0,
+                  };
+
+                  if (emailMatch) {
+                    // Follower submitted their email address!
+                    const capturedEmail = emailMatch[0].toLowerCase();
+                    await saveLeadCapture({
+                      automation_id: activeAuto.id,
+                      tenant_id: 'travel_kathegalu',
+                      participant_id: senderId,
+                      participant_username: senderUsername,
+                      participant_name: senderName,
+                      status: 'unlocked',
+                      email: capturedEmail,
+                      unlocked: true,
+                    });
+
+                    // Send unlocked resource card
+                    await sendInstagramButtonCard({
+                      igUserId: accountId,
+                      recipientId: senderId,
+                      title: activeAuto.success_message,
+                      buttons: [{ type: 'web_url', title: activeAuto.button_title, url: activeAuto.button_url }],
+                      accessToken: token,
+                    });
+                    await incrementReelAutomationStat(activeAuto.id, 'total_guides_unlocked');
+                    console.log(`[Meta Webhook] Captured email "${capturedEmail}" and sent unlocked resource card to ${senderName}`);
+                  } else if (isFollowCheckRequest) {
+                    // Follower tapped "I'm following you!" quick reply button
+                    const { isFollowing } = await checkUserFollowsBusiness(senderId, token);
+
+                    if (!isFollowing) {
+                      // Still not following yet
+                      await sendInstagramQuickReplyMessage({
+                        igUserId: accountId,
+                        recipientId: senderId,
+                        text: activeAuto.not_following_message,
+                        buttons: [{ title: activeAuto.gate_button_text, payload: `CHECK_FOLLOW_${activeAuto.id}` }],
+                        accessToken: token,
+                      });
+                      await saveLeadCapture({
+                        automation_id: activeAuto.id,
+                        tenant_id: 'travel_kathegalu',
+                        participant_id: senderId,
+                        participant_username: senderUsername,
+                        participant_name: senderName,
+                        status: 'gated',
+                      });
+                      console.log(`[Meta Webhook] Follow verification failed: user ${senderId} not following yet`);
+                    } else {
+                      // Verified follower!
+                      if (activeAuto.ask_email) {
+                        await saveLeadCapture({
+                          automation_id: activeAuto.id,
+                          tenant_id: 'travel_kathegalu',
+                          participant_id: senderId,
+                          participant_username: senderUsername,
+                          participant_name: senderName,
+                          status: 'awaiting_email',
+                        });
+                        await sendInstagramDirectMessage({
+                          igUserId: accountId,
+                          recipientId: senderId,
+                          text: "Awesome 👏 What's the best email to send this to? Reply with your email 👇",
+                          accessToken: token,
+                        });
+                        console.log(`[Meta Webhook] Follow verified for ${senderName}! Prompted for email.`);
+                      } else {
+                        await saveLeadCapture({
+                          automation_id: activeAuto.id,
+                          tenant_id: 'travel_kathegalu',
+                          participant_id: senderId,
+                          participant_username: senderUsername,
+                          participant_name: senderName,
+                          status: 'unlocked',
+                          unlocked: true,
+                        });
+                        await sendInstagramButtonCard({
+                          igUserId: accountId,
+                          recipientId: senderId,
+                          title: activeAuto.success_message,
+                          buttons: [{ type: 'web_url', title: activeAuto.button_title, url: activeAuto.button_url }],
+                          accessToken: token,
+                        });
+                        await incrementReelAutomationStat(activeAuto.id, 'total_guides_unlocked');
+                        console.log(`[Meta Webhook] Follow verified! Delivered unlocked guide card to ${senderId}`);
+                      }
+                    }
+                  } else {
+                    // Check if inbound DM matches any Reel Automation keyword (e.g. DAY15, GUIDE, ITINERARY)
+                    const matchingAuto = await findMatchingReelAutomation('travel_kathegalu', {
+                      text,
+                      channelType: 'dm',
+                    });
+
+                    if (matchingAuto) {
+                      const { isFollowing } = await checkUserFollowsBusiness(senderId, token);
+
+                      if (matchingAuto.require_follow && !isFollowing) {
+                        // User does not follow yet -> Send Gate with "I'm following you!" quick reply
+                        await sendInstagramQuickReplyMessage({
+                          igUserId: accountId,
+                          recipientId: senderId,
+                          text: matchingAuto.gate_message,
+                          buttons: [{ title: matchingAuto.gate_button_text, payload: `CHECK_FOLLOW_${matchingAuto.id}` }],
+                          accessToken: token,
+                        });
+                        await saveLeadCapture({
+                          automation_id: matchingAuto.id,
+                          tenant_id: 'travel_kathegalu',
+                          participant_id: senderId,
+                          participant_username: senderUsername,
+                          participant_name: senderName,
+                          status: 'gated',
+                        });
+                        await incrementReelAutomationStat(matchingAuto.id, 'total_followers_gated');
+                        console.log(`[Meta Webhook] Sent follow-gate DM to ${senderName}`);
+                      } else {
+                        if (matchingAuto.ask_email) {
+                          await saveLeadCapture({
+                            automation_id: matchingAuto.id,
+                            tenant_id: 'travel_kathegalu',
+                            participant_id: senderId,
+                            participant_username: senderUsername,
+                            participant_name: senderName,
+                            status: 'awaiting_email',
+                          });
+                          await sendInstagramDirectMessage({
+                            igUserId: accountId,
+                            recipientId: senderId,
+                            text: "Awesome 👏 What's the best email to send this to? Reply with your email 👇",
+                            accessToken: token,
+                          });
+                        } else {
+                          await saveLeadCapture({
+                            automation_id: matchingAuto.id,
+                            tenant_id: 'travel_kathegalu',
+                            participant_id: senderId,
+                            participant_username: senderUsername,
+                            participant_name: senderName,
+                            status: 'unlocked',
+                            unlocked: true,
+                          });
+                          await sendInstagramButtonCard({
+                            igUserId: accountId,
+                            recipientId: senderId,
+                            title: matchingAuto.success_message,
+                            buttons: [{ type: 'web_url', title: matchingAuto.button_title, url: matchingAuto.button_url }],
+                            accessToken: token,
+                          });
+                          await incrementReelAutomationStat(matchingAuto.id, 'total_guides_unlocked');
+                          console.log(`[Meta Webhook] Delivered unlocked guide card to follower ${senderName}`);
+                        }
+                      }
+                      await incrementReelAutomationStat(matchingAuto.id, 'total_dms_sent');
+                    }
+                  }
+                }
+              } catch (reelDmErr: any) {
+                console.warn('[Meta Webhook] Reel DM automation check warning:', reelDmErr.message);
+              }
             } catch (dmErr: any) {
               console.error('[Meta Webhook] Error ingesting DM:', dmErr.message);
             }
@@ -213,6 +420,99 @@ export async function POST(req: NextRequest) {
                 rawPayload: val,
               });
               console.log(`[Meta Webhook] Ingested Instagram Comment on media ${val.media?.id}`);
+
+              // Handle Comment Automation + Public Reply + DM Follow Gate
+              const commenterId = val.from?.id;
+              const commenterUsername = val.from?.username || 'traveler';
+              const commentText = val.text || '';
+              const reelMediaId = val.media?.id;
+
+              const dbAcc = await getInboxAccount(accountId);
+              const token = dbAcc?.page_access_token || dbAcc?.access_token;
+
+              if (token && commenterId) {
+                const matchingAuto = await findMatchingReelAutomation('travel_kathegalu', {
+                  reelId: reelMediaId,
+                  text: commentText,
+                  channelType: 'comment',
+                });
+
+                if (matchingAuto) {
+                  // 1. Reply to comment publicly
+                  if (matchingAuto.public_comment_reply) {
+                    try {
+                      await replyToInstagramComment({
+                        commentId: val.id,
+                        text: matchingAuto.public_comment_reply,
+                        accessToken: token,
+                      });
+                      await incrementReelAutomationStat(matchingAuto.id, 'total_comments_replied');
+                      console.log(`[Meta Webhook] Publicly replied to comment ${val.id}`);
+                    } catch (replyErr: any) {
+                      console.warn('[Meta Webhook] Failed to reply to comment:', replyErr.message);
+                    }
+                  }
+
+                  // 2. Check follow status & dispatch DM
+                  const { isFollowing } = await checkUserFollowsBusiness(commenterId, token);
+
+                  if (matchingAuto.require_follow && !isFollowing) {
+                    await sendInstagramQuickReplyMessage({
+                      igUserId: accountId,
+                      recipientId: commenterId,
+                      text: matchingAuto.gate_message,
+                      buttons: [{ title: matchingAuto.gate_button_text, payload: `CHECK_FOLLOW_${matchingAuto.id}` }],
+                      accessToken: token,
+                    });
+                    await saveLeadCapture({
+                      automation_id: matchingAuto.id,
+                      tenant_id: 'travel_kathegalu',
+                      participant_id: commenterId,
+                      participant_username: commenterUsername,
+                      reel_id: reelMediaId,
+                      status: 'gated',
+                    });
+                    await incrementReelAutomationStat(matchingAuto.id, 'total_followers_gated');
+                    console.log(`[Meta Webhook] Sent follow-gate DM to commenter @${commenterUsername}`);
+                  } else {
+                    if (matchingAuto.ask_email) {
+                      await saveLeadCapture({
+                        automation_id: matchingAuto.id,
+                        tenant_id: 'travel_kathegalu',
+                        participant_id: commenterId,
+                        participant_username: commenterUsername,
+                        reel_id: reelMediaId,
+                        status: 'awaiting_email',
+                      });
+                      await sendInstagramDirectMessage({
+                        igUserId: accountId,
+                        recipientId: commenterId,
+                        text: "Awesome 👏 What's the best email to send this to? Reply with your email 👇",
+                        accessToken: token,
+                      });
+                    } else {
+                      await saveLeadCapture({
+                        automation_id: matchingAuto.id,
+                        tenant_id: 'travel_kathegalu',
+                        participant_id: commenterId,
+                        participant_username: commenterUsername,
+                        reel_id: reelMediaId,
+                        status: 'unlocked',
+                        unlocked: true,
+                      });
+                      await sendInstagramButtonCard({
+                        igUserId: accountId,
+                        recipientId: commenterId,
+                        title: matchingAuto.success_message,
+                        buttons: [{ type: 'web_url', title: matchingAuto.button_title, url: matchingAuto.button_url }],
+                        accessToken: token,
+                      });
+                      await incrementReelAutomationStat(matchingAuto.id, 'total_guides_unlocked');
+                    }
+                  }
+                  await incrementReelAutomationStat(matchingAuto.id, 'total_dms_sent');
+                }
+              }
             } catch (commentErr: any) {
               console.error('[Meta Webhook] Error ingesting comment:', commentErr.message);
             }

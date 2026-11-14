@@ -550,3 +550,238 @@ export async function recordPaidRuleTrigger(ruleId: string): Promise<void> {
     [ruleId]
   );
 }
+
+export interface ReelAutomationRecord {
+  id: string;
+  tenant_id: string;
+  name: string;
+  reel_id: string;
+  reel_caption?: string | null;
+  reel_permalink?: string | null;
+  trigger_type: 'comment' | 'dm' | 'both';
+  trigger_keywords: string;
+  public_comment_reply?: string | null;
+  require_follow: boolean;
+  gate_message: string;
+  gate_button_text: string;
+  not_following_message: string;
+  success_message: string;
+  button_title: string;
+  button_url: string;
+  ask_email: boolean;
+  is_active: boolean;
+  total_comments_replied: number;
+  total_dms_sent: number;
+  total_followers_gated: number;
+  total_guides_unlocked: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export async function listReelAutomations(tenantId: string): Promise<ReelAutomationRecord[]> {
+  const p = getInboxPool();
+  const res = await p.query(
+    `SELECT * FROM inbox_reel_automations WHERE tenant_id = $1 ORDER BY created_at DESC`,
+    [tenantId]
+  );
+  return res.rows;
+}
+
+export async function upsertReelAutomation(
+  auto: Partial<ReelAutomationRecord> & {
+    id: string;
+    tenant_id: string;
+    name: string;
+  }
+): Promise<ReelAutomationRecord> {
+  const p = getInboxPool();
+  const res = await p.query(
+    `INSERT INTO inbox_reel_automations (
+       id, tenant_id, name, reel_id, reel_caption, reel_permalink, trigger_type,
+       trigger_keywords, public_comment_reply, require_follow, gate_message,
+       gate_button_text, not_following_message, success_message, button_title,
+       button_url, ask_email, is_active, updated_at
+     ) VALUES (
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, now()
+     )
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name,
+       reel_id = EXCLUDED.reel_id,
+       reel_caption = EXCLUDED.reel_caption,
+       reel_permalink = EXCLUDED.reel_permalink,
+       trigger_type = EXCLUDED.trigger_type,
+       trigger_keywords = EXCLUDED.trigger_keywords,
+       public_comment_reply = EXCLUDED.public_comment_reply,
+       require_follow = EXCLUDED.require_follow,
+       gate_message = EXCLUDED.gate_message,
+       gate_button_text = EXCLUDED.gate_button_text,
+       not_following_message = EXCLUDED.not_following_message,
+       success_message = EXCLUDED.success_message,
+       button_title = EXCLUDED.button_title,
+       button_url = EXCLUDED.button_url,
+       ask_email = EXCLUDED.ask_email,
+       is_active = EXCLUDED.is_active,
+       updated_at = now()
+     RETURNING *`,
+    [
+      auto.id,
+      auto.tenant_id,
+      auto.name,
+      auto.reel_id || 'ALL',
+      auto.reel_caption || null,
+      auto.reel_permalink || null,
+      auto.trigger_type || 'both',
+      auto.trigger_keywords || 'GUIDE,PDF,DAY15,ITINERARY',
+      auto.public_comment_reply || null,
+      auto.require_follow ?? true,
+      auto.gate_message || "This guide is only for my followers! Would really appreciate the support first and then I'll send it over!",
+      auto.gate_button_text || "I'm following you!",
+      auto.not_following_message || "Looks like you're not following yet. Follow @travel_kathegalu, then tap again 👇",
+      auto.success_message || "you asked for this resource...\nhere it is 🎁\ntap the first button below to open it 👇",
+      auto.button_title || "Get the guide 🎁",
+      auto.button_url || "https://tysonlabs.in/guides/bengaluru-itinerary-2026.pdf",
+      auto.ask_email ?? false,
+      auto.is_active ?? true,
+    ]
+  );
+  return res.rows[0];
+}
+
+export async function deleteReelAutomation(id: string, tenantId: string): Promise<void> {
+  const p = getInboxPool();
+  await p.query(
+    `DELETE FROM inbox_reel_automations WHERE id = $1 AND tenant_id = $2`,
+    [id, tenantId]
+  );
+}
+
+export async function findMatchingReelAutomation(
+  tenantId: string,
+  options: {
+    reelId?: string;
+    text?: string;
+    channelType: 'comment' | 'dm';
+  }
+): Promise<ReelAutomationRecord | null> {
+  const autos = await listReelAutomations(tenantId);
+  const textUpper = (options.text || '').toUpperCase();
+
+  for (const auto of autos) {
+    if (!auto.is_active) continue;
+
+    // Check trigger type
+    if (auto.trigger_type === 'comment' && options.channelType !== 'comment') continue;
+    if (auto.trigger_type === 'dm' && options.channelType !== 'dm') continue;
+
+    // Check reel match
+    if (auto.reel_id !== 'ALL' && options.reelId && auto.reel_id !== options.reelId) {
+      continue;
+    }
+
+    // If keywords configured, verify keyword match
+    if (auto.trigger_keywords && auto.trigger_keywords.trim()) {
+      const keywords = auto.trigger_keywords
+        .split(',')
+        .map((k) => k.trim().toUpperCase())
+        .filter(Boolean);
+      const matches = keywords.some((kw) => textUpper.includes(kw));
+      if (!matches) continue;
+    }
+
+    return auto;
+  }
+  return null;
+}
+
+export async function incrementReelAutomationStat(
+  autoId: string,
+  field: 'total_comments_replied' | 'total_dms_sent' | 'total_followers_gated' | 'total_guides_unlocked'
+): Promise<void> {
+  const p = getInboxPool();
+  await p.query(
+    `UPDATE inbox_reel_automations SET ${field} = ${field} + 1, updated_at = now() WHERE id = $1`,
+    [autoId]
+  );
+}
+
+export interface LeadCaptureRecord {
+  id: string;
+  automation_id: string;
+  tenant_id: string;
+  participant_id: string;
+  participant_username?: string | null;
+  participant_name?: string | null;
+  status: 'gated' | 'awaiting_email' | 'unlocked';
+  email?: string | null;
+  reel_id?: string | null;
+  created_at?: string;
+  unlocked_at?: string | null;
+}
+
+export async function getLeadCapture(
+  participantId: string,
+  automationId?: string
+): Promise<LeadCaptureRecord | null> {
+  const p = getInboxPool();
+  let query = `SELECT * FROM inbox_lead_captures WHERE participant_id = $1`;
+  const params: any[] = [participantId];
+  if (automationId) {
+    query += ` AND automation_id = $2`;
+    params.push(automationId);
+  }
+  query += ` ORDER BY created_at DESC LIMIT 1`;
+  const res = await p.query(query, params);
+  return res.rows[0] || null;
+}
+
+export async function saveLeadCapture(data: {
+  automation_id: string;
+  tenant_id: string;
+  participant_id: string;
+  participant_username?: string;
+  participant_name?: string;
+  status: 'gated' | 'awaiting_email' | 'unlocked';
+  email?: string;
+  reel_id?: string;
+  unlocked?: boolean;
+}): Promise<LeadCaptureRecord> {
+  const p = getInboxPool();
+  const id = `lead_${data.participant_id}_${data.automation_id}`;
+  const res = await p.query(
+    `INSERT INTO inbox_lead_captures (
+       id, automation_id, tenant_id, participant_id, participant_username,
+       participant_name, status, email, reel_id, created_at, unlocked_at
+     ) VALUES (
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, now(), $10
+     )
+     ON CONFLICT (id) DO UPDATE SET
+       status = EXCLUDED.status,
+       email = COALESCE(EXCLUDED.email, inbox_lead_captures.email),
+       participant_username = COALESCE(EXCLUDED.participant_username, inbox_lead_captures.participant_username),
+       participant_name = COALESCE(EXCLUDED.participant_name, inbox_lead_captures.participant_name),
+       unlocked_at = CASE WHEN EXCLUDED.status = 'unlocked' THEN now() ELSE inbox_lead_captures.unlocked_at END
+     RETURNING *`,
+    [
+      id,
+      data.automation_id,
+      data.tenant_id,
+      data.participant_id,
+      data.participant_username || null,
+      data.participant_name || null,
+      data.status,
+      data.email || null,
+      data.reel_id || null,
+      data.unlocked ? new Date().toISOString() : null,
+    ]
+  );
+  return res.rows[0];
+}
+
+export async function listLeadCaptures(tenantId: string): Promise<LeadCaptureRecord[]> {
+  const p = getInboxPool();
+  const res = await p.query(
+    `SELECT * FROM inbox_lead_captures WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT 100`,
+    [tenantId]
+  );
+  return res.rows;
+}
