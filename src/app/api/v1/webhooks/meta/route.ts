@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   verifyMetaWebhookHmac,
   getInstagramScopedUserProfile,
+  sendInstagramDirectMessage,
 } from '@/lib/instagram';
 import {
   ingestInstagramDm,
   ingestInstagramComment,
   logWebhookEvent,
   getInboxAccount,
+  findMatchingPaidRule,
+  recordPaidRuleTrigger,
+  recordOutboundMessage,
 } from '@/lib/inbox-db';
 
 const WEBHOOK_VERIFY_TOKEN =
@@ -141,6 +145,48 @@ export async function POST(req: NextRequest) {
                 rawPayload: item,
               });
               console.log(`[Meta Webhook] Ingested Instagram DM from ${senderName} (${senderId})`);
+
+              // Check for Paid DM Auto-Reply match
+              try {
+                const matchingRule = await findMatchingPaidRule('travel_kathegalu', text);
+                if (matchingRule) {
+                  const dbAcc = await getInboxAccount(accountId);
+                  const token = dbAcc?.page_access_token || dbAcc?.access_token;
+                  if (token) {
+                    const cleanName = senderName.replace('@', '').replace(/[^\w\s]/gi, '').trim() || 'traveler';
+                    const autoReplyText = matchingRule.reply_template
+                      .replace(/{{name}}/gi, cleanName)
+                      .replace(/{{product_name}}/gi, matchingRule.name)
+                      .replace(/{{payment_link}}/gi, matchingRule.payment_link)
+                      .replace(/{{price}}/gi, `₹${matchingRule.price_inr}`);
+
+                    const sendRes = await sendInstagramDirectMessage({
+                      igUserId: accountId,
+                      recipientId: senderId,
+                      text: autoReplyText,
+                      accessToken: token,
+                    });
+
+                    await recordOutboundMessage({
+                      id: sendRes.message_id,
+                      conversationId: `ig_dm_${accountId}_${senderId}`,
+                      tenantId: 'travel_kathegalu',
+                      platform: 'instagram',
+                      channelType: 'dm',
+                      senderId: accountId,
+                      senderName: 'Travel Kathegalu',
+                      recipientId: senderId,
+                      text: autoReplyText,
+                      status: 'sent',
+                    });
+
+                    await recordPaidRuleTrigger(matchingRule.id);
+                    console.log(`[Meta Webhook] Auto-dispatched Paid DM trigger for "${matchingRule.name}" to ${senderName}`);
+                  }
+                }
+              } catch (paidErr: any) {
+                console.warn('[Meta Webhook] Paid auto-reply check warning:', paidErr.message);
+              }
             } catch (dmErr: any) {
               console.error('[Meta Webhook] Error ingesting DM:', dmErr.message);
             }

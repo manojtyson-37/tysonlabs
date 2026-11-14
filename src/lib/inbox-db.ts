@@ -434,3 +434,119 @@ export async function updateConversationStatus(
     [status, conversationId]
   );
 }
+
+export interface PaidRuleRecord {
+  id: string;
+  tenant_id: string;
+  name: string;
+  keyword: string;
+  match_type: 'contains' | 'exact';
+  price_inr: number;
+  payment_link: string;
+  reply_template: string;
+  delivery_asset_url?: string | null;
+  delivery_message?: string | null;
+  is_active: boolean;
+  trigger_count: number;
+  order_count: number;
+  total_revenue_inr: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export async function listPaidRules(tenantId: string): Promise<PaidRuleRecord[]> {
+  const p = getInboxPool();
+  const res = await p.query(
+    `SELECT * FROM inbox_paid_rules WHERE tenant_id = $1 ORDER BY created_at DESC`,
+    [tenantId]
+  );
+  return res.rows;
+}
+
+export async function upsertPaidRule(
+  rule: Partial<PaidRuleRecord> & {
+    id: string;
+    tenant_id: string;
+    name: string;
+    keyword: string;
+    price_inr: number;
+    payment_link: string;
+    reply_template: string;
+  }
+): Promise<PaidRuleRecord> {
+  const p = getInboxPool();
+  const res = await p.query(
+    `INSERT INTO inbox_paid_rules (
+       id, tenant_id, name, keyword, match_type, price_inr, payment_link,
+       reply_template, delivery_asset_url, delivery_message, is_active, updated_at
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now())
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name,
+       keyword = EXCLUDED.keyword,
+       match_type = EXCLUDED.match_type,
+       price_inr = EXCLUDED.price_inr,
+       payment_link = EXCLUDED.payment_link,
+       reply_template = EXCLUDED.reply_template,
+       delivery_asset_url = EXCLUDED.delivery_asset_url,
+       delivery_message = EXCLUDED.delivery_message,
+       is_active = EXCLUDED.is_active,
+       updated_at = now()
+     RETURNING *`,
+    [
+      rule.id,
+      rule.tenant_id,
+      rule.name,
+      rule.keyword,
+      rule.match_type || 'contains',
+      rule.price_inr,
+      rule.payment_link,
+      rule.reply_template,
+      rule.delivery_asset_url || null,
+      rule.delivery_message || null,
+      rule.is_active ?? true,
+    ]
+  );
+  return res.rows[0];
+}
+
+export async function deletePaidRule(ruleId: string, tenantId: string): Promise<void> {
+  const p = getInboxPool();
+  await p.query(
+    `DELETE FROM inbox_paid_rules WHERE id = $1 AND tenant_id = $2`,
+    [ruleId, tenantId]
+  );
+}
+
+export async function findMatchingPaidRule(
+  tenantId: string,
+  messageText: string
+): Promise<PaidRuleRecord | null> {
+  if (!messageText) return null;
+  const rules = await listPaidRules(tenantId);
+  const textUpper = messageText.toUpperCase();
+
+  for (const rule of rules) {
+    if (!rule.is_active) continue;
+    const keywords = rule.keyword
+      .split(',')
+      .map((k) => k.trim().toUpperCase())
+      .filter(Boolean);
+
+    for (const kw of keywords) {
+      if (rule.match_type === 'exact') {
+        if (textUpper === kw) return rule;
+      } else {
+        if (textUpper.includes(kw)) return rule;
+      }
+    }
+  }
+  return null;
+}
+
+export async function recordPaidRuleTrigger(ruleId: string): Promise<void> {
+  const p = getInboxPool();
+  await p.query(
+    `UPDATE inbox_paid_rules SET trigger_count = trigger_count + 1, updated_at = now() WHERE id = $1`,
+    [ruleId]
+  );
+}
