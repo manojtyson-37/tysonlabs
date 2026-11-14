@@ -55,6 +55,57 @@ export interface MessageRecord {
   created_at: string;
 }
 
+export interface InboxAccountRecord {
+  id: string;
+  username: string;
+  name?: string | null;
+  page_id?: string | null;
+  page_name?: string | null;
+  access_token: string;
+  page_access_token?: string | null;
+  token_expires_at?: Date | null;
+  tenant_id: string;
+}
+
+export async function upsertInboxAccount(account: InboxAccountRecord): Promise<void> {
+  const p = getInboxPool();
+  await p.query(
+    `INSERT INTO inbox_accounts (
+       id, username, name, page_id, page_name, access_token, page_access_token, token_expires_at, tenant_id, updated_at
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, now())
+     ON CONFLICT (id) DO UPDATE SET
+       username = EXCLUDED.username,
+       name = EXCLUDED.name,
+       page_id = EXCLUDED.page_id,
+       page_name = EXCLUDED.page_name,
+       access_token = EXCLUDED.access_token,
+       page_access_token = EXCLUDED.page_access_token,
+       token_expires_at = EXCLUDED.token_expires_at,
+       tenant_id = EXCLUDED.tenant_id,
+       updated_at = now()`,
+    [
+      account.id,
+      account.username,
+      account.name || null,
+      account.page_id || null,
+      account.page_name || null,
+      account.access_token,
+      account.page_access_token || null,
+      account.token_expires_at || null,
+      account.tenant_id,
+    ]
+  );
+}
+
+export async function getInboxAccount(tenantOrId: string): Promise<InboxAccountRecord | null> {
+  const p = getInboxPool();
+  const res = await p.query(
+    `SELECT * FROM inbox_accounts WHERE id = $1 OR username = $1 OR tenant_id = $1 ORDER BY updated_at DESC LIMIT 1`,
+    [tenantOrId]
+  );
+  return res.rows[0] || null;
+}
+
 /**
  * Log raw webhook payload for debugging and Meta audit trail.
  */

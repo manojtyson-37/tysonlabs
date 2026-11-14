@@ -6,6 +6,7 @@ import {
 import {
   ingestInstagramDm,
   ingestInstagramComment,
+  getInboxAccount,
 } from '@/lib/inbox-db';
 
 export async function POST(req: NextRequest) {
@@ -17,16 +18,26 @@ export async function POST(req: NextRequest) {
       // empty body uses environment defaults
     }
 
+    const tenantId = body.tenantId || 'travel_kathegalu';
+    const accountName = body.accountName || 'Travel Kathegalu';
+
+    // Retrieve active credentials from database first, fallback to env
+    const dbAccount = await getInboxAccount(tenantId);
+
     const token =
       body.accessToken ||
+      dbAccount?.access_token ||
       process.env.INSTAGRAM_USER_ACCESS_TOKEN ||
       process.env.META_ACCESS_TOKEN;
 
-    const igUserId = body.igUserId || body.accountId || '17841432905297253';
-    const tenantId = body.tenantId || 'travel_kathegalu';
-    const accountName = body.accountName || 'Travel Kathegalu';
-    const pageId = body.pageId;
-    const pageAccessToken = body.pageAccessToken || token;
+    const igUserId =
+      body.igUserId ||
+      body.accountId ||
+      dbAccount?.id ||
+      '17841470062375430'; // Default to travel_kathegalu IG ID
+
+    const pageId = body.pageId || dbAccount?.page_id;
+    const pageAccessToken = body.pageAccessToken || dbAccount?.page_access_token || token;
 
     if (!token) {
       return NextResponse.json(

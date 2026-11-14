@@ -7,7 +7,11 @@ import {
   subscribePageToWebhooks,
   fetchHistoricalInstagramData,
 } from '@/lib/instagram';
-import { ingestInstagramComment, ingestInstagramDm } from '@/lib/inbox-db';
+import {
+  ingestInstagramComment,
+  ingestInstagramDm,
+  upsertInboxAccount,
+} from '@/lib/inbox-db';
 
 /**
  * Handles the OAuth redirect for both Direct Instagram Login (no Facebook Page)
@@ -96,9 +100,21 @@ export async function GET(request: Request) {
 
     const accounts = await getConnectedInstagramAccounts(accessToken);
 
-    // Auto-subscribe webhooks and ingest recent comments/DMs for connected accounts
+    // Auto-subscribe webhooks, persist credentials, and ingest recent comments/DMs
     for (const acc of accounts) {
       try {
+        await upsertInboxAccount({
+          id: acc.id,
+          username: acc.username,
+          name: acc.name,
+          page_id: acc.pageId,
+          page_name: acc.pageName,
+          access_token: accessToken,
+          page_access_token: acc.pageAccessToken,
+          token_expires_at: new Date(Date.now() + expiresIn * 1000),
+          tenant_id: 'travel_kathegalu',
+        });
+
         if (acc.pageId && acc.pageAccessToken) {
           await subscribePageToWebhooks(acc.pageId, acc.pageAccessToken);
         }

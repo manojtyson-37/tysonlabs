@@ -80,8 +80,8 @@ export async function POST(req: NextRequest) {
     rawPayload: payload,
   }).catch((e) => console.error('[Meta Webhook] Failed to log raw event:', e.message));
 
-  // Handle Instagram Webhook Events
-  if (objectType === 'instagram' && Array.isArray(payload.entry)) {
+  // Handle Instagram & Facebook Page Webhook Events
+  if ((objectType === 'instagram' || objectType === 'page') && Array.isArray(payload.entry)) {
     for (const entry of payload.entry) {
       const accountId = entry.id;
 
