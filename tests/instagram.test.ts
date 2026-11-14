@@ -8,7 +8,7 @@ import {
 } from '@/lib/instagram';
 
 describe('Instagram Graph API Helpers', () => {
-  it('generates a valid Meta OAuth URL with required Instagram scopes', () => {
+  it('generates a valid Meta OAuth URL with config_id or required scopes', () => {
     const url = getInstagramAuthUrl({
       appId: '1234567890',
       redirectUri: 'https://tysonlabs.in/api/auth/instagram/callback',
@@ -18,12 +18,7 @@ describe('Instagram Graph API Helpers', () => {
     expect(url).toContain('https://www.facebook.com/v21.0/dialog/oauth');
     expect(url).toContain('client_id=1234567890');
     expect(url).toContain('state=test-state-123');
-    expect(url).toContain('scope=');
-    expect(url).toContain('instagram_basic');
-    expect(url).toContain('instagram_manage_messages');
-    expect(url).toContain('instagram_content_publish');
-    expect(url).toContain('instagram_manage_insights');
-    expect(url).toContain('pages_show_list');
+    expect(url).toContain('config_id=1658341599370365');
   });
 
   it('correctly parses and verifies a valid Meta signed_request', () => {

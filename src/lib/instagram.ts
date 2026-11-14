@@ -34,6 +34,7 @@ export interface MediaContainerResponse {
  */
 export function getInstagramAuthUrl(options: {
   appId?: string;
+  configId?: string;
   redirectUri: string;
   state: string;
 }): string {
@@ -42,24 +43,16 @@ export function getInstagramAuthUrl(options: {
     process.env.FACEBOOK_APP_ID ||
     process.env.VITE_FACEBOOK_APP_ID ||
     '2229540584495459';
-  const scopes = [
-    'instagram_basic',
-    'instagram_manage_messages',
-    'instagram_manage_comments',
-    'instagram_content_publish',
-    'instagram_manage_insights',
-    'pages_show_list',
-    'pages_manage_metadata',
-    'pages_messaging',
-    'business_management',
-    'public_profile',
-  ].join(',');
+  const configId =
+    options.configId ||
+    process.env.FACEBOOK_CONFIG_ID ||
+    '1658341599370365';
 
   const params = new URLSearchParams({
     client_id: appId,
+    config_id: configId,
     redirect_uri: options.redirectUri,
     state: options.state,
-    scope: scopes,
     response_type: 'code',
   });
 
