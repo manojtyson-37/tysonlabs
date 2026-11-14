@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyMetaWebhookHmac } from '@/lib/instagram';
+import {
+  verifyMetaWebhookHmac,
+  getInstagramScopedUserProfile,
+} from '@/lib/instagram';
 import {
   ingestInstagramDm,
   ingestInstagramComment,
   logWebhookEvent,
+  getInboxAccount,
 } from '@/lib/inbox-db';
 
 const WEBHOOK_VERIFY_TOKEN =
@@ -100,6 +104,28 @@ export async function POST(req: NextRequest) {
               text = `[Sent ${att.type || 'media'}]`;
             }
 
+            // Resolve sender profile using active account credentials
+            let senderName = `Instagram User (${senderId.slice(-4)})`;
+            let senderAvatar: string | undefined;
+
+            try {
+              const dbAcc = await getInboxAccount(accountId);
+              const token =
+                dbAcc?.page_access_token ||
+                dbAcc?.access_token ||
+                process.env.INSTAGRAM_USER_ACCESS_TOKEN;
+
+              if (token) {
+                const profile = await getInstagramScopedUserProfile(senderId, token);
+                if (profile) {
+                  senderName = profile.username ? `@${profile.username}` : (profile.name || senderName);
+                  senderAvatar = profile.profile_pic;
+                }
+              }
+            } catch (profErr) {
+              console.warn('[Meta Webhook] Could not resolve sender profile:', profErr);
+            }
+
             try {
               await ingestInstagramDm({
                 messageId: message.mid || `mid_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -107,12 +133,14 @@ export async function POST(req: NextRequest) {
                 accountName: 'Travel Kathegalu',
                 tenantId: 'travel_kathegalu',
                 senderId,
+                senderName,
+                senderAvatar,
                 recipientId,
                 text,
                 timestamp: item.timestamp,
                 rawPayload: item,
               });
-              console.log(`[Meta Webhook] Ingested Instagram DM from ${senderId}`);
+              console.log(`[Meta Webhook] Ingested Instagram DM from ${senderName} (${senderId})`);
             } catch (dmErr: any) {
               console.error('[Meta Webhook] Error ingesting DM:', dmErr.message);
             }

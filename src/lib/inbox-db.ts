@@ -144,6 +144,7 @@ export async function ingestInstagramDm(options: {
   tenantId?: string;
   senderId: string;
   senderName?: string;
+  senderAvatar?: string;
   recipientId: string;
   text: string;
   timestamp?: number;
@@ -160,10 +161,12 @@ export async function ingestInstagramDm(options: {
   await p.query(
     `INSERT INTO inbox_conversations (
        id, tenant_id, platform, channel_type, account_id, account_name,
-       participant_id, participant_name, last_message, last_message_at,
+       participant_id, participant_name, participant_avatar, last_message, last_message_at,
        unread_count, status, updated_at
-     ) VALUES ($1, $2, 'instagram', 'dm', $3, $4, $5, $6, $7, $8, 1, 'open', now())
+     ) VALUES ($1, $2, 'instagram', 'dm', $3, $4, $5, $6, $7, $8, $9, 1, 'open', now())
      ON CONFLICT (id) DO UPDATE SET
+       participant_name = CASE WHEN EXCLUDED.participant_name NOT LIKE 'Instagram User%' THEN EXCLUDED.participant_name ELSE inbox_conversations.participant_name END,
+       participant_avatar = COALESCE(EXCLUDED.participant_avatar, inbox_conversations.participant_avatar),
        last_message = EXCLUDED.last_message,
        last_message_at = EXCLUDED.last_message_at,
        unread_count = inbox_conversations.unread_count + 1,
@@ -176,6 +179,7 @@ export async function ingestInstagramDm(options: {
       accountName,
       options.senderId,
       senderName,
+      options.senderAvatar || null,
       options.text,
       createdAt,
     ]

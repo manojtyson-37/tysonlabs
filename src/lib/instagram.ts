@@ -518,6 +518,25 @@ export function verifyMetaWebhookHmac(
 }
 
 /**
+ * Retrieve user profile (username, name, profile_pic) for an Instagram-Scoped ID (IGSID).
+ * Requires the receiving account's access token.
+ */
+export async function getInstagramScopedUserProfile(
+  igsid: string,
+  accessToken: string
+): Promise<{ id: string; name?: string; username?: string; profile_pic?: string } | null> {
+  try {
+    const url = `${META_GRAPH_BASE}/${igsid}?fields=name,username,profile_pic&access_token=${accessToken}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.warn(`[Meta Profile] Failed to fetch profile for IGSID ${igsid}:`, err);
+    return null;
+  }
+}
+
+/**
  * Send an Instagram Direct Message (reply to a follower).
  * Endpoint: POST https://graph.facebook.com/v21.0/{ig_user_id}/messages
  */

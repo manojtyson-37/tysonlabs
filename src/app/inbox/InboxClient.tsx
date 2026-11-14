@@ -452,18 +452,42 @@ export function InboxClient() {
             <>
               {/* Active Conversation Header */}
               <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50/60 dark:bg-zinc-900/60">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                      {activeConv.participant_name}
-                    </span>
-                    <span className="text-[11px] text-zinc-400">
-                      (ID: {activeConv.participant_id})
-                    </span>
+                <div className="flex items-center gap-3">
+                  {activeConv.participant_avatar ? (
+                    <img
+                      src={activeConv.participant_avatar}
+                      alt={activeConv.participant_name}
+                      className="w-10 h-10 rounded-full object-cover border border-zinc-200 dark:border-zinc-700"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-sm text-zinc-600 dark:text-zinc-300">
+                      {activeConv.participant_name.replace('@', '').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                        {activeConv.participant_name}
+                      </span>
+                      {activeConv.participant_name.startsWith('@') ? (
+                        <a
+                          href={`https://instagram.com/${activeConv.participant_name.replace('@', '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                        >
+                          View Profile ↗
+                        </a>
+                      ) : (
+                        <span className="text-[11px] text-zinc-400">
+                          (IGSID: {activeConv.participant_id})
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Channel: {activeConv.channel_type === 'comment' ? 'Reel/Post Comment Thread' : 'Direct Message'} · Managing as {activeConv.account_name}
+                    </p>
                   </div>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Channel: {activeConv.channel_type === 'comment' ? 'Reel/Post Comment Thread' : 'Direct Message'} · Managing as {activeConv.account_name}
-                  </p>
                 </div>
 
                 {/* Status Toggle Button */}
