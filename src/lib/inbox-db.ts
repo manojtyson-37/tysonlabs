@@ -159,37 +159,79 @@ export async function ingestInstagramDm(options: {
   const p = getInboxPool();
   const tenantId = options.tenantId || 'travel_kathegalu';
   const accountName = options.accountName || 'Travel Kathegalu';
-  const senderName = options.senderName || `Instagram User (${options.senderId.slice(-4)})`;
-  const conversationId = `ig_dm_${options.accountId}_${options.senderId}`;
+
+  // Check if message is outbound (echo from bot or sent by the creator)
+  const isEcho = Boolean(
+    options.senderId === options.accountId ||
+    options.rawPayload?.is_echo ||
+    options.rawPayload?.message?.is_echo
+  );
+
+  // The conversation participant is always the external user, not the brand account
+  const participantId = isEcho ? options.recipientId : options.senderId;
+  const conversationId = `ig_dm_${options.accountId}_${participantId}`;
+  const direction: 'inbound' | 'outbound' = isEcho ? 'outbound' : 'inbound';
   const createdAt = options.timestamp ? new Date(options.timestamp) : new Date();
 
+  const senderName = isEcho
+    ? accountName
+    : (options.senderName || `Instagram User (${participantId.slice(-4)})`);
+
   // 1. Upsert conversation
-  await p.query(
-    `INSERT INTO inbox_conversations (
-       id, tenant_id, platform, channel_type, account_id, account_name,
-       participant_id, participant_name, participant_avatar, last_message, last_message_at,
-       unread_count, status, updated_at
-     ) VALUES ($1, $2, 'instagram', 'dm', $3, $4, $5, $6, $7, $8, $9, 1, 'open', now())
-     ON CONFLICT (id) DO UPDATE SET
-       participant_name = CASE WHEN EXCLUDED.participant_name NOT LIKE 'Instagram User%' THEN EXCLUDED.participant_name ELSE inbox_conversations.participant_name END,
-       participant_avatar = COALESCE(EXCLUDED.participant_avatar, inbox_conversations.participant_avatar),
-       last_message = EXCLUDED.last_message,
-       last_message_at = EXCLUDED.last_message_at,
-       unread_count = inbox_conversations.unread_count + 1,
-       status = 'open',
-       updated_at = now()`,
-    [
-      conversationId,
-      tenantId,
-      options.accountId,
-      accountName,
-      options.senderId,
-      senderName,
-      options.senderAvatar || null,
-      options.text,
-      createdAt,
-    ]
-  );
+  if (isEcho) {
+    // For outbound message: update last_message without overwriting participant profile
+    await p.query(
+      `INSERT INTO inbox_conversations (
+         id, tenant_id, platform, channel_type, account_id, account_name,
+         participant_id, participant_name, participant_avatar, last_message, last_message_at,
+         unread_count, status, updated_at
+       ) VALUES ($1, $2, 'instagram', 'dm', $3, $4, $5, $6, $7, $8, $9, 0, 'replied', now())
+       ON CONFLICT (id) DO UPDATE SET
+         last_message = EXCLUDED.last_message,
+         last_message_at = EXCLUDED.last_message_at,
+         status = 'replied',
+         updated_at = now()`,
+      [
+        conversationId,
+        tenantId,
+        options.accountId,
+        accountName,
+        participantId,
+        `Instagram User (${participantId.slice(-4)})`,
+        options.senderAvatar || null,
+        options.text,
+        createdAt,
+      ]
+    );
+  } else {
+    // For inbound message from follower: update participant profile and increment unread
+    await p.query(
+      `INSERT INTO inbox_conversations (
+         id, tenant_id, platform, channel_type, account_id, account_name,
+         participant_id, participant_name, participant_avatar, last_message, last_message_at,
+         unread_count, status, updated_at
+       ) VALUES ($1, $2, 'instagram', 'dm', $3, $4, $5, $6, $7, $8, $9, 1, 'open', now())
+       ON CONFLICT (id) DO UPDATE SET
+         participant_name = CASE WHEN EXCLUDED.participant_name NOT LIKE 'Instagram User%' THEN EXCLUDED.participant_name ELSE inbox_conversations.participant_name END,
+         participant_avatar = COALESCE(EXCLUDED.participant_avatar, inbox_conversations.participant_avatar),
+         last_message = EXCLUDED.last_message,
+         last_message_at = EXCLUDED.last_message_at,
+         unread_count = inbox_conversations.unread_count + 1,
+         status = 'open',
+         updated_at = now()`,
+      [
+        conversationId,
+        tenantId,
+        options.accountId,
+        accountName,
+        participantId,
+        senderName,
+        options.senderAvatar || null,
+        options.text,
+        createdAt,
+      ]
+    );
+  }
 
   // 2. Insert message
   await p.query(
@@ -197,12 +239,13 @@ export async function ingestInstagramDm(options: {
        id, conversation_id, tenant_id, platform, channel_type,
        direction, sender_id, sender_name, recipient_id, text,
        status, raw_payload, created_at
-     ) VALUES ($1, $2, $3, 'instagram', 'dm', 'inbound', $4, $5, $6, $7, 'delivered', $8, $9)
+     ) VALUES ($1, $2, $3, 'instagram', 'dm', $4, $5, $6, $7, $8, 'delivered', $9, $10)
      ON CONFLICT (id) DO NOTHING`,
     [
       options.messageId,
       conversationId,
       tenantId,
+      direction,
       options.senderId,
       senderName,
       options.recipientId,
@@ -233,35 +276,64 @@ export async function ingestInstagramComment(options: {
   const p = getInboxPool();
   const tenantId = options.tenantId || 'travel_kathegalu';
   const accountName = options.accountName || 'Travel Kathegalu';
+  const isOwnComment = options.fromId === options.accountId || options.fromUsername === 'travel_kathegalu';
   const fromUsername = options.fromUsername || `user_${options.fromId.slice(-4)}`;
   const conversationId = `ig_comment_${options.mediaId}`;
+  const direction: 'inbound' | 'outbound' = isOwnComment ? 'outbound' : 'inbound';
   const now = new Date();
 
   // 1. Upsert comment conversation thread (keyed by post/mediaId)
-  await p.query(
-    `INSERT INTO inbox_conversations (
-       id, tenant_id, platform, channel_type, account_id, account_name,
-       participant_id, participant_name, subject_media_id,
-       last_message, last_message_at, unread_count, status, updated_at
-     ) VALUES ($1, $2, 'instagram', 'comment', $3, $4, $5, $6, $7, $8, now(), 1, 'open', now())
-     ON CONFLICT (id) DO UPDATE SET
-       participant_name = EXCLUDED.participant_name,
-       last_message = EXCLUDED.last_message,
-       last_message_at = now(),
-       unread_count = inbox_conversations.unread_count + 1,
-       status = 'open',
-       updated_at = now()`,
-    [
-      conversationId,
-      tenantId,
-      options.accountId,
-      accountName,
-      options.fromId,
-      `@${fromUsername}`,
-      options.mediaId,
-      `@${fromUsername}: ${options.text}`,
-    ]
-  );
+  if (isOwnComment) {
+    // Brand's own reply: update last message without overwriting commenter's participant_name
+    await p.query(
+      `INSERT INTO inbox_conversations (
+         id, tenant_id, platform, channel_type, account_id, account_name,
+         participant_id, participant_name, subject_media_id,
+         last_message, last_message_at, unread_count, status, updated_at
+       ) VALUES ($1, $2, 'instagram', 'comment', $3, $4, $5, $6, $7, $8, now(), 0, 'replied', now())
+       ON CONFLICT (id) DO UPDATE SET
+         last_message = EXCLUDED.last_message,
+         last_message_at = now(),
+         status = 'replied',
+         updated_at = now()`,
+      [
+        conversationId,
+        tenantId,
+        options.accountId,
+        accountName,
+        options.fromId,
+        `@${fromUsername}`,
+        options.mediaId,
+        `You: ${options.text}`,
+      ]
+    );
+  } else {
+    // Inbound user comment
+    await p.query(
+      `INSERT INTO inbox_conversations (
+         id, tenant_id, platform, channel_type, account_id, account_name,
+         participant_id, participant_name, subject_media_id,
+         last_message, last_message_at, unread_count, status, updated_at
+       ) VALUES ($1, $2, 'instagram', 'comment', $3, $4, $5, $6, $7, $8, now(), 1, 'open', now())
+       ON CONFLICT (id) DO UPDATE SET
+         participant_name = CASE WHEN inbox_conversations.participant_name LIKE '@travel_kathegalu%' THEN EXCLUDED.participant_name ELSE COALESCE(inbox_conversations.participant_name, EXCLUDED.participant_name) END,
+         last_message = EXCLUDED.last_message,
+         last_message_at = now(),
+         unread_count = inbox_conversations.unread_count + 1,
+         status = 'open',
+         updated_at = now()`,
+      [
+        conversationId,
+        tenantId,
+        options.accountId,
+        accountName,
+        options.fromId,
+        `@${fromUsername}`,
+        options.mediaId,
+        `@${fromUsername}: ${options.text}`,
+      ]
+    );
+  }
 
   // 2. Insert comment as message
   await p.query(
@@ -269,14 +341,15 @@ export async function ingestInstagramComment(options: {
        id, conversation_id, tenant_id, platform, channel_type,
        direction, sender_id, sender_name, recipient_id, text,
        parent_id, status, raw_payload, created_at
-     ) VALUES ($1, $2, $3, 'instagram', 'comment', 'inbound', $4, $5, $6, $7, $8, 'delivered', $9, now())
+     ) VALUES ($1, $2, $3, 'instagram', 'comment', $4, $5, $6, $7, $8, $9, 'delivered', $10, now())
      ON CONFLICT (id) DO NOTHING`,
     [
       options.commentId,
       conversationId,
       tenantId,
+      direction,
       options.fromId,
-      `@${fromUsername}`,
+      isOwnComment ? accountName : `@${fromUsername}`,
       options.accountId,
       options.text,
       options.parentId || null,
@@ -372,6 +445,9 @@ export async function listConversations(options: {
     conditions.push(`status = $${idx++}`);
     params.push(options.status);
   }
+
+  // Never include self-conversations (where participant_id = account_id or self-reflexive id)
+  conditions.push(`(participant_id != account_id AND id NOT LIKE '%_' || account_id || '_' || account_id)`);
 
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
   const limitClause = `LIMIT ${options.limit || 50}`;
@@ -684,7 +760,16 @@ export async function findMatchingReelAutomation(
         .split(',')
         .map((k) => k.trim().toUpperCase())
         .filter(Boolean);
-      const matches = keywords.some((kw) => textUpper.includes(kw));
+      const normalizedText = textUpper.replace(/[^A-Z0-9\s]/g, ' ');
+      const compactText = textUpper.replace(/[^A-Z0-9]/g, '');
+      const matches = keywords.some((kw) => {
+        const cleanKw = kw.replace(/[^A-Z0-9]/g, '');
+        return (
+          textUpper.includes(kw) ||
+          normalizedText.includes(kw) ||
+          (cleanKw.length >= 3 && compactText.includes(cleanKw))
+        );
+      });
       if (!matches) continue;
     }
 

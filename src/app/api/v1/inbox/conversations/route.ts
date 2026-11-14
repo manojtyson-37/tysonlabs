@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listConversations } from '@/lib/inbox-db';
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
+  const searchParams = req.nextUrl.searchParams;
   const tenantId = searchParams.get('tenantId') || 'travel_kathegalu';
   const platform = searchParams.get('platform') || undefined;
   const channelType = searchParams.get('channelType') || undefined;

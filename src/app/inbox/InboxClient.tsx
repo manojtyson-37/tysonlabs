@@ -498,6 +498,10 @@ export function InboxClient() {
 
   // Filter conversations
   const filteredConversations = conversations.filter((c) => {
+    // Exclude any bogus self-conversations
+    if (c.participant_id === c.account_id) return false;
+    if (c.participant_name.includes('5430') && c.participant_id === '17841470062375430') return false;
+    if (c.id === 'ig_dm_17841470062375430_17841470062375430') return false;
     if (filterType === 'dm') return c.channel_type === 'dm';
     if (filterType === 'comment') return c.channel_type === 'comment';
     if (filterType === 'unread') return c.unread_count > 0;
@@ -514,9 +518,9 @@ export function InboxClient() {
   const activeHandle = activeConv ? extractInstagramHandle(activeConv.participant_name) : null;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 py-4 space-y-4">
+    <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 pt-1 pb-4 space-y-3">
       {/* TOP HEADER */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-black border border-[#262626] text-white">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-black border border-[#262626] text-white">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full p-[2px] bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] flex-shrink-0">
             <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
@@ -585,7 +589,7 @@ export function InboxClient() {
       )}
 
       {/* NATIVE INSTAGRAM DIRECT UNIFIED CANVAS */}
-      <div className="rounded-2xl border border-[#262626] bg-black overflow-hidden flex h-[760px] shadow-2xl">
+      <div className="rounded-2xl border border-[#262626] bg-black overflow-hidden flex h-[calc(100dvh-140px)] min-h-[540px] max-h-[860px] shadow-2xl">
         {/* Left Column: Instagram Inbox Thread List (360px) */}
         <div className="w-[340px] sm:w-[380px] border-r border-[#262626] flex flex-col bg-black flex-shrink-0">
           {/* Account Title Bar */}
@@ -687,7 +691,9 @@ export function InboxClient() {
                       </div>
 
                       <p className="text-xs text-zinc-400 truncate mt-0.5 font-normal">
-                        {c.last_message || 'Sent a message'}
+                        {c.status === 'replied' && !c.last_message.startsWith('You: ') && !c.last_message.startsWith('@')
+                          ? `You: ${c.last_message}`
+                          : c.last_message || 'Sent a message'}
                       </p>
 
                       <div className="flex items-center gap-1.5 mt-1">
@@ -715,7 +721,7 @@ export function InboxClient() {
         </div>
 
         {/* Right Column: Native Instagram Direct Chat Canvas */}
-        <div className="flex-1 flex flex-col bg-black min-w-0">
+        <div className="flex-1 flex flex-col bg-black min-w-0 h-full">
           {activeConv ? (
             <>
               {/* Native Chat Header */}
@@ -848,10 +854,10 @@ export function InboxClient() {
               </div>
 
               {/* Chat Messages Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-black">
-                {/* Instagram Profile Anchor Header */}
-                <div className="flex flex-col items-center justify-center py-6 text-center border-b border-[#1f1f1f] mb-4">
-                  <div className="w-20 h-20 rounded-full p-[2px] bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] mb-3">
+              <div className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6 space-y-3 bg-black">
+                {/* Instagram Profile Anchor Header - Compact & Native */}
+                <div className="flex flex-col items-center justify-center py-3 text-center border-b border-[#1f1f1f] mb-3">
+                  <div className="w-14 h-14 rounded-full p-[1.5px] bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] mb-2">
                     <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
                       {activeConv.participant_avatar ? (
                         <img
@@ -860,18 +866,18 @@ export function InboxClient() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="font-bold text-2xl text-white">
+                        <span className="font-bold text-lg text-white">
                           {(activeHandle || activeConv.participant_name).charAt(0).toUpperCase()}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <h3 className="font-bold text-base text-white tracking-tight">
+                  <h3 className="font-bold text-sm text-white tracking-tight">
                     {activeConv.participant_name}
                   </h3>
 
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-[11px] text-zinc-400">
                     {activeHandle ? `${activeHandle} · Instagram` : 'Instagram User'}
                   </p>
                 </div>
@@ -1020,7 +1026,7 @@ export function InboxClient() {
               </div>
 
               {/* Native Instagram Quick Reply Chips */}
-              <div className="px-5 py-2 bg-black border-t border-[#1f1f1f] flex items-center gap-2 overflow-x-auto">
+              <div className="px-5 py-2 bg-black border-t border-[#1f1f1f] flex items-center gap-2 overflow-x-auto flex-shrink-0">
                 <span className="text-[11px] font-bold text-zinc-500 whitespace-nowrap">Quick:</span>
                 {QUICK_REPLIES.map((qr, idx) => (
                   <button
@@ -1034,7 +1040,7 @@ export function InboxClient() {
               </div>
 
               {/* Native Instagram Message Composer */}
-              <div className="p-4 border-t border-[#262626] bg-black">
+              <div className="p-3 sm:p-4 border-t border-[#262626] bg-black flex-shrink-0">
                 <form onSubmit={handleSendReply} className="flex items-center gap-3 rounded-full border border-[#363636] bg-[#121212] px-4 py-2.5 focus-within:border-[#555] transition">
                   <Smile className="w-5 h-5 text-zinc-400 hover:text-white cursor-pointer transition flex-shrink-0" />
 

@@ -110,6 +110,12 @@ export async function POST(req: NextRequest) {
           const message = item.message;
 
           if (message && senderId && recipientId) {
+            const isEcho = Boolean(
+              message.is_echo ||
+              item.is_echo ||
+              senderId === accountId
+            );
+
             // Text or fallback for media
             let text = message.text || '';
             if (!text && message.attachments && message.attachments.length > 0) {
@@ -117,8 +123,12 @@ export async function POST(req: NextRequest) {
               text = `[Sent ${att.type || 'media'}]`;
             }
 
+            // If it's an echo (outbound from bot/creator), the customer is recipientId.
+            // If inbound from follower, customer is senderId.
+            const customerId = isEcho ? recipientId : senderId;
+
             // Resolve sender profile using active account credentials
-            let senderName = `Instagram User (${senderId.slice(-4)})`;
+            let senderName = `Instagram User (${customerId.slice(-4)})`;
             let senderUsername: string | undefined;
             let senderAvatar: string | undefined;
 
@@ -129,8 +139,8 @@ export async function POST(req: NextRequest) {
                 dbAcc?.access_token ||
                 process.env.INSTAGRAM_USER_ACCESS_TOKEN;
 
-              if (token) {
-                const profile = await getInstagramScopedUserProfile(senderId, token);
+              if (token && !isEcho) {
+                const profile = await getInstagramScopedUserProfile(customerId, token);
                 if (profile) {
                   senderUsername = profile.username;
                   senderName = profile.username ? `@${profile.username}` : (profile.name || senderName);
@@ -148,14 +158,19 @@ export async function POST(req: NextRequest) {
                 accountName: 'Travel Kathegalu',
                 tenantId: 'travel_kathegalu',
                 senderId,
-                senderName,
+                senderName: isEcho ? 'Travel Kathegalu' : senderName,
                 senderAvatar,
                 recipientId,
                 text,
                 timestamp: item.timestamp,
                 rawPayload: item,
               });
-              console.log(`[Meta Webhook] Ingested Instagram DM from ${senderName} (${senderId})`);
+              console.log(`[Meta Webhook] Ingested ${isEcho ? 'outbound echo' : 'inbound'} Instagram DM for customer ${customerId}`);
+
+              // Do not run automation triggers on our own outbound echoes!
+              if (isEcho) {
+                continue;
+              }
 
               // Check for Paid DM Auto-Reply match
               try {
@@ -406,24 +421,31 @@ export async function POST(req: NextRequest) {
         for (const change of entry.changes) {
           if (change.field === 'comments' && change.value) {
             const val = change.value;
+            const commenterId = val.from?.id;
+            const commenterUsername = val.from?.username || 'traveler';
+            const isOwnComment = commenterId === accountId || commenterUsername === 'travel_kathegalu';
+
             try {
               await ingestInstagramComment({
                 commentId: val.id,
                 accountId,
                 accountName: 'Travel Kathegalu',
                 tenantId: 'travel_kathegalu',
-                fromId: val.from?.id || 'unknown',
-                fromUsername: val.from?.username || 'traveler',
+                fromId: commenterId || 'unknown',
+                fromUsername: commenterUsername,
                 text: val.text || '',
                 mediaId: val.media?.id || 'media_post',
                 parentId: val.parent_id,
                 rawPayload: val,
               });
-              console.log(`[Meta Webhook] Ingested Instagram Comment on media ${val.media?.id}`);
+              console.log(`[Meta Webhook] Ingested ${isOwnComment ? 'own reply' : 'user'} comment on media ${val.media?.id}`);
+
+              // Never run auto-reply on our own comment replies!
+              if (isOwnComment) {
+                continue;
+              }
 
               // Handle Comment Automation + Public Reply + DM Follow Gate
-              const commenterId = val.from?.id;
-              const commenterUsername = val.from?.username || 'traveler';
               const commentText = val.text || '';
               const reelMediaId = val.media?.id;
 
