@@ -10,7 +10,23 @@ import {
   User,
   MessageCircle,
   Filter,
+  ExternalLink,
 } from 'lucide-react';
+
+function extractInstagramHandle(name: string): string | null {
+  if (!name) return null;
+  const match = name.match(/@([a-zA-Z0-9_.]+)/);
+  if (match) return match[1];
+  const cleaned = name.trim();
+  if (
+    /^[a-zA-Z0-9_.]{1,30}$/.test(cleaned) &&
+    !cleaned.toLowerCase().startsWith('instagram user') &&
+    !cleaned.toLowerCase().startsWith('user')
+  ) {
+    return cleaned;
+  }
+  return null;
+}
 
 interface Conversation {
   id: string;
@@ -382,62 +398,75 @@ export function InboxClient() {
               filteredConversations.map((c) => {
                 const isActive = c.id === activeConvId;
                 const isComment = c.channel_type === 'comment';
+                const handle = extractInstagramHandle(c.participant_name);
                 return (
                   <button
                     key={c.id}
                     onClick={() => setActiveConvId(c.id)}
-                    className={`w-full text-left p-4 transition flex flex-col gap-1.5 ${
+                    className={`w-full text-left p-3.5 transition flex items-start gap-3 border-b border-zinc-100 dark:border-zinc-800/60 ${
                       isActive
                         ? 'bg-zinc-100/90 dark:bg-zinc-800/90 border-l-4 border-zinc-900 dark:border-zinc-100'
                         : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/40'
                     }`}
                   >
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-2">
-                        {isComment ? (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                            <MessageCircle className="w-3 h-3" />
-                            COMMENT
+                    {c.participant_avatar ? (
+                      <img
+                        src={c.participant_avatar}
+                        alt={c.participant_name}
+                        className="w-10 h-10 rounded-full object-cover flex-shrink-0 border border-zinc-200 dark:border-zinc-700 mt-0.5"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center font-bold text-xs text-zinc-700 dark:text-zinc-300 flex-shrink-0 mt-0.5">
+                        {(handle || c.participant_name).replace('@', '').charAt(0).toUpperCase()}
+                      </div>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                            {c.participant_name}
                           </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950 dark:text-fuchsia-300">
-                            <MessageSquare className="w-3 h-3" />
-                            DM
-                          </span>
-                        )}
-                        <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[150px]">
-                          {c.participant_name}
+                          {isComment ? (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 flex-shrink-0">
+                              COMMENT
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950 dark:text-fuchsia-300 flex-shrink-0">
+                              DM
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-zinc-400 flex-shrink-0 ml-1">
+                          {new Date(c.last_message_at).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
                         </span>
                       </div>
-                      <span className="text-[10px] text-zinc-400">
-                        {new Date(c.last_message_at).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                    </div>
 
-                    <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed">
-                      {c.last_message || '(No message preview)'}
-                    </p>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-1 leading-relaxed mt-0.5">
+                        {c.last_message || '(No message preview)'}
+                      </p>
 
-                    <div className="flex items-center justify-between pt-1">
-                      <span
-                        className={`text-[10px] font-medium uppercase px-2 py-0.5 rounded-full ${
-                          c.status === 'replied'
-                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                            : c.status === 'resolved'
-                            ? 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
-                            : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                        }`}
-                      >
-                        {c.status}
-                      </span>
-                      {c.unread_count > 0 && (
-                        <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
-                          {c.unread_count}
+                      <div className="flex items-center justify-between pt-1">
+                        <span
+                          className={`text-[9px] font-semibold uppercase px-2 py-0.5 rounded-full ${
+                            c.status === 'replied'
+                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                              : c.status === 'resolved'
+                              ? 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+                              : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                          }`}
+                        >
+                          {c.status}
                         </span>
-                      )}
+                        {c.unread_count > 0 && (
+                          <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                            {c.unread_count}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </button>
                 );
@@ -451,58 +480,76 @@ export function InboxClient() {
           {activeConv ? (
             <>
               {/* Active Conversation Header */}
-              <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50/60 dark:bg-zinc-900/60">
-                <div className="flex items-center gap-3">
-                  {activeConv.participant_avatar ? (
-                    <img
-                      src={activeConv.participant_avatar}
-                      alt={activeConv.participant_name}
-                      className="w-10 h-10 rounded-full object-cover border border-zinc-200 dark:border-zinc-700"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-sm text-zinc-600 dark:text-zinc-300">
-                      {activeConv.participant_name.replace('@', '').charAt(0).toUpperCase()}
+              {(() => {
+                const activeHandle = extractInstagramHandle(activeConv.participant_name);
+                return (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50/70 dark:bg-zinc-900/70">
+                    <div className="flex items-center gap-3.5">
+                      {activeConv.participant_avatar ? (
+                        <img
+                          src={activeConv.participant_avatar}
+                          alt={activeConv.participant_name}
+                          className="w-12 h-12 rounded-full object-cover border-2 border-zinc-200 dark:border-zinc-700 shadow-sm"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center font-bold text-base text-zinc-700 dark:text-zinc-200 shadow-sm">
+                          {(activeHandle || activeConv.participant_name).replace('@', '').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                            {activeConv.participant_name}
+                          </h2>
+                          {activeHandle && (
+                            <a
+                              href={`https://instagram.com/${activeHandle}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:opacity-85 transition"
+                            >
+                              <span>@{activeHandle}</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                          <span className="text-[10px] font-mono text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
+                            ID: {activeConv.participant_id}
+                          </span>
+                        </div>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+                          <span>Channel: {activeConv.channel_type === 'comment' ? 'Reel/Post Comment Thread' : 'Direct Message'}</span>
+                          <span>·</span>
+                          <span>Managing as <strong className="text-zinc-700 dark:text-zinc-300">@{activeConv.account_name}</strong></span>
+                        </p>
+                      </div>
                     </div>
-                  )}
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                        {activeConv.participant_name}
-                      </span>
-                      {activeConv.participant_name.startsWith('@') ? (
+
+                    {/* Action Controls */}
+                    <div className="flex items-center gap-2 self-end sm:self-auto">
+                      {activeHandle && (
                         <a
-                          href={`https://instagram.com/${activeConv.participant_name.replace('@', '')}`}
+                          href={`https://instagram.com/${activeHandle}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition shadow-xs"
                         >
+                          <ExternalLink className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                           View Profile ↗
                         </a>
-                      ) : (
-                        <span className="text-[11px] text-zinc-400">
-                          (IGSID: {activeConv.participant_id})
-                        </span>
                       )}
+                      <button
+                        onClick={() =>
+                          handleStatusChange(activeConv.status === 'resolved' ? 'open' : 'resolved')
+                        }
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        {activeConv.status === 'resolved' ? 'Re-open' : 'Mark Resolved'}
+                      </button>
                     </div>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                      Channel: {activeConv.channel_type === 'comment' ? 'Reel/Post Comment Thread' : 'Direct Message'} · Managing as {activeConv.account_name}
-                    </p>
                   </div>
-                </div>
-
-                {/* Status Toggle Button */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() =>
-                      handleStatusChange(activeConv.status === 'resolved' ? 'open' : 'resolved')
-                    }
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    {activeConv.status === 'resolved' ? 'Re-open' : 'Mark Resolved'}
-                  </button>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Reel / Post Context Banner if Comment */}
               {activeConv.channel_type === 'comment' && (
@@ -546,7 +593,14 @@ export function InboxClient() {
                         className={`flex flex-col ${isInbound ? 'items-start' : 'items-end'}`}
                       >
                         <div className="flex items-center gap-1.5 mb-1 text-[11px] text-zinc-400">
-                          <span>{m.sender_name}</span>
+                          {isInbound && activeConv.participant_avatar && (
+                            <img
+                              src={activeConv.participant_avatar}
+                              alt=""
+                              className="w-4 h-4 rounded-full object-cover inline-block mr-0.5 border border-zinc-200 dark:border-zinc-700"
+                            />
+                          )}
+                          <span className="font-semibold text-zinc-700 dark:text-zinc-300">{m.sender_name}</span>
                           <span>·</span>
                           <span>
                             {new Date(m.created_at).toLocaleTimeString([], {

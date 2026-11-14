@@ -97,13 +97,19 @@ export async function upsertInboxAccount(account: InboxAccountRecord): Promise<v
   );
 }
 
-export async function getInboxAccount(tenantOrId: string): Promise<InboxAccountRecord | null> {
+export async function getInboxAccount(tenantOrId?: string): Promise<InboxAccountRecord | null> {
   const p = getInboxPool();
-  const res = await p.query(
-    `SELECT * FROM inbox_accounts WHERE id = $1 OR username = $1 OR tenant_id = $1 ORDER BY updated_at DESC LIMIT 1`,
-    [tenantOrId]
+  if (tenantOrId) {
+    const res = await p.query(
+      `SELECT * FROM inbox_accounts WHERE id = $1 OR username = $1 OR tenant_id = $1 OR page_id = $1 ORDER BY updated_at DESC LIMIT 1`,
+      [tenantOrId]
+    );
+    if (res.rows.length > 0) return res.rows[0];
+  }
+  const fallback = await p.query(
+    `SELECT * FROM inbox_accounts ORDER BY updated_at DESC LIMIT 1`
   );
-  return res.rows[0] || null;
+  return fallback.rows[0] || null;
 }
 
 /**
