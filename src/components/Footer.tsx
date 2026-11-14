@@ -1,11 +1,24 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ArrowUpRight, Mail, Globe } from 'lucide-react';
 import { GithubIcon } from '@/components/Icons';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function Footer() {
+  const pathname = usePathname();
   const currentYear = 2026;
+
+  // Do not render marketing footer on full-height app workspaces
+  if (
+    pathname?.startsWith('/inbox') ||
+    pathname?.startsWith('/creatorautomation') ||
+    pathname?.startsWith('/dashboard')
+  ) {
+    return null;
+  }
 
   return (
     <footer className="border-t border-black/[0.08] dark:border-white/[0.08] bg-zinc-50 dark:bg-[#000000] text-zinc-600 dark:text-[#9B9B9B] mt-24 transition-colors duration-200">

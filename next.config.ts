@@ -4,17 +4,21 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
-  // The reviews dashboard lives on its own host and is served from /dashboard. The same app and database serve both sites.
-  // DASHBOARD_HOST must be the same value at build time (here) and at run time (the dashboard layout). Dots are escaped because has.value is a pattern.
+  // Host-level rewrites for dedicated subdomains:
+  // - reviews.tysonlabs.in -> /dashboard
+  // - creatorautomation.tysonlabs.in -> /inbox
   async rewrites() {
-    const host = [{ type: 'host' as const, value: (process.env.DASHBOARD_HOST ?? 'reviews.tysonlabs.in').replace(/\./g, '\\.') }];
+    const dashboardHost = [{ type: 'host' as const, value: (process.env.DASHBOARD_HOST ?? 'reviews.tysonlabs.in').replace(/\./g, '\\.') }];
+    const creatorHost = [{ type: 'host' as const, value: (process.env.CREATOR_AUTOMATION_HOST ?? 'creatorautomation.tysonlabs.in').replace(/\./g, '\\.') }];
     return {
       beforeFiles: [
-        { source: '/', has: host, destination: '/dashboard' },
-        { source: '/:path((?!api/|_next/|dashboard|favicon\\.ico|robots\\.txt|sitemap\\.xml).+)', has: host, destination: '/dashboard/:path' },
-        // On every other host the dashboard routes do not exist: a real 404, not a page that happens to render "not found".
-        { source: '/dashboard/:path*', missing: host, destination: '/this-page-does-not-exist' },
-        { source: '/dashboard', missing: host, destination: '/this-page-does-not-exist' },
+        { source: '/', has: creatorHost, destination: '/inbox' },
+        { source: '/:path((?!api/|_next/|inbox|favicon\\.ico|robots\\.txt|sitemap\\.xml).+)', has: creatorHost, destination: '/inbox/:path' },
+        { source: '/', has: dashboardHost, destination: '/dashboard' },
+        { source: '/:path((?!api/|_next/|dashboard|favicon\\.ico|robots\\.txt|sitemap\\.xml).+)', has: dashboardHost, destination: '/dashboard/:path' },
+        // On other hosts the private dashboard routes do not exist
+        { source: '/dashboard/:path*', missing: dashboardHost, destination: '/this-page-does-not-exist' },
+        { source: '/dashboard', missing: dashboardHost, destination: '/this-page-does-not-exist' },
       ],
       afterFiles: [],
       fallback: [],

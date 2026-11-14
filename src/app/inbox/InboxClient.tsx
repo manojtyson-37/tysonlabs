@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   MessageSquare,
   Send,
@@ -144,6 +145,13 @@ export function InboxClient() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
+  // Top Section Switcher: Direct Inbox vs Reply Automation Studio vs Follower Leads CRM
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeSection, setActiveSection] = useState<'inbox' | 'automations' | 'leads'>(
+    tabParam === 'automations' ? 'automations' : tabParam === 'leads' ? 'leads' : 'inbox'
+  );
+
   // Reel Automation & Follower Gate State
   const [showReelModal, setShowReelModal] = useState(false);
   const [activeAutoTab, setActiveAutoTab] = useState<'automations' | 'create' | 'leads'>('automations');
@@ -155,7 +163,7 @@ export function InboxClient() {
   // Form state for creating a Reel Automation
   const [newAutoName, setNewAutoName] = useState('Reel Lead Magnet: Follow-to-Unlock 3-Day Bengaluru Guide');
   const [newAutoReelId, setNewAutoReelId] = useState('ALL');
-  const [newAutoKeywords, setNewAutoKeywords] = useState('GUIDE,PDF,DAY15,ITINERARY,FOOD,SEND,MAP');
+  const [newAutoKeywords, setNewAutoKeywords] = useState('GUIDE,PDF,DAY15,DAY 15,ITINERARY,FOOD,SEND,MAP,LINK,PLEASE,HELLO,HI,HEY,INFO');
   const [newAutoPublicReply, setNewAutoPublicReply] = useState('Sent you the full Bengaluru PDF guide in DMs! Check your requests ✈️❤️');
   const [newAutoRequireFollow, setNewAutoRequireFollow] = useState(true);
   const [newAutoGateMessage, setNewAutoGateMessage] = useState("This guide is only for my followers! Would really appreciate the support first and then I'll send it over!");
@@ -166,11 +174,13 @@ export function InboxClient() {
   const [newAutoButtonTitle, setNewAutoButtonTitle] = useState('Get the guide 🎁');
   const [newAutoButtonUrl, setNewAutoButtonUrl] = useState('https://tysonlabs.in/guides/bengaluru-itinerary-2026.pdf');
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to latest message in active conversation
+  // Auto-scroll inside the messages container only (NEVER scrolling the browser window)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages, activeConvId]);
 
   // Fetch Reel Automations
@@ -545,14 +555,18 @@ export function InboxClient() {
 
         {/* Action Controls */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Reel Automation & Follower-Gate Studio Button */}
+          {/* Section Switcher Shortcut */}
           <button
-            onClick={() => setShowReelModal(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white px-3.5 py-1.5 text-xs font-bold shadow-md hover:opacity-95 transition"
+            onClick={() => setActiveSection(activeSection === 'automations' ? 'inbox' : 'automations')}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition shadow-md ${
+              activeSection === 'automations'
+                ? 'bg-purple-600 text-white ring-2 ring-purple-400'
+                : 'bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white hover:opacity-95'
+            }`}
           >
             <Sparkles className="w-3.5 h-3.5 fill-white" />
-            <span>⚡ Reel Automation & Follow-Gate</span>
-            {totalGuidesUnlocked > 0 && (
+            <span>{activeSection === 'automations' ? '← Back to Direct Inbox' : '⚡ Reply Automation Studio'}</span>
+            {totalGuidesUnlocked > 0 && activeSection !== 'automations' && (
               <span className="bg-black/40 text-white text-[10px] px-1.5 py-0.2 rounded-full font-black">
                 {totalGuidesUnlocked} Unlocked
               </span>
@@ -588,8 +602,67 @@ export function InboxClient() {
         </div>
       )}
 
-      {/* NATIVE INSTAGRAM DIRECT UNIFIED CANVAS */}
-      <div className="rounded-2xl border border-[#262626] bg-black overflow-hidden flex h-[calc(100dvh-140px)] min-h-[540px] max-h-[860px] shadow-2xl">
+      {/* PRIMARY WORKSPACE NAVIGATION TABS */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-black p-2 rounded-2xl border border-[#262626]">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveSection('inbox')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              activeSection === 'inbox'
+                ? 'bg-[#262626] text-white border border-[#444] shadow'
+                : 'text-zinc-400 hover:text-white hover:bg-[#181818]'
+            }`}
+          >
+            <MessageSquare className="w-4 h-4 text-[#0095F6]" />
+            <span>Direct Messages & Comments</span>
+            <span className="text-[10px] bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded-full font-mono">
+              {filteredConversations.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveSection('automations')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              activeSection === 'automations'
+                ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white shadow-md'
+                : 'text-zinc-400 hover:text-white hover:bg-[#181818]'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 fill-white" />
+            <span>⚡ Reply Automation Studio</span>
+            <span className="bg-black/40 text-white text-[10px] px-1.5 py-0.5 rounded-full font-black">
+              {totalGuidesUnlocked} Unlocked
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveSection('leads')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              activeSection === 'leads'
+                ? 'bg-[#262626] text-white border border-[#444] shadow'
+                : 'text-zinc-400 hover:text-white hover:bg-[#181818]'
+            }`}
+          >
+            <Users className="w-4 h-4 text-emerald-400" />
+            <span>Follower CRM & Captured Leads</span>
+            <span className="bg-emerald-950/70 border border-emerald-800 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+              {leadCaptures.length} Total
+            </span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 pr-2">
+          <span className="text-[11px] text-zinc-500">Host:</span>
+          <span className="text-[11px] font-mono text-zinc-300 bg-[#161616] px-2.5 py-1 rounded-lg border border-[#2a2a2a] flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            creatorautomation.tysonlabs.in
+          </span>
+        </div>
+      </div>
+
+      {/* SECTION 1: NATIVE INSTAGRAM DIRECT UNIFIED CANVAS */}
+      {activeSection === 'inbox' && (
+        <div className="rounded-2xl border border-[#262626] bg-black overflow-hidden flex h-[calc(100dvh-200px)] min-h-[520px] max-h-[860px] shadow-2xl">
         {/* Left Column: Instagram Inbox Thread List (360px) */}
         <div className="w-[340px] sm:w-[380px] border-r border-[#262626] flex flex-col bg-black flex-shrink-0">
           {/* Account Title Bar */}
@@ -854,7 +927,7 @@ export function InboxClient() {
               </div>
 
               {/* Chat Messages Body */}
-              <div className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6 space-y-3 bg-black">
+              <div ref={messagesContainerRef} className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6 space-y-4 bg-black">
                 {/* Instagram Profile Anchor Header - Compact & Native */}
                 <div className="flex flex-col items-center justify-center py-3 text-center border-b border-[#1f1f1f] mb-3">
                   <div className="w-14 h-14 rounded-full p-[1.5px] bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] mb-2">
@@ -904,7 +977,19 @@ export function InboxClient() {
                         key={m.id}
                         className={`flex flex-col ${isInbound ? 'items-start' : 'items-end'} space-y-1`}
                       >
-                        <div className={`flex items-end gap-2 max-w-[80%] ${isInbound ? 'flex-row' : 'flex-row-reverse'}`}>
+                        {/* Clear Sender Tag */}
+                        <div className={`flex items-center gap-1.5 text-[10px] font-bold ${isInbound ? 'pl-9 text-zinc-400' : 'pr-1 text-[#0095F6]'}`}>
+                          <span>{isInbound ? (activeHandle || activeConv.participant_name) : 'Travel Kathegalu'}</span>
+                          <span className="text-zinc-600 font-normal">
+                            {!isInbound ? '· Delivered ' : '· '}
+                            {new Date(m.created_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </div>
+
+                        <div className={`flex items-end gap-2 max-w-[85%] sm:max-w-[75%] ${isInbound ? 'flex-row' : 'flex-row-reverse'}`}>
                           {/* Mini Avatar for Follower Inbound */}
                           {isInbound && (
                             <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 mb-1 border border-[#333]">
@@ -941,22 +1026,23 @@ export function InboxClient() {
                               </div>
                             </div>
                           ) : isFollowGateMessage && !isInbound ? (
-                            /* 2. Follower Gate Message with Interactive Pill Button */
-                            <div className="space-y-2 max-w-[340px]">
-                              <div className="rounded-[22px] rounded-tr-[4px] px-4 py-3 bg-[#262626] text-white shadow-md text-[14px] leading-relaxed">
+                            /* 2. Follower Gate Message with Interactive Pill Button (Outbound branded gradient) */
+                            <div className="space-y-2 max-w-[380px]">
+                              <div className="rounded-[22px] rounded-tr-[4px] px-4 py-3 bg-gradient-to-r from-purple-700 via-pink-600 to-[#0095F6] text-white shadow-lg text-[14px] leading-relaxed font-medium">
                                 {m.text}
                               </div>
                               {/* Native Instagram Quick Reply Pill Button */}
-                              <div className="flex justify-start">
-                                <div className="px-4 py-2 rounded-2xl bg-[#363636] border border-[#444] text-white text-xs font-bold shadow-md inline-flex items-center gap-1.5">
-                                  <span>I'm following you!</span>
+                              <div className="flex justify-end">
+                                <div className="px-3.5 py-1.5 rounded-2xl bg-[#1c1c1c] border border-[#3a3a3a] text-zinc-200 text-xs font-bold shadow-md inline-flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+                                  <span>Quick Reply Button: "I'm following you!"</span>
                                 </div>
                               </div>
                             </div>
                           ) : isResourceDelivery && !isInbound ? (
                             /* 3. Resource Delivery Card with [Get the guide 🎁] Button */
-                            <div className="space-y-2 max-w-[340px]">
-                              <div className="rounded-[22px] rounded-tr-[4px] px-4 py-3 bg-[#262626] text-white shadow-md text-[14px] leading-relaxed whitespace-pre-line">
+                            <div className="space-y-2 max-w-[380px]">
+                              <div className="rounded-[22px] rounded-tr-[4px] px-4 py-3 bg-[#161616] border border-emerald-500/50 text-white shadow-xl text-[14px] leading-relaxed whitespace-pre-line">
                                 {m.text.replace('[BUTTON_CARD]', '').trim()}
                               </div>
                               {/* Clickable Resource Buttons Stack */}
@@ -965,30 +1051,30 @@ export function InboxClient() {
                                   href="https://tysonlabs.in/guides/bengaluru-itinerary-2026.pdf"
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="w-full text-center px-4 py-2.5 rounded-xl bg-[#262626] hover:bg-[#333] border border-[#3a3a3a] text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-md"
+                                  className="w-full text-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-md"
                                 >
                                   <span>Get the guide 🎁</span>
-                                  <ExternalLink className="w-3.5 h-3.5 text-[#0095F6]" />
+                                  <ExternalLink className="w-3.5 h-3.5 text-white" />
                                 </a>
                                 <a
-                                  href="https://tysonlabs.in"
+                                  href="https://tysonlabs.in/guides/bengaluru-itinerary-2026"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="w-full text-center px-4 py-2 rounded-xl bg-[#1c1c1c] hover:bg-[#262626] border border-[#2a2a2a] text-zinc-300 font-semibold text-[11px] flex items-center justify-center gap-1.5 transition"
                                 >
-                                  <span>EXPLORE ALL TRAVEL GUIDES</span>
+                                  <span>VIEW INTERACTIVE METRO & FOOD GUIDE ↗</span>
                                 </a>
                               </div>
                             </div>
                           ) : isEmailPrompt && !isInbound ? (
                             /* 4. Email Collection Prompt */
-                            <div className="rounded-[22px] rounded-tr-[4px] px-4 py-3 bg-gradient-to-r from-purple-950/80 to-[#262626] border border-purple-800/40 text-white shadow-md text-[14px] leading-relaxed">
+                            <div className="rounded-[22px] rounded-tr-[4px] px-4 py-3 bg-gradient-to-r from-purple-900 to-[#1e1e1e] border border-purple-600/40 text-white shadow-md text-[14px] leading-relaxed font-medium">
                               {m.text}
                             </div>
                           ) : isEmailSubmission ? (
                             /* 5. Inbound Captured Email */
                             <div className="space-y-1">
-                              <div className="rounded-[22px] rounded-tl-[4px] px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#0095F6] text-white text-[14px] font-medium shadow-md">
+                              <div className="rounded-[22px] rounded-tl-[4px] px-4 py-2.5 bg-gradient-to-r from-emerald-700 to-teal-700 text-white text-[14px] font-medium shadow-md">
                                 {m.text}
                               </div>
                               <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold px-1">
@@ -1001,28 +1087,18 @@ export function InboxClient() {
                             <div
                               className={`rounded-[22px] px-4 py-2.5 text-[14px] leading-relaxed break-words shadow-sm ${
                                 isInbound
-                                  ? 'bg-[#262626] text-white rounded-tl-[4px]'
-                                  : 'bg-[#0095F6] text-white rounded-tr-[4px] font-normal'
+                                  ? 'bg-[#262626] border border-[#333] text-white rounded-tl-[4px]'
+                                  : 'bg-[#0095F6] text-white rounded-tr-[4px] font-normal shadow-md'
                               }`}
                             >
                               {m.text}
                             </div>
                           )}
                         </div>
-
-                        {/* Status / Timestamp */}
-                        <span className="text-[11px] text-zinc-500 px-1">
-                          {!isInbound ? 'Delivered · ' : ''}
-                          {new Date(m.created_at).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
                       </div>
                     );
                   })
                 )}
-                <div ref={messagesEndRef} />
               </div>
 
               {/* Native Instagram Quick Reply Chips */}
@@ -1082,6 +1158,501 @@ export function InboxClient() {
           )}
         </div>
       </div>
+      )}
+
+      {/* SECTION 2: DEDICATED REPLY AUTOMATION STUDIO */}
+      {activeSection === 'automations' && (
+        <div className="rounded-3xl border border-[#2a2a2a] bg-[#101010] p-6 space-y-6 shadow-2xl">
+          {/* Studio Header */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#242424]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 via-pink-600 to-amber-500 flex items-center justify-center shadow-lg">
+                <Sparkles className="w-5 h-5 text-white fill-white" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white tracking-tight">Creator Reply Automation Studio</h2>
+                <p className="text-xs text-zinc-400">
+                  Automate Instagram Reel comments, gate lead magnets behind follow verification, and capture high-intent emails.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveAutoTab('automations')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
+                  activeAutoTab === 'automations'
+                    ? 'bg-[#262626] text-white border border-[#444]'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                Live Campaigns ({reelAutomations.length})
+              </button>
+              <button
+                onClick={() => setActiveAutoTab('create')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                  activeAutoTab === 'create'
+                    ? 'bg-purple-600 text-white shadow'
+                    : 'bg-[#1e1e1e] text-zinc-300 hover:text-white border border-[#333]'
+                }`}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ Create Campaign</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Performance Metric Counters */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-4 rounded-2xl bg-[#181818] border border-[#282828]">
+              <span className="text-[11px] text-zinc-400 uppercase font-semibold">Comments Replied</span>
+              <p className="text-2xl font-black text-amber-400 mt-1">{totalCommentsReplied}</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#181818] border border-[#282828]">
+              <span className="text-[11px] text-zinc-400 uppercase font-semibold">Followers Gated</span>
+              <p className="text-2xl font-black text-purple-400 mt-1">{totalFollowersGated}</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#181818] border border-[#282828]">
+              <span className="text-[11px] text-zinc-400 uppercase font-semibold">Guides Unlocked</span>
+              <p className="text-2xl font-black text-emerald-400 mt-1">{totalGuidesUnlocked}</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#181818] border border-[#282828]">
+              <span className="text-[11px] text-zinc-400 uppercase font-semibold">Emails Captured</span>
+              <p className="text-2xl font-black text-[#0095F6] mt-1">{totalLeadsCaptured}</p>
+            </div>
+          </div>
+
+          {/* TAB 1: ACTIVE AUTOMATIONS */}
+          {activeAutoTab === 'automations' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                  Live Reel Campaigns
+                </h3>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleSimulate('comment')}
+                    disabled={isSimulating}
+                    className="px-3 py-1.5 rounded-lg bg-[#222] hover:bg-[#333] border border-[#333] text-xs font-bold text-zinc-300 flex items-center gap-1.5 transition"
+                  >
+                    <Zap className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Test Comment Auto-Reply</span>
+                  </button>
+                  <button
+                    onClick={() => handleSimulate('dm')}
+                    disabled={isSimulating}
+                    className="px-3 py-1.5 rounded-lg bg-[#222] hover:bg-[#333] border border-[#333] text-xs font-bold text-zinc-300 flex items-center gap-1.5 transition"
+                  >
+                    <Send className="w-3.5 h-3.5 text-[#0095F6]" />
+                    <span>Test Follow-Gate DM</span>
+                  </button>
+                </div>
+              </div>
+
+              {reelAutomations.length === 0 ? (
+                <p className="text-xs text-zinc-500">No campaigns created yet.</p>
+              ) : (
+                reelAutomations.map((auto) => (
+                  <div
+                    key={auto.id}
+                    className="p-5 rounded-2xl bg-[#181818] border border-[#2a2a2a] space-y-4 shadow-lg"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-sm text-white">{auto.name}</span>
+                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-950 border border-purple-800 text-purple-300">
+                            {auto.reel_id === 'ALL' ? 'All Reels & Posts' : `Reel: ${auto.reel_id}`}
+                          </span>
+                        </div>
+                        <p className="text-xs text-zinc-400">
+                          Keywords:{' '}
+                          <span className="font-mono text-zinc-200">{auto.trigger_keywords}</span>
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => handleToggleAuto(auto)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-bold transition ${
+                            auto.is_active
+                              ? 'bg-emerald-600 text-white shadow-sm'
+                              : 'bg-zinc-700 text-zinc-300'
+                          }`}
+                        >
+                          {auto.is_active ? 'Active' : 'Paused'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Campaign Rules Overview */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-[#121212] p-3.5 rounded-xl border border-[#242424]">
+                      <div>
+                        <span className="text-zinc-500 font-semibold block text-[10px] uppercase">
+                          💬 Public Comment Reply
+                        </span>
+                        <p className="text-zinc-300 truncate mt-0.5">
+                          {auto.public_comment_reply || 'Disabled'}
+                        </p>
+                      </div>
+
+                      <div>
+                        <span className="text-zinc-500 font-semibold block text-[10px] uppercase">
+                          🔒 Follower Gate
+                        </span>
+                        <p className="text-zinc-300 mt-0.5">
+                          {auto.require_follow ? 'Required · With verification pill' : 'Open to everyone'}
+                        </p>
+                      </div>
+
+                      <div>
+                        <span className="text-zinc-500 font-semibold block text-[10px] uppercase">
+                          🎁 Delivery Button
+                        </span>
+                        <p className="text-blue-400 truncate mt-0.5">
+                          {auto.button_title} ({auto.button_url})
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Stats Row */}
+                    <div className="flex items-center gap-4 text-xs text-zinc-400 pt-1">
+                      <span>💬 {auto.total_comments_replied} comments replied</span>
+                      <span>🔒 {auto.total_followers_gated} gated</span>
+                      <span className="font-bold text-emerald-400">🎁 {auto.total_guides_unlocked} unlocked</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: CREATE / EDIT REEL CAMPAIGN */}
+          {activeAutoTab === 'create' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Left Form: Settings (7 cols) */}
+              <form onSubmit={handleCreateAuto} className="lg:col-span-7 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                    Campaign Name
+                  </label>
+                  <input
+                    type="text"
+                    value={newAutoName}
+                    onChange={(e) => setNewAutoName(e.target.value)}
+                    className="w-full rounded-xl bg-black border border-[#333] px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                      Reel / Media ID
+                    </label>
+                    <input
+                      type="text"
+                      value={newAutoReelId}
+                      onChange={(e) => setNewAutoReelId(e.target.value)}
+                      placeholder="ALL or Instagram Media ID"
+                      className="w-full rounded-xl bg-black border border-[#333] px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                      Trigger Keywords
+                    </label>
+                    <input
+                      type="text"
+                      value={newAutoKeywords}
+                      onChange={(e) => setNewAutoKeywords(e.target.value)}
+                      placeholder="DAY15, GUIDE, PDF, ITINERARY"
+                      className="w-full rounded-xl bg-black border border-[#333] px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                    Public Comment Auto-Reply
+                  </label>
+                  <input
+                    type="text"
+                    value={newAutoPublicReply}
+                    onChange={(e) => setNewAutoPublicReply(e.target.value)}
+                    placeholder="Sent you the full Bengaluru PDF guide in DMs! Check your requests ✈️❤️"
+                    className="w-full rounded-xl bg-black border border-[#333] px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  />
+                </div>
+
+                {/* Follower Gate Settings */}
+                <div className="p-4 rounded-2xl bg-black border border-[#2a2a2a] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Lock className="w-4 h-4 text-purple-400" />
+                      <span className="text-xs font-bold text-white">Require User to Follow</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={newAutoRequireFollow}
+                      onChange={(e) => setNewAutoRequireFollow(e.target.checked)}
+                      className="w-4 h-4 accent-purple-600 rounded"
+                    />
+                  </div>
+
+                  {newAutoRequireFollow && (
+                    <>
+                      <div>
+                        <label className="block text-[11px] text-zinc-400 mb-1">
+                          Gate Message (if not following)
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={newAutoGateMessage}
+                          onChange={(e) => setNewAutoGateMessage(e.target.value)}
+                          className="w-full rounded-xl bg-[#141414] border border-[#333] px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500 resize-none font-sans"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] text-zinc-400 mb-1">
+                            Quick Reply Button Text
+                          </label>
+                          <input
+                            type="text"
+                            value={newAutoGateButtonText}
+                            onChange={(e) => setNewAutoGateButtonText(e.target.value)}
+                            className="w-full rounded-xl bg-[#141414] border border-[#333] px-3 py-1.5 text-xs text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] text-zinc-400 mb-1">
+                            Re-check Failure Message
+                          </label>
+                          <input
+                            type="text"
+                            value={newAutoNotFollowingMessage}
+                            onChange={(e) => setNewAutoNotFollowingMessage(e.target.value)}
+                            className="w-full rounded-xl bg-[#141414] border border-[#333] px-3 py-1.5 text-xs text-white"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Email Capture Toggle */}
+                <div className="p-4 rounded-2xl bg-black border border-[#2a2a2a] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-amber-400" />
+                    <div>
+                      <span className="text-xs font-bold text-white block">Email Lead Capture Step</span>
+                      <span className="text-[11px] text-zinc-400">Ask for email before delivering the resource card</span>
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={newAutoAskEmail}
+                    onChange={(e) => setNewAutoAskEmail(e.target.checked)}
+                    className="w-4 h-4 accent-amber-500 rounded"
+                  />
+                </div>
+
+                {/* Resource Delivery Settings */}
+                <div className="p-4 rounded-2xl bg-black border border-[#2a2a2a] space-y-3">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-emerald-400" />
+                    <span className="text-xs font-bold text-white">Resource Card Delivery</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] text-zinc-400 mb-1">
+                        Interactive Button Label
+                      </label>
+                      <input
+                        type="text"
+                        value={newAutoButtonTitle}
+                        onChange={(e) => setNewAutoButtonTitle(e.target.value)}
+                        placeholder="Get the guide 🎁"
+                        className="w-full rounded-xl bg-[#141414] border border-[#333] px-3 py-1.5 text-xs text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] text-zinc-400 mb-1">
+                        Resource Destination Link (PDF or Web)
+                      </label>
+                      <input
+                        type="text"
+                        value={newAutoButtonUrl}
+                        onChange={(e) => setNewAutoButtonUrl(e.target.value)}
+                        placeholder="https://tysonlabs.in/guides/bengaluru-itinerary-2026.pdf"
+                        className="w-full rounded-xl bg-[#141414] border border-[#333] px-3 py-1.5 text-xs text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] text-zinc-400 mb-1">
+                      Delivery Message Above Button
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={newAutoSuccessMessage}
+                      onChange={(e) => setNewAutoSuccessMessage(e.target.value)}
+                      className="w-full rounded-xl bg-[#141414] border border-[#333] px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500 resize-none font-sans"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoadingAutomations}
+                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white font-bold text-xs shadow-lg hover:opacity-95 transition disabled:opacity-50"
+                >
+                  {isLoadingAutomations ? 'Saving Campaign…' : 'Deploy Automation Campaign 🚀'}
+                </button>
+              </form>
+
+              {/* Right Phone Mockup Preview (5 cols) */}
+              <div className="lg:col-span-5 flex flex-col items-center justify-center p-4 bg-black rounded-3xl border border-[#222]">
+                <span className="text-[11px] font-bold text-zinc-500 mb-2 uppercase tracking-wider">
+                  Instagram DM Mockup Preview
+                </span>
+                <div className="w-[280px] rounded-[32px] bg-black border-4 border-[#333] overflow-hidden flex flex-col shadow-2xl relative text-[11px]">
+                  <div className="p-3 bg-[#161616] border-b border-[#262626] flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] p-[1px]">
+                      <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-[9px] font-bold text-white">
+                        TK
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-bold text-[11px] text-white">travel_kathegalu</p>
+                      <p className="text-[9px] text-zinc-400">Active now</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 space-y-2 overflow-y-auto max-h-[360px]">
+                    <div className="flex justify-end">
+                      <span className="px-3 py-1.5 rounded-2xl bg-purple-600 text-white font-bold text-[11px]">
+                        DAY15
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 rounded-2xl bg-[#262626] text-white text-[10.5px] leading-snug">
+                      {newAutoGateMessage}
+                    </div>
+
+                    <div className="flex justify-start">
+                      <span className="px-3 py-1.5 rounded-full bg-[#1c1c1c] border border-[#3a3a3a] text-zinc-200 text-[10px] font-bold">
+                        {newAutoGateButtonText}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                      <div className="p-2.5 rounded-2xl bg-[#262626] text-white text-[10.5px] leading-snug whitespace-pre-line">
+                        {newAutoSuccessMessage}
+                      </div>
+                      <div className="p-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-center text-white font-bold text-[10px]">
+                        {newAutoButtonTitle}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* SECTION 3: DEDICATED FOLLOWER CRM & CAPTURED LEADS */}
+      {activeSection === 'leads' && (
+        <div className="rounded-3xl border border-[#2a2a2a] bg-[#101010] p-6 space-y-6 shadow-2xl">
+          <div className="flex items-center justify-between pb-4 border-b border-[#242424]">
+            <div>
+              <h2 className="text-base font-bold text-white tracking-tight">Follower CRM & Captured Leads</h2>
+              <p className="text-xs text-zinc-400">
+                Followers who interacted with your Reel automation and submitted their contact info.
+              </p>
+            </div>
+
+            <button
+              onClick={handleExportLeadsCsv}
+              disabled={leadCaptures.length === 0}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#262626] hover:bg-[#333] border border-[#3a3a3a] text-white text-xs font-bold transition disabled:opacity-50"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export CSV</span>
+            </button>
+          </div>
+
+          {leadCaptures.length === 0 ? (
+            <div className="p-12 text-center text-zinc-500 text-xs">
+              No leads captured yet. Run a test trigger to generate your first lead!
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-[#2a2a2a] overflow-hidden bg-black">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#181818] border-b border-[#2a2a2a] text-zinc-400 font-semibold uppercase text-[10px]">
+                  <tr>
+                    <th className="px-4 py-3">Follower</th>
+                    <th className="px-4 py-3">Email Address</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Reel / Source</th>
+                    <th className="px-4 py-3">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#1e1e1e]">
+                  {leadCaptures.map((l) => (
+                    <tr key={l.id} className="hover:bg-[#141414] transition">
+                      <td className="px-4 py-3 font-semibold text-white">
+                        <div>
+                          <p>{l.participant_name || 'Traveler'}</p>
+                          <p className="text-[11px] text-zinc-500 font-normal">
+                            @{l.participant_username || l.participant_id}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        {l.email ? (
+                          <span className="font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded-md">
+                            {l.email}
+                          </span>
+                        ) : (
+                          <span className="text-zinc-500 italic">Not submitted</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                            l.status === 'unlocked'
+                              ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                              : l.status === 'awaiting_email'
+                              ? 'bg-amber-950 text-amber-400 border border-amber-800'
+                              : 'bg-purple-950 text-purple-400 border border-purple-800'
+                          }`}
+                        >
+                          {l.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-zinc-400 font-mono text-[11px]">
+                        {l.reel_id || 'ALL'}
+                      </td>
+                      <td className="px-4 py-3 text-zinc-500 text-[11px]">
+                        {l.unlocked_at
+                          ? new Date(l.unlocked_at).toLocaleString()
+                          : new Date(l.created_at).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* REEL LEAD MAGNET & FOLLOWER-GATE STUDIO MODAL */}
       {showReelModal && (
