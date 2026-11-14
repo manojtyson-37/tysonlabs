@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
               senderId: msg.from?.id || participant.id,
               senderName: msg.from?.username || participant.username,
               recipientId: igUserId,
-              text: msg.message || '',
+              text: msg.message?.trim() || '[Shared Reel / Instagram Media]',
               timestamp: msg.created_time ? new Date(msg.created_time).getTime() : Date.now(),
               rawPayload: msg,
             });

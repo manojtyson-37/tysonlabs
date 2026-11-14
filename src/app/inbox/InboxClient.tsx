@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   MessageSquare,
   Send,
@@ -11,6 +11,7 @@ import {
   MessageCircle,
   Filter,
   ExternalLink,
+  Film,
 } from 'lucide-react';
 
 function extractInstagramHandle(name: string): string | null {
@@ -83,6 +84,12 @@ export function InboxClient() {
   const [isSimulating, setIsSimulating] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to latest message in active conversation
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, activeConvId]);
 
   // Sync historical posts, comments, and conversations from Meta Graph API
   const handleSyncHistorical = async () => {
@@ -347,11 +354,11 @@ export function InboxClient() {
       )}
 
       {/* Main Two-Pane Split Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[640px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[760px]">
         {/* Left Column: Conversation Sidebar (4 cols) */}
-        <div className="lg:col-span-4 flex flex-col rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="lg:col-span-4 flex flex-col rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden h-full">
           {/* Filter Tabs */}
-          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50/60 dark:bg-zinc-900/60">
+          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50/60 dark:bg-zinc-900/60 flex-shrink-0">
             <div className="flex items-center gap-1">
               {(
                 [
@@ -380,7 +387,7 @@ export function InboxClient() {
           </div>
 
           {/* Conversation List */}
-          <div className="flex-1 divide-y divide-zinc-100 dark:divide-zinc-800/60 overflow-y-auto max-h-[680px]">
+          <div className="flex-1 divide-y divide-zinc-100 dark:divide-zinc-800/60 overflow-y-auto">
             {filteredConversations.length === 0 ? (
               <div className="p-8 text-center space-y-2">
                 <MessageSquare className="w-8 h-8 mx-auto text-zinc-300 dark:text-zinc-600" />
@@ -476,14 +483,14 @@ export function InboxClient() {
         </div>
 
         {/* Right Column: Active Conversation Feed (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden h-full">
           {activeConv ? (
             <>
               {/* Active Conversation Header */}
               {(() => {
                 const activeHandle = extractInstagramHandle(activeConv.participant_name);
                 return (
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50/70 dark:bg-zinc-900/70">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50/70 dark:bg-zinc-900/70 flex-shrink-0">
                     <div className="flex items-center gap-3.5">
                       {activeConv.participant_avatar ? (
                         <img
@@ -553,7 +560,7 @@ export function InboxClient() {
 
               {/* Reel / Post Context Banner if Comment */}
               {activeConv.channel_type === 'comment' && (
-                <div className="bg-amber-50/80 dark:bg-amber-950/40 border-b border-amber-200/60 dark:border-amber-800/40 px-4 py-2.5 flex items-center justify-between text-xs text-amber-900 dark:text-amber-200">
+                <div className="bg-amber-50/80 dark:bg-amber-950/40 border-b border-amber-200/60 dark:border-amber-800/40 px-4 py-2.5 flex items-center justify-between text-xs text-amber-900 dark:text-amber-200 flex-shrink-0">
                   <div className="flex items-center gap-2 truncate max-w-[80%]">
                     <span className="font-semibold text-amber-950 dark:text-amber-100 flex-shrink-0">
                       📌 Attached Reel:
@@ -579,7 +586,7 @@ export function InboxClient() {
               )}
 
               {/* Message Feed Stream */}
-              <div className="flex-1 p-6 space-y-4 overflow-y-auto max-h-[460px] bg-zinc-50/30 dark:bg-zinc-950/20">
+              <div className="flex-1 p-5 space-y-3.5 overflow-y-auto bg-zinc-50/40 dark:bg-zinc-950/40">
                 {messages.length === 0 ? (
                   <p className="text-center text-xs text-zinc-400 py-12">
                     No messages recorded in this thread yet.
@@ -587,6 +594,12 @@ export function InboxClient() {
                 ) : (
                   messages.map((m) => {
                     const isInbound = m.direction === 'inbound';
+                    const hasValidText = Boolean(m.text && m.text.trim());
+                    const isMediaShare =
+                      !hasValidText ||
+                      m.text.includes('[Shared Reel') ||
+                      m.text.includes('[Instagram');
+
                     return (
                       <div
                         key={m.id}
@@ -610,13 +623,20 @@ export function InboxClient() {
                           </span>
                         </div>
                         <div
-                          className={`max-w-[80%] rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-sm ${
+                          className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed shadow-xs ${
                             isInbound
-                              ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 rounded-tl-sm'
-                              : 'bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 rounded-tr-sm font-medium'
+                              ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200/80 dark:border-zinc-700/80 rounded-tl-xs'
+                              : 'bg-blue-600 text-white rounded-tr-xs font-normal shadow-xs'
                           }`}
                         >
-                          {m.text}
+                          {isMediaShare ? (
+                            <div className="flex items-center gap-1.5 italic text-opacity-90">
+                              <Film className="w-3.5 h-3.5 flex-shrink-0" />
+                              <span>Shared Reel / Instagram Media</span>
+                            </div>
+                          ) : (
+                            <span>{m.text}</span>
+                          )}
                         </div>
                         <span className="text-[10px] text-zinc-400 mt-0.5">
                           {m.status === 'sent'
@@ -629,10 +649,11 @@ export function InboxClient() {
                     );
                   })
                 )}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Quick Canned Answers Bar */}
-              <div className="px-4 py-2 bg-zinc-50/80 dark:bg-zinc-900/80 border-t border-zinc-200 dark:border-zinc-800 flex items-center gap-2 overflow-x-auto">
+              <div className="px-4 py-2 bg-zinc-50/80 dark:bg-zinc-900/80 border-t border-zinc-200 dark:border-zinc-800 flex items-center gap-2 overflow-x-auto flex-shrink-0">
                 <span className="text-[11px] font-bold text-zinc-400 whitespace-nowrap">
                   Quick Replies:
                 </span>
@@ -648,7 +669,7 @@ export function InboxClient() {
               </div>
 
               {/* Reply Action Composer */}
-              <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-3">
+              <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-3 flex-shrink-0">
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}

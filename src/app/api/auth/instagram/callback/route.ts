@@ -159,7 +159,7 @@ export async function GET(request: Request) {
                 senderId: isOutbound ? acc.id : participant.id,
                 senderName: isOutbound ? acc.username : (participant.username || participant.name || 'User'),
                 recipientId: isOutbound ? participant.id : acc.id,
-                text: m.message || '',
+                text: m.message?.trim() || '[Shared Reel / Instagram Media]',
                 timestamp: m.created_time ? new Date(m.created_time).getTime() : undefined,
                 rawPayload: { threadId: conv.id, isOutbound },
               }).catch(() => null);
