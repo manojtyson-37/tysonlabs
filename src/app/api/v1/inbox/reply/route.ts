@@ -6,6 +6,7 @@ import {
 import {
   recordOutboundMessage,
   getConversationWithMessages,
+  getInboxAccount,
 } from '@/lib/inbox-db';
 
 export async function POST(req: NextRequest) {
@@ -39,11 +40,15 @@ export async function POST(req: NextRequest) {
     // Dispatch to Meta Graph API if credentials exist
     if (conversation.platform === 'instagram') {
       try {
+        const dbAcc = await getInboxAccount(conversation.account_id);
+        const token = dbAcc?.page_access_token || dbAcc?.access_token;
+
         if (conversation.channel_type === 'dm') {
           const res = await sendInstagramDirectMessage({
             igUserId: conversation.account_id,
             recipientId: conversation.participant_id,
             text: text.trim(),
+            accessToken: token,
           });
           metaResponseId = res.message_id;
         } else if (conversation.channel_type === 'comment') {
@@ -52,6 +57,7 @@ export async function POST(req: NextRequest) {
           const res = await replyToInstagramComment({
             commentId: targetCommentId,
             text: text.trim(),
+            accessToken: token,
           });
           metaResponseId = res.id;
         }
